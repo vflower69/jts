@@ -532,7 +532,7 @@ function renderTimeline(sightings) {
     .join("");
 }
 
- ---------------------------------------------------------------
+// ---------------------------------------------------------------
 // Show Jimothy movement on map:
 // This creates: A Google Map, A raccoon marker, Smooth movement from sighting to sighting, Auto‑panning as Jimothy travels
 // -------------------------------------------------------------
