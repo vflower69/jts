@@ -1,142 +1,136 @@
-<style>
-    body {
-      background: #000;
-      color: #00ffcc;
-      font-family: "Press Start 2P", monospace;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-      overflow-x: hidden;
-    }
+.arcade {
+  background: #000;
+  color: #00ffcc;
+  font-family: "Press Start 2P", monospace;
+  text-align: center;
+  overflow-x: hidden;
+  padding-bottom: 2rem;
+}
 
-    header {
-      padding: 2rem 1rem 1rem;
-      text-shadow: 0 0 10px #00ffcc;
-    }
+/* Header inside arcade (subtitle only — shared header stays Tailwind) */
+.arcade p.subtitle {
+  margin: 1rem 0 2rem;
+  color: #66ffe0;
+  font-size: 0.8rem;
+}
 
-    h1 {
-      margin: 0;
-      font-size: 2rem;
-    }
+/* Grid layout */
+.arcade .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
 
-    p.subtitle {
-      margin: 1rem 0 2rem;
-      color: #66ffe0;
-      font-size: 0.8rem;
-    }
+/* Game cards */
+.arcade .card {
+  background: #111;
+  border: 3px solid #00ffcc;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 20px #00ffcc;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  position: relative;
+  transform-style: preserve-3d;
+}
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 1.5rem;
-      padding: 1rem;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
+.arcade .card:hover {
+  transform: rotateY(180deg);
+  box-shadow: 0 0 30px #00ffee;
+}
 
-    .card {
-      background: #111;
-      border: 3px solid #00ffcc;
-      padding: 1.5rem;
-      border-radius: 0.5rem;
-      box-shadow: 0 0 20px #00ffcc;
-      transition: transform 0.4s ease, box-shadow 0.4s ease;
-      position: relative;
-      transform-style: preserve-3d;
-    }
+.arcade .card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
 
-    .card:hover {
-      transform: rotateY(180deg);
-      box-shadow: 0 0 30px #00ffee;
-    }
+.arcade .card p {
+  margin: 0 0 1rem;
+  color: #99ffee;
+  font-size: 0.7rem;
+  line-height: 1.4;
+}
 
-    .card h2 {
-      margin: 0 0 0.5rem;
-      font-size: 1rem;
-    }
+.arcade .difficulty {
+  margin-bottom: 1rem;
+  font-size: 0.7rem;
+  color: #ff66aa;
+}
 
-    .card p {
-      margin: 0 0 1rem;
-      color: #99ffee;
-      font-size: 0.7rem;
-      line-height: 1.4;
-    }
+.arcade .card a {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: #00ffcc;
+  color: #000;
+  font-weight: bold;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background 0.1s ease;
+}
 
-    .difficulty {
-      margin-bottom: 1rem;
-      font-size: 0.7rem;
-      color: #ff66aa;
-    }
+.arcade .card a:hover {
+  background: #00ffee;
+}
 
-    .card a {
-      display: inline-block;
-      padding: 0.5rem 1rem;
-      background: #00ffcc;
-      color: #000;
-      font-weight: bold;
-      border-radius: 5px;
-      text-decoration: none;
-      transition: background 0.1s ease;
-    }
+/* Runner animation */
+.arcade #runner {
+  position: absolute;
+  font-size: 3rem;
+  transition: left 0.4s ease, top 0.4s ease;
+  pointer-events: none;
+  z-index: 50;
+  text-shadow: 0 0 10px #fff;
+}
 
-    .card a:hover {
-      background: #00ffee;
-    }
+/* Surprise button */
+.arcade #surprise {
+  margin: 2rem auto;
+  padding: 1rem 2rem;
+  background: #ff66aa;
+  color: #000;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: inline-block;
+  box-shadow: 0 0 20px #ff66aa;
+  transition: transform 0.15s ease;
+}
 
-    #runner {
-      position: absolute;
-      font-size: 3rem;
-      transition: left 0.4s ease, top 0.4s ease;
-      pointer-events: none;
-      z-index: 50;
-      text-shadow: 0 0 10px #fff;
-    }
+.arcade #surprise:hover {
+  transform: scale(1.1);
+}
 
-    #surprise {
-      margin: 2rem auto;
-      padding: 1rem 2rem;
-      background: #ff66aa;
-      color: #000;
-      border-radius: 10px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      display: inline-block;
-      box-shadow: 0 0 20px #ff66aa;
-      transition: transform 0.15s ease;
-    }
+/* Leaderboard */
+.arcade #leaderboard {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: #111;
+  border: 3px solid #00ffcc;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 0 20px #00ffcc;
+}
 
-    #surprise:hover {
-      transform: scale(1.1);
-    }
+.arcade #leaderboard h2 {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
 
-    #leaderboard {
-      margin-top: 2rem;
-      padding: 1rem;
-      background: #111;
-      border: 3px solid #00ffcc;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-      box-shadow: 0 0 20px #00ffcc;
-    }
+.arcade #leaderboard ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.8rem;
+  color: #66ffe0;
+}
 
-    #leaderboard h2 {
-      font-size: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    #leaderboard ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      font-size: 0.8rem;
-      color: #66ffe0;
-    }
-
-    footer {
-      margin-top: 2rem;
-      padding: 1rem;
-      color: #66ffe0;
-      font-size: 0.7rem;
-    }
-  </style>
+/* Footer inside arcade (shared footer stays Tailwind) */
+.arcade footer {
+  margin-top: 2rem;
+  padding: 1rem;
+  color: #66ffe0;
+  font-size: 0.7rem;
+}
