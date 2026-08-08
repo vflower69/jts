@@ -557,37 +557,91 @@ function animateMovementOnMap(sightings) {
     icon: jimothyIcon
   });
 
-  // ⭐ Build the polyline path
-  const pathCoordinates = sightings.map(s => ({
-    lat: s.lat,
-    lng: s.lng
-  }));
+  // ⭐ Polyline path
+  const pathCoordinates = sightings.map(s => ({ lat: s.lat, lng: s.lng }));
 
   const jimothyPath = new google.maps.Polyline({
     path: pathCoordinates,
     geodesic: true,
-    strokeColor: "#d97706",     // amber-600
+    strokeColor: "#d97706",
     strokeOpacity: 0.9,
     strokeWeight: 4
   });
 
   jimothyPath.setMap(map);
 
-  // ⭐ Animate Jimothy along the path
+  // ⭐ Pulsing marker at latest sighting
+  const pulseDiv = document.createElement("div");
+  pulseDiv.classList.add("pulse-marker");
+
+  new google.maps.OverlayView().onAdd = function () {
+    const panes = this.getPanes();
+    panes.overlayMouseTarget.appendChild(pulseDiv);
+  };
+
+  const pulseOverlay = new google.maps.OverlayView();
+  pulseOverlay.onAdd = function () {
+    const panes = this.getPanes();
+    panes.overlayLayer.appendChild(pulseDiv);
+  };
+  pulseOverlay.draw = function () {
+    const projection = this.getProjection();
+    const pos = projection.fromLatLngToDivPixel(
+      new google.maps.LatLng(
+        sightings[sightings.length - 1].lat,
+        sightings[sightings.length - 1].lng
+      )
+    );
+    pulseDiv.style.left = pos.x - 10 + "px";
+    pulseDiv.style.top = pos.y - 10 + "px";
+    pulseDiv.style.position = "absolute";
+  };
+  pulseOverlay.setMap(map);
+
+  // ⭐ Animation controls
   let i = 0;
-  function moveNext() {
-    if (i >= sightings.length) return;
+  let interval = null;
 
-    const next = sightings[i];
-    marker.setPosition({ lat: next.lat, lng: next.lng });
-    map.panTo({ lat: next.lat, lng: next.lng });
+  function startAnimation() {
+    if (interval) return;
 
-    i++;
-    setTimeout(moveNext, 1200); // movement speed
+    interval = setInterval(() => {
+      if (i >= sightings.length) {
+        clearInterval(interval);
+        interval = null;
+        return;
+      }
+
+      const next = sightings[i];
+      marker.setPosition({ lat: next.lat, lng: next.lng });
+      map.panTo({ lat: next.lat, lng: next.lng });
+
+      i++;
+    }, 1200);
   }
 
-  moveNext();
+  function pauseAnimation() {
+    clearInterval(interval);
+    interval = null;
+  }
+
+  function replayAnimation() {
+    pauseAnimation();
+    i = 0;
+    marker.setPosition({ lat: sightings[0].lat, lng: sightings[0].lng });
+    map.panTo({ lat: sightings[0].lat, lng: sightings[0].lng });
+    startAnimation();
+  }
+
+  // Hook up buttons
+  document.getElementById("playBtn").onclick = startAnimation;
+  document.getElementById("pauseBtn").onclick = pauseAnimation;
+  document.getElementById("replayBtn").onclick = replayAnimation;
+
+  // Auto-start animation
+  startAnimation();
 }
+
 
 
 // -------------------------------
