@@ -532,6 +532,64 @@ function renderTimeline(sightings) {
     .join("");
 }
 
+ ---------------------------------------------------------------
+// Show Jimothy movement on map:
+// This creates: A Google Map, A raccoon marker, Smooth movement from sighting to sighting, Auto‑panning as Jimothy travels
+// -------------------------------------------------------------
+function animateMovementOnMap(sightings) {
+  if (!sightings.length) return;
+
+  const map = new google.maps.Map(document.getElementById("movementMap"), {
+    center: { lat: sightings[0].lat, lng: sightings[0].lng },
+    zoom: 14,
+    mapTypeId: "roadmap"
+  });
+
+  // Jimothy icon
+  const jimothyIcon = {
+    url: "/assets/raccoon.png",
+    scaledSize: new google.maps.Size(50, 50)
+  };
+
+  const marker = new google.maps.Marker({
+    position: { lat: sightings[0].lat, lng: sightings[0].lng },
+    map,
+    icon: jimothyIcon
+  });
+
+  // ⭐ Build the polyline path
+  const pathCoordinates = sightings.map(s => ({
+    lat: s.lat,
+    lng: s.lng
+  }));
+
+  const jimothyPath = new google.maps.Polyline({
+    path: pathCoordinates,
+    geodesic: true,
+    strokeColor: "#d97706",     // amber-600
+    strokeOpacity: 0.9,
+    strokeWeight: 4
+  });
+
+  jimothyPath.setMap(map);
+
+  // ⭐ Animate Jimothy along the path
+  let i = 0;
+  function moveNext() {
+    if (i >= sightings.length) return;
+
+    const next = sightings[i];
+    marker.setPosition({ lat: next.lat, lng: next.lng });
+    map.panTo({ lat: next.lat, lng: next.lng });
+
+    i++;
+    setTimeout(moveNext, 1200); // movement speed
+  }
+
+  moveNext();
+}
+
+
 // -------------------------------
 // Main Loader
 // -------------------------------
@@ -577,7 +635,8 @@ async function loadSightings() {
       .join("");
 
     // Run all visualizations
-    animateMovement(sightings);
+    //animateMovement(sightings);
+    animateMovementOnMap(sightings);
     setupMapModal();
     renderTimeline(sightings);
     renderNeighborhoodHeatmap(sightings);
