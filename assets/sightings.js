@@ -516,4 +516,88 @@ function renderTimeline(sightings) {
 
       return `
         <div class="border-l-4 border-amber-700 pl-4 py-2">
-          <p class
+          <p class="text-sm text-gray-500">${date}</p>
+          <p class="text-lg font-semibold">${neighborhood}</p>
+          <p class="text-gray-700">${s.note || "No notes provided."}</p>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+// -------------------------------
+// Main Loader
+// -------------------------------
+async function loadSightings() {
+  const container = document.getElementById("sightingListContainer");
+
+  try {
+    const response = await fetch("/api/sightings");
+    const data = await response.json();
+    const sightings = data.locations || [];
+
+    sightings.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    const recent = sightings.slice(0, 5);
+    container.innerHTML = recent
+      .map(s => {
+        const date = new Date(s.timestamp).toLocaleString("en-US", {
+          dateStyle: "medium",
+          timeStyle: "short"
+        });
+        const neighborhood = getNeighborhood(s.lat, s.lng);
+        const icon = getSightingIcon(s.note);
+        const mapUrl = getMapPreview(s.lat, s.lng);
+        const note = s.note && s.note.trim() !== "" ? s.note : "No notes provided.";
+
+        return `
+          <div class="p-5 bg-white rounded-lg shadow-sm border border-gray-200 space-y-3">
+            <div class="flex items-center gap-3">
+              <span class="text-3xl">${icon}</span>
+              <div>
+                <p class="text-sm text-gray-500">${date}</p>
+                <p class="text-lg font-semibold">${neighborhood}</p>
+              </div>
+            </div>
+            <img src="${mapUrl}" alt="Map preview"
+                 class="map-preview rounded-lg border border-gray-300 cursor-pointer"
+                 data-lat="${s.lat}" data-lng="${s.lng}" />
+            <p class="text-gray-700">${note}</p>
+            <p class="text-xs text-gray-500">Lat: ${s.lat}, Lng: ${s.lng}</p>
+          </div>
+        `;
+      })
+      .join("");
+
+    // Run all visualizations
+    animateMovement(sightings);
+    setupMapModal();
+    renderTimeline(sightings);
+    renderNeighborhoodHeatmap(sightings);
+    generateNeighborhoodDescriptions(sightings);
+    renderFavoritePlaces(sightings);
+    renderSeasonalPatterns(sightings);
+
+    const moodData = calculateJimothyMood(sightings);
+    renderJimothyMood(moodData);
+
+    const dailyMoods = computeDailyMoods(sightings);
+    renderMoodHistoryChart(dailyMoods);
+    renderDailyMoodSummary(dailyMoods);
+
+    const moodForecast = forecastMood(dailyMoods);
+    renderMoodForecast(moodForecast);
+
+    const prediction = predictMigration(sightings);
+    renderMigrationPrediction(prediction);
+
+    const nextNeighborhood = forecastNextNeighborhood(sightings);
+    renderNextForecast(nextNeighborhood);
+
+  } catch (err) {
+    console.error("Error loading sightings:", err);
+    container.innerHTML = `<p class="text-red-600">Unable to load sightings at this time.</p>`;
+  }
+}
+
+document.addEventListener("DOMContentLoaded", loadSightings);
