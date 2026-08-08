@@ -41,7 +41,7 @@
     <section class="mb-10">
       <h2 class="text-3xl font-serif mb-4">A Complete Record of Jimothy Sightings</h2>
       <p class="text-lg leading-relaxed">
-        This page collects all community-submitted sightings of Jimothy the raccoon. Each entry includes a timestamp, location, and optional notes from observers.
+        This page shows all community-submitted sightings of Jimothy the raccoon. Each entry includes a timestamp, location, and optional notes from observers.
       </p>
     </section>
 
@@ -55,13 +55,23 @@
     </section>
 
     <!-- Movement Animation -->
-    <section class="mt-12">
+    <!-- old section class="mt-12">
       <h3 class="text-2xl font-semibold mb-3">Jimothy Movement Animation</h3>
       <div id="movementAnimation" class="relative w-full h-64 bg-gray-100 rounded-xl overflow-hidden">
         <img id="raccoonIcon" src="/assets/raccoon.png"
              class="absolute w-12 h-12 transition-all duration-700 ease-in-out" />
       </div>
+    </section old -->
+    <section class="mt-12">
+      <h3 class="text-2xl font-semibold mb-3">Jimothy Movement Animation</h3>
+      <div id="movementMap" class="w-full h-96 rounded-xl overflow-hidden"></div>
+      <div class="flex gap-3 mt-3">
+        <button id="playBtn" class="px-4 py-2 bg-amber-600 text-white rounded">Play</button>
+        <button id="pauseBtn" class="px-4 py-2 bg-gray-600 text-white rounded">Pause</button>
+        <button id="replayBtn" class="px-4 py-2 bg-blue-600 text-white rounded">Replay</button>
+      </div>
     </section>
+
 
     <!-- Timeline -->
     <section class="mt-12">
