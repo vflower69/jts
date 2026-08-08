@@ -1,3 +1,10 @@
+// ------------------------------
+// CONFIG VARS
+// ------------------------------
+const GITHUB_USER = "vflower69";
+const GITHUB_REPO = "jts";
+const GITHUB_FILE_PATH = "data/jimothy.json";
+
 // -------------------------------
 // Neighborhood Lookup
 // -------------------------------
@@ -532,7 +539,7 @@ async function loadSightings() {
   const container = document.getElementById("sightingListContainer");
 
   try {
-    const response = await fetch("/api/sightings");
+    const response = await fetch(`https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${GITHUB_FILE_PATH}`);
     const data = await response.json();
     const sightings = data.locations || [];
 
