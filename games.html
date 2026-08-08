@@ -4,20 +4,32 @@
   <meta charset="UTF-8" />
   <title>Jimothy Retro Arcade</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Tailwind (matches bio.html) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Retro Arcade Font -->
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <!-- Page Styles -->
   <link rel="stylesheet" href="/assets/games.css">
   
 </head>
 <body>
-
-  <header>
-    <h1>Jimothy Retro Arcade</h1>
-    <p class="subtitle">SELECT YOUR CHAOS! Jimothy approves this retro arcade and denies responsibility for excessive laughter.</p>
+  <header class="flex flex-wrap items-center justify-between px-16 py-6 bg-gradient-to-b from-[#f8f8f7] to-[#f1f0ee] shadow-sm gap-4">
+    <div class="flex items-center gap-3">
+      <h1 class="text-2xl font-serif text-[#34322d]">🦝 Jimothy Retro Arcade</h1>
+    </div>
+    <nav class="flex items-center gap-8 text-sm font-medium text-[#34322d]">
+      <a href="/" class="hover:text-[#a64f3c]">Home</a>
+      <a href="/sightings" class="hover:text-[#a64f3c]">Sightings</a>
+      <a href="/#sightingReportForm" class="hover:text-[#a64f3c]">Report A Sighting</a>
+    </nav>
   </header>
 
+    <h1>Jimothy Retro Arcade</h1>
+    <p class="subtitle">SELECT YOUR CHAOS! Jimothy approves this retro arcade and denies responsibility for excessive laughter.</p>
+  <!-- Retro Runner + Surprise Button -->
   <div id="runner">🦝</div>
   <div id="surprise">🎲 Surprise Me!</div>
-
+  <!-- Main Arcade Grid -->
   <main class="grid">
     <div class="card" data-link="games/disco.html">
       <h2>Jimothy Disco</h2>
@@ -126,7 +138,7 @@
       <a href="games/funnyjoke.html">Play</a>
     </div>
   </main>
-
+  <!-- Leaderboard -->
   <div id="leaderboard">
     <h2>High Scores</h2>
     <ul id="scores"></ul>
