@@ -38,7 +38,7 @@ function getSightingIcon(note) {
 // Map preview (static image)
 // -------------------------------
 function getMapPreview(lat, lng) {
-  return `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=15&size=400x200&markers=color:red|${lat},${lng}&key=YOUR_GOOGLE_MAPS_API_KEY`;
+  return `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=15&size=400x200&markers=color:red|${lat},${lng}&key=AIzaSyAlxVpnD3O24HnHep4J4gwWZCHqKG7uewk`;
 }
 
 // -------------------------------
