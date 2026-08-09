@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - '**/*.html'   # Only run when HTML files change
   workflow_dispatch:
 
 jobs:
@@ -12,7 +14,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4   # Updated to Node.js 24 compatible version
 
       - name: Add Cloudflare Analytics snippet to all HTML files
         run: |
@@ -20,13 +22,15 @@ jobs:
 
           for file in $(find . -type f -name "*.html"); do
             if ! grep -q "static.cloudflareinsights.com/beacon.min.js" "$file"; then
-              # Insert before </body>
               sed -i "s|</body>|  $SNIPPET\n</body>|" "$file"
               echo "Injected snippet into $file"
             else
               echo "Snippet already present in $file"
             fi
           done
+          
+      - name: Show modified files
+        run: git diff --name-only
 
       - name: Commit changes
         run: |
