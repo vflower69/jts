@@ -96,7 +96,17 @@
         this.load.on("complete", () => {
           this.time.delayedCall(300, () => this.scene.start("MainMenu"));
         });
-
+        
+        // Audio placeholders (royalty-free beeps)
+        this.load.audio("music_main", "https://cdn.jsdelivr.net/gh/jimothy-assets/audio/music_placeholder.mp3");
+        this.load.audio("sfx_hit", "https://cdn.jsdelivr.net/gh/jimothy-assets/audio/hit.wav");
+        this.load.audio("sfx_shard", "https://cdn.jsdelivr.net/gh/jimothy-assets/audio/shard.wav");
+        this.load.audio("sfx_ui", "https://cdn.jsdelivr.net/gh/jimothy-assets/audio/ui.wav");
+        
+        // Image placeholders
+        this.load.image("btn_large", "https://dummyimage.com/300x80/222/00f5ff&text=BUTTON");
+        this.load.image("bg_gradient", "https://dummyimage.com/960x540/1b1b3a/050510");
+/* *********
         // --- Assets (placeholder) ---
         // Audio
         this.load.audio("music_main", "assets/audio/music_main.mp3"); // TODO: add real file
@@ -107,6 +117,7 @@
         // Images (you can replace with real sprites)
         this.load.image("bg_gradient", "assets/images/bg_gradient.png"); // optional
         this.load.image("btn_large", "assets/images/btn_large.png"); // optional
+********** */
       }
     }
 
