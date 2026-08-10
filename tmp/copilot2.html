@@ -96,7 +96,31 @@
         this.load.on("complete", () => {
           this.time.delayedCall(300, () => this.scene.start("MainMenu"));
         });
-        
+
+        // AUDIO
+this.load.audio("music_main", "https://assets.mixkit.co/music/preview/mixkit-driving-energetic-synthwave-127.mp3");
+this.load.audio("music_pastel", "https://assets.mixkit.co/music/preview/mixkit-lofi-chill-112.mp3");
+this.load.audio("music_dark", "https://assets.mixkit.co/music/preview/mixkit-dark-ambient-110.mp3");
+
+this.load.audio("sfx_ui", "https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3");
+this.load.audio("sfx_shard", "https://assets.mixkit.co/sfx/preview/mixkit-arcade-bonus-alert-767.mp3");
+this.load.audio("sfx_hit", "https://assets.mixkit.co/sfx/preview/mixkit-failure-arcade-alert-240.mp3");
+
+// IMAGES
+this.load.image("btn_large", "https://dummyimage.com/300x80/222/00f5ff&text=BUTTON");
+this.load.image("btn_small", "https://dummyimage.com/180x60/222/00f5ff&text=BTN");
+
+this.load.image("bg_neon", "https://dummyimage.com/960x540/1b1b3a/050510");
+this.load.image("bg_pastel", "https://dummyimage.com/960x540/fce1ff/a0c4ff");
+this.load.image("bg_dark", "https://dummyimage.com/960x540/000000/111111");
+
+this.load.image("lane_marker", "https://dummyimage.com/960x20/444/00f5ff");
+this.load.image("obstacle_block", "https://dummyimage.com/60x60/ff2e63/000000");
+this.load.image("shard", "https://dummyimage.com/32x32/fff56b/000000");
+this.load.image("player_orb", "https://dummyimage.com/48x48/00f5ff/000000");
+this.load.image("bg_gradient", "https://dummyimage.com/960x540/1b1b3a/050510");
+
+/* *********        
         // Audio placeholders (royalty-free beeps)
         this.load.audio("music_main", "https://cdn.jsdelivr.net/gh/jimothy-assets/audio/music_placeholder.mp3");
         this.load.audio("sfx_hit", "https://cdn.jsdelivr.net/gh/jimothy-assets/audio/hit.wav");
@@ -106,7 +130,7 @@
         // Image placeholders
         this.load.image("btn_large", "https://dummyimage.com/300x80/222/00f5ff&text=BUTTON");
         this.load.image("bg_gradient", "https://dummyimage.com/960x540/1b1b3a/050510");
-/* *********
+
         // --- Assets (placeholder) ---
         // Audio
         this.load.audio("music_main", "assets/audio/music_main.mp3"); // TODO: add real file
