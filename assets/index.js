@@ -74,11 +74,11 @@ function drawAllMarkers() {
   console.log("bounds.contains(map.getCenter())", bounds.contains(map.getCenter()));
 
   // Now auto-fit AFTER clusterer finishes
-  google.maps.event.addListenerOnce(map, "idle", () => {
+  //google.maps.event.addListenerOnce(map, "idle", () => {
     if (!bounds.isEmpty()) {
       map.fitBounds(bounds);
     }
-  });
+  //});
 }
 
 
