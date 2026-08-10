@@ -54,7 +54,7 @@ function drawAllMarkers() {
   const markers = allLocations.map(loc => {
     const marker = new google.maps.Marker({
       position: { lat: loc.lat, lng: loc.lng },
-      //map,
+      map,
       label: "J"
     });
     bounds.extend(marker.getPosition());
