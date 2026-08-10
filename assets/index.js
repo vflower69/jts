@@ -47,9 +47,18 @@ function drawPageMarkers(pageItems) {
 // drawAllMarkers
 // ------------------------------
 function drawAllMarkers() {
+  // Remove old clusterer if it exists
+  if (markerCluster) {
+    markerCluster.clearMarkers();
+    markerCluster = null;
+  }
+
   clearMapMarkers();
+
   const bounds = new google.maps.LatLngBounds();
-  const markers = allLocations.map(loc => {
+
+  // Create and store markers
+  mapMarkers = allLocations.map(loc => {
     const marker = new google.maps.Marker({
       position: { lat: loc.lat, lng: loc.lng },
       map,
@@ -58,17 +67,21 @@ function drawAllMarkers() {
     bounds.extend(marker.getPosition());
     return marker;
   });
-  mapMarkers = markers;
-  // Cluster them
-  markerCluster = new markerClusterer.MarkerClusterer({ 
-    map, 
-    markers 
+
+  // Correct MarkerClusterer v3 syntax
+  markerCluster = new markerClusterer.MarkerClusterer({
+    map,
+    markers: mapMarkers
   });
-  // Auto-fit map to all markers
+  // For debugging purpose
+  console.log("allLocations length:", allLocations.length);
+  console.log("bounds.contains(map.getCenter())", bounds.contains(map.getCenter()));
+  // Now auto-fit AFTER clusterer finishes
   if (!bounds.isEmpty()) {
     map.fitBounds(bounds);
   }
 }
+
 
 
 // ------------------------------

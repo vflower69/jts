@@ -1,0 +1,348 @@
+// hostname check - only run from jimothytracker.org domain
+    if (window.location.hostname !== "jimothytracker.org") {
+      document.body.innerHTML = "🦝 Jimothy says: This is stolen from jimothytracker.org!";}
+  // Below are the codes for the game
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const lyricsBubble = document.getElementById('lyrics-bubble');
+    const startBtn = document.getElementById('startBtn');
+
+    // --- Audio Synthesizer for Disco Beat, Singing & Reactions ---
+    class DiscoAudio {
+      constructor() {
+        this.ctx = null;
+        this.isPlaying = false;
+        this.step = 0;
+        this.timer = null;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioCtx();
+        }
+      }
+
+      playKick() {
+        let osc = this.ctx.createOscillator();
+        let gain = this.ctx.createGain();
+        let now = this.ctx.currentTime;
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.exponentialRampToValueAtTime(0.01, now + 0.15);
+        gain.gain.setValueAtTime(0.8, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(now + 0.15);
+      }
+
+      playHiHat() {
+        let now = this.ctx.currentTime;
+        let bufferSize = this.ctx.sampleRate * 0.05;
+        let buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        let data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+        let noise = this.ctx.createBufferSource();
+        noise.buffer = buffer;
+        let gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+
+        noise.connect(gain); gain.connect(this.ctx.destination);
+        noise.start();
+      }
+
+      singNote(freq, lyric, duration = 0.25) {
+        let osc = this.ctx.createOscillator();
+        let gain = this.ctx.createGain();
+        let now = this.ctx.currentTime;
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(freq, now);
+        osc.frequency.linearRampToValueAtTime(freq * 1.05, now + duration);
+
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(now + duration);
+
+        showLyrics(lyric);
+        jimothy.dance();
+      }
+
+      // Funky squeak sound when touched!
+      playPokeSound() {
+        this.init();
+        let now = this.ctx.currentTime;
+        
+        let osc = this.ctx.createOscillator();
+        let gain = this.ctx.createGain();
+        
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(600, now);
+        osc.frequency.exponentialRampToValueAtTime(200, now + 0.25);
+        
+        gain.gain.setValueAtTime(0.5, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(now + 0.25);
+      }
+
+      startMusic() {
+        this.init();
+        if (this.isPlaying) return;
+        this.isPlaying = true;
+        this.step = 0;
+
+        const songSequence = [
+          { f: 300, l: "I'm Jimothy! 🦝" },
+          { f: 350, l: "Look at me dance! 🕺" },
+          { f: 400, l: "Sniffing flowers... 🌸" },
+          { f: 450, l: "SNEEZING CHANCE! 🤧🎉" },
+          { f: 500, l: "Disco Raccoon! ✨" },
+          { f: 450, l: "Groovy Beans! 🐾" },
+          { f: 520, l: "TEE-HEE-HEE! 💖" },
+          { f: 600, l: "DISCO QUEEN! 🪩👑" }
+        ];
+
+        this.timer = setInterval(() => {
+          this.playKick();
+          if (this.step % 2 === 1) this.playHiHat();
+
+          if (this.step % 2 === 0 && !jimothy.isPoked) {
+            let noteIdx = Math.floor(this.step / 2) % songSequence.length;
+            let note = songSequence[noteIdx];
+            this.singNote(note.f, note.l, 0.35);
+          }
+
+          this.step++;
+        }, 320);
+      }
+
+      stopMusic() {
+        this.isPlaying = false;
+        clearInterval(this.timer);
+      }
+    }
+
+    const audio = new DiscoAudio();
+
+    // Funny phrases when Jimothy gets touched
+    const touchPhrases = [
+      "HEY! Don't touch me! 🚨",
+      "Why are you touching me?! 🦝💢",
+      "Whoa! Personal space! ✋🛑",
+      "That tickles! TEE-HEE! 🤭",
+      "Touch the disco ball instead! 🪩",
+      "Ouch! Watch the fur! ✨"
+    ];
+
+    // --- Jimothy Raccoon Dancer ---
+    const jimothy = {
+      x: 425, y: 340,
+      scaleY: 1, scaleX: 1,
+      rotation: 0,
+      bounceY: 0,
+      armAngle: 0,
+      isPoked: false,
+      pokedTimer: 0,
+
+      dance() {
+        if (this.isPoked) return;
+        this.bounceY = -30;
+        this.scaleX = Math.random() > 0.5 ? 1.15 : 0.85;
+        this.scaleY = 1.2;
+        this.rotation = (Math.random() - 0.5) * 0.5;
+        this.armAngle = (Math.random() - 0.5) * 1.5;
+      },
+
+      poke() {
+        this.isPoked = true;
+        this.bounceY = -60; // Extra high jump
+        this.scaleX = 0.7;
+        this.scaleY = 1.4;
+        this.rotation = (Math.random() - 0.5) * 0.8;
+        this.armAngle = Math.PI / 2; // Hands up in shock
+        this.pokedTimer = 30; // ~0.5s reaction
+
+        audio.playPokeSound();
+        const phrase = touchPhrases[Math.floor(Math.random() * touchPhrases.length)];
+        showLyrics(phrase);
+      },
+
+      update() {
+        this.bounceY *= 0.8;
+        this.scaleX += (1 - this.scaleX) * 0.15;
+        this.scaleY += (1 - this.scaleY) * 0.15;
+        this.rotation += (0 - this.rotation) * 0.15;
+
+        if (this.isPoked) {
+          this.pokedTimer--;
+          if (this.pokedTimer <= 0) {
+            this.isPoked = false;
+          }
+        }
+      },
+
+      draw(c) {
+        c.save();
+        c.translate(this.x, this.y + this.bounceY);
+        c.scale(this.scaleX, this.scaleY);
+        c.rotate(this.rotation);
+
+        // Body
+        c.fillStyle = '#7a8288';
+        c.beginPath(); c.ellipse(0, 20, 85, 75, 0, 0, Math.PI * 2); c.fill();
+
+        // Belly
+        c.fillStyle = '#f2e9e4';
+        c.beginPath(); c.ellipse(0, 30, 55, 45, 0, 0, Math.PI * 2); c.fill();
+
+        // Head
+        c.fillStyle = '#9a8c98';
+        c.beginPath(); c.ellipse(0, -60, 65, 50, 0, 0, Math.PI * 2); c.fill();
+
+        // Ears
+        c.fillStyle = '#4a4e69';
+        c.beginPath(); c.arc(-45, -100, 20, 0, Math.PI * 2); c.fill();
+        c.beginPath(); c.arc(45, -100, 20, 0, Math.PI * 2); c.fill();
+
+        // Mask
+        c.fillStyle = '#22223b';
+        c.beginPath();
+        c.ellipse(-24, -60, 24, 15, 0.2, 0, Math.PI * 2);
+        c.ellipse(24, -60, 24, 15, -0.2, 0, Math.PI * 2);
+        c.fill();
+
+        // Cool Disco Sunglasses 🕶️
+        c.fillStyle = '#000000';
+        c.fillRect(-45, -72, 40, 22);
+        c.fillRect(5, -72, 40, 22);
+        c.fillRect(-10, -68, 20, 5);
+        c.fillStyle = '#ff007f';
+        c.fillRect(-40, -70, 30, 4);
+        c.fillRect(10, -70, 30, 4);
+
+        // Mouth (changes when touched)
+        c.fillStyle = '#000000';
+        if (this.isPoked) {
+          // Shocked "O" mouth
+          c.beginPath(); c.arc(0, -42, 12, 0, Math.PI * 2); c.fill();
+        } else {
+          // Happy smile
+          c.beginPath(); c.arc(0, -42, 12, 0, Math.PI); c.fill();
+        }
+
+        // Paws / Arms (Dancing or Shocked)
+        c.save();
+        c.rotate(this.armAngle);
+        c.fillStyle = '#22223b';
+        c.beginPath(); c.ellipse(-75, 0, 22, 14, 0, 0, Math.PI * 2); c.fill();
+        c.beginPath(); c.ellipse(75, 0, 22, 14, 0, 0, Math.PI * 2); c.fill();
+        c.restore();
+
+        c.restore();
+      }
+    };
+
+    // --- Disco Ball & Lights Effects ---
+    function drawDiscoStage() {
+      let now = Date.now() * 0.003;
+
+      // Flashing Light Beams
+      const colors = ['rgba(255, 0, 127, 0.2)', 'rgba(0, 255, 234, 0.2)', 'rgba(255, 230, 0, 0.2)'];
+      for (let i = 0; i < 5; i++) {
+        ctx.fillStyle = colors[i % colors.length];
+        ctx.beginPath();
+        ctx.moveTo(425, 0);
+        ctx.lineTo(100 + i * 160 + Math.sin(now + i) * 60, 550);
+        ctx.lineTo(180 + i * 160 + Math.sin(now + i) * 60, 550);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      // Disco Dance Floor
+      let cols = 8, rows = 3;
+      let w = 850 / cols, h = 100 / rows;
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          ctx.fillStyle = (r + c + Math.floor(now * 4)) % 2 === 0 ? '#ff007f' : '#00ftea';
+          ctx.globalAlpha = 0.3;
+          ctx.fillRect(c * w, 450 + r * h, w - 4, h - 4);
+          ctx.globalAlpha = 1.0;
+        }
+      }
+
+      // Disco Ball
+      ctx.save();
+      ctx.translate(425, 50);
+      ctx.strokeStyle = '#aaa';
+      ctx.beginPath(); ctx.moveTo(0, -50); ctx.lineTo(0, 0); ctx.stroke();
+
+      ctx.fillStyle = '#e0e0e0';
+      ctx.beginPath(); ctx.arc(0, 25, 35, 0, Math.PI * 2); ctx.fill();
+
+      // Glitter on ball
+      ctx.fillStyle = '#ffffff';
+      for (let i = 0; i < 8; i++) {
+        let gx = Math.sin(now * 2 + i) * 20;
+        let gy = Math.cos(now * 3 + i) * 20 + 25;
+        ctx.fillRect(gx, gy, 5, 5);
+      }
+      ctx.restore();
+    }
+
+    // Speech Lyrics Helper
+    let lyricsTimeout;
+    function showLyrics(text) {
+      lyricsBubble.textContent = text;
+      lyricsBubble.style.transform = 'translateX(-50%) scale(1)';
+      clearTimeout(lyricsTimeout);
+      lyricsTimeout = setTimeout(() => {
+        lyricsBubble.style.transform = 'translateX(-50%) scale(0)';
+      }, 1400);
+    }
+
+    // Detect Click / Touch on Jimothy
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+
+      // Distance check from Jimothy's center
+      const dx = clickX - jimothy.x;
+      const dy = clickY - (jimothy.y + jimothy.bounceY - 20);
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      // Hit detection (~100px radius around Jimothy)
+      if (distance < 110) {
+        jimothy.poke();
+      }
+    });
+
+    // Toggle Music Button
+    startBtn.onclick = () => {
+      if (!audio.isPlaying) {
+        audio.startMusic();
+        startBtn.textContent = "🛑 STOP DISCO";
+      } else {
+        audio.stopMusic();
+        startBtn.textContent = "🪩 START DISCO SONG!";
+      }
+    };
+
+    // Main Loop
+    function loop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      drawDiscoStage();
+      jimothy.update();
+      jimothy.draw(ctx);
+
+      requestAnimationFrame(loop);
+    }
+
+    loop();
+  

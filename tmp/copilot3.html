@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Pulse Runner</title>
+<style>
+  body {
+    margin: 0;
+    background: #050510;
+    font-family: system-ui, sans-serif;
+    overflow: hidden;
+  }
+  #game-container {
+    width: 100vw;
+    height: 100vh;
+  }
+</style>
+</head>
+<body>
+<div id="game-container"></div>
+
+<!-- Phaser -->
+<script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.min.js"></script>
+
+<script>
+/* ---------------------------------------------------------
+   INLINE SVG ASSETS → Phaser Textures
+--------------------------------------------------------- */
+
+const SVG_PLAYER = `
+<svg width="64" height="64" viewBox="0 0 64 64">
+  <circle cx="32" cy="32" r="28" fill="#00f5ff" stroke="#ffffff" stroke-width="4"/>
+</svg>
+`;
+
+const SVG_SHARD = `
+<svg width="48" height="48" viewBox="0 0 48 48">
+  <polygon points="24,4 34,18 24,44 14,18" fill="#fff56b" stroke="#ffffff" stroke-width="3"/>
+</svg>
+`;
+
+const SVG_OBSTACLE = `
+<svg width="64" height="64" viewBox="0 0 64 64">
+  <rect x="8" y="8" width="48" height="48" fill="#ff2e63" stroke="#ffffff" stroke-width="4"/>
+</svg>
+`;
+
+const SVG_BUTTON = `
+<svg width="240" height="80" viewBox="0 0 240 80">
+  <rect x="4" y="4" width="232" height="72" rx="16" fill="#222" stroke="#00f5ff" stroke-width="4"/>
+</svg>
+`;
+
+const SVG_LANE = `
+<svg width="960" height="20" viewBox="0 0 960 20">
+  <rect x="0" y="8" width="960" height="4" fill="#00f5ff"/>
+</svg>
+`;
+
+/* ---------------------------------------------------------
+   PROCEDURAL AUDIO (NO FILES)
+--------------------------------------------------------- */
+
+function generateClickSound(scene) {
+  const ctx = scene.sound.context;
+  const buffer = ctx.createBuffer(1, 44100, 44100);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < 200; i++) data[i] = Math.random() * 0.3;
+  scene.cache.audio.add("sfx_ui", { buffer });
+}
+
+function generateShardSound(scene) {
+  const ctx = scene.sound.context;
+  const buffer = ctx.createBuffer(1, 44100, 44100);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < 300; i++) data[i] = Math.sin(i / 10) * 0.4;
+  scene.cache.audio.add("sfx_shard", { buffer });
+}
+
+function generateHitSound(scene) {
+  const ctx = scene.sound.context;
+  const buffer = ctx.createBuffer(1, 44100, 44100);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < 500; i++) data[i] = (Math.random() - 0.5) * (1 - i / 500);
+  scene.cache.audio.add("sfx_hit", { buffer });
+}
+
+function generateAmbientMusic(scene) {
+  const ctx = scene.sound.context;
+  const buffer = ctx.createBuffer(1, 44100 * 4, 44100);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < data.length; i++) {
+    data[i] = Math.sin(i / 200) * 0.1 * Math.sin(i / 5000);
+  }
+  scene.cache.audio.add("music_main", { buffer });
+}
+
+/* ---------------------------------------------------------
+   BOOT SCENE
+--------------------------------------------------------- */
+
+class BootScene extends Phaser.Scene {
+  constructor() { super("Boot"); }
+  preload() {}
+  create() {
+    this.scene.start("Preload");
+  }
+}
+
+/* ---------------------------------------------------------
+   PRELOAD SCENE (GENERATE ASSETS)
+--------------------------------------------------------- */
+
+class PreloadScene extends Phaser.Scene {
+  constructor() { super("Preload"); }
+
+  preload() {
+    const { width, height } = this.scale;
+
+    // Loading text
+    this.add.text(width/2, height/2, "Loading...", {
+      fontSize: "32px",
+      color: "#ffffff"
+    }).setOrigin(0.5);
+
+    // Convert SVG → Phaser textures
+    this.textures.fromSVG("player_orb", SVG_PLAYER);
+    this.textures.fromSVG("shard", SVG_SHARD);
+    this.textures.fromSVG("obstacle_block", SVG_OBSTACLE);
+    this.textures.fromSVG("btn_large", SVG_BUTTON);
+    this.textures.fromSVG("lane_marker", SVG_LANE);
+
+    // Procedural audio
+    generateClickSound(this);
+    generateShardSound(this);
+    generateHitSound(this);
+    generateAmbientMusic(this);
+  }
+
+  create() {
+    this.scene.start("MainMenu");
+  }
+}
+
+/* ---------------------------------------------------------
+   MAIN MENU
+--------------------------------------------------------- */
+
+class MainMenuScene extends Phaser.Scene {
+  constructor() { super("MainMenu"); }
+
+  create() {
+    const { width, height } = this.scale;
+
+    this.add.text(width/2, height*0.25, "Pulse Runner", {
+      fontSize: "48px",
+      color: "#ffffff"
+    }).setOrigin(0.5);
+
+    this.createButton(width/2, height*0.45, "PLAY", () => {
+      this.sound.play("sfx_ui");
+      this.scene.start("Game");
+    });
+
+    this.createButton(width/2, height*0.55, "SETTINGS", () => {
+      this.sound.play("sfx_ui");
+      this.scene.start("Settings");
+    });
+
+    this.createButton(width/2, height*0.65, "QUIT", () => {
+      this.sound.play("sfx_ui");
+      alert("Thanks for playing Pulse Runner!");
+    });
+
+    // Music
+    this.music = this.sound.add("music_main", { loop: true });
+    this.music.play({ volume: 0.4 });
+  }
+
+  createButton(x, y, label, onClick) {
+    const btn = this.add.image(x, y, "btn_large").setInteractive();
+    this.add.text(x, y, label, {
+      fontSize: "24px",
+      color: "#00f5ff"
+    }).setOrigin(0.5);
+
+    btn.on("pointerup", onClick);
+  }
+}
+
+/* ---------------------------------------------------------
+   SETTINGS SCENE
+--------------------------------------------------------- */
+
+class SettingsScene extends Phaser.Scene {
+  constructor() { super("Settings"); }
+
+  create() {
+    const { width, height } = this.scale;
+
+    this.add.text(width/2, height*0.2, "Settings", {
+      fontSize: "36px",
+      color: "#ffffff"
+    }).setOrigin(0.5);
+
+    this.createButton(width/2, height*0.85, "BACK", () => {
+      this.sound.play("sfx_ui");
+      this.scene.start("MainMenu");
+    });
+  }
+
+  createButton(x, y, label, onClick) {
+    const btn = this.add.image(x, y, "btn_large").setInteractive();
+    this.add.text(x, y, label, {
+      fontSize: "24px",
+      color: "#00f5ff"
+    }).setOrigin(0.5);
+    btn.on("pointerup", onClick);
+  }
+}
+
+/* ---------------------------------------------------------
+   GAME SCENE
+--------------------------------------------------------- */
+
+class GameScene extends Phaser.Scene {
+  constructor() { super("Game"); }
+
+  create() {
+    const { width, height } = this.scale;
+
+    // Background gradient
+    const g = this.add.graphics();
+    g.fillGradientStyle(0x1b1b3a, 0x050510, 0x050510, 0x1b1b3a, 1);
+    g.fillRect(0, 0, width, height);
+
+    // Lanes
+    this.laneY = [height*0.3, height*0.5, height*0.7];
+    this.lane = 1;
+
+    // Player
+    this.player = this.add.image(120, this.laneY[this.lane], "player_orb");
+    this.physics.add.existing(this.player);
+    this.player.body.setCircle(28);
+
+    // Groups
+    this.obstacles = this.physics.add.group();
+    this.shards = this.physics.add.group();
+
+    // HUD
+    this.score = 0;
+    this.combo = 1;
+    this.elapsed = 0;
+    this.gameOver = false;
+
+    this.scoreText = this.add.text(20, 20, "Score: 0", {
+      fontSize: "18px",
+      color: "#ffffff"
+    });
+
+    this.comboText = this.add.text(20, 45, "Combo x1.0", {
+      fontSize: "16px",
+      color: "#ffffff"
+    });
+
+    this.timeText = this.add.text(width-20, 20, "Time: 0.0s", {
+      fontSize: "18px",
+      color: "#ffffff"
+    }).setOrigin(1, 0);
+
+    // Input
+    this.input.keyboard.on("keydown-LEFT", () => this.changeLane(-1));
+    this.input.keyboard.on("keydown-RIGHT", () => this.changeLane(1));
+
+    this.input.on("pointerup", (pointer) => {
+      if (pointer.upX < width/2) this.changeLane(-1);
+      else this.changeLane(1);
+    });
+
+    // Spawn loop
+    this.spawnTimer = this.time.addEvent({
+      delay: 800,
+      loop: true,
+      callback: () => this.spawnObstacleOrShard()
+    });
+
+    // Collisions
+    this.physics.add.overlap(this.player, this.obstacles, () => this.hitObstacle());
+    this.physics.add.overlap(this.player, this.shards, (player, shard) => this.collectShard(shard));
+
+    // Difficulty
+    this.speedFactor = 1;
+  }
+
+  changeLane(delta) {
+    if (this.gameOver) return;
+    this.lane = Phaser.Math.Clamp(this.lane + delta, 0, 2);
+    this.tweens.add({
+      targets: this.player,
+      y: this.laneY[this.lane],
+      duration: 120,
+      ease: "Sine.easeInOut"
+    });
+  }
+
+  spawnObstacleOrShard() {
+    if (this.gameOver) return;
+
+    const laneIndex = Phaser.Math.Between(0, 2);
+    const y = this.laneY[laneIndex];
+    const isShard = Math.random() < 0.4;
+
+    if (isShard) {
+      const shard = this.shards.create(820, y, "shard");
+      shard.body.setVelocityX(-220 * this.speedFactor);
+    } else {
+      const obs = this.obstacles.create(820, y, "obstacle_block");
+      obs.body.setVelocityX(-260 * this.speedFactor);
+    }
+  }
+
+  update(time, delta) {
+    if (this.gameOver) return;
+
+    this.elapsed += delta/1000;
+    this.timeText.setText("Time: " + this.elapsed.toFixed(1) + "s");
+
+    if (this.elapsed > 30 && this.elapsed <= 60) this.speedFactor = 1.2;
+    else if (this.elapsed > 60 && this.elapsed <= 90) this.speedFactor = 1.5;
+    else if (this.elapsed > 90) this.speedFactor = 1.8;
+
+    this.obstacles.children.iterate(o => { if (o && o.x < -50) o.destroy(); });
+    this.shards.children.iterate(s => { if (s && s.x < -50) s.destroy(); });
+  }
+
+  hitObstacle() {
+    if (this.gameOver) return;
+    this.gameOver = true;
+
+    this.sound.play("sfx_hit");
+
+    this.spawnTimer.remove(false);
+
+    const { width, height } = this.scale;
+    const overlay = this.add.rectangle(width/2, height/2, width, height, 0x000000, 0.6);
+
+    this.add.text(width/2, height*0.4, "Game Over", {
+      fontSize: "40px",
+      color: "#ffffff"
+    }).setOrigin(0.5);
+
+    this.add.text(width/2, height*0.5, `Score: ${this.score}`, {
+      fontSize: "24px",
+      color: "#ffffff"
+    }).setOrigin(0.5);
+
+    this.createButton(width/2, height*0.6, "RETRY", () => this.scene.restart());
+    this.createButton(width/2, height*0.7, "MENU", () => this.scene.start("MainMenu"));
+  }
+
+  collectShard(shard) {
+    shard.destroy();
+    this.score += Math.floor(10 * this.combo);
+    this.combo = Math.min(this.combo + 0.1, 5);
+    this.scoreText.setText("Score: " + this.score);
+    this.comboText.setText("Combo x" + this.combo.toFixed(1));
+
+    this.sound.play("sfx_shard");
+
+    this.tweens.add({
+      targets: this.player,
+      scaleX: 1.2,
+      scaleY: 1.2,
+      duration: 80,
+      yoyo: true
+    });
+  }
+
+  createButton(x, y, label, onClick) {
+    const btn = this.add.image(x, y, "btn_large").setInteractive();
+    this.add.text(x, y, label, {
+      fontSize: "24px",
+      color: "#00f5ff"
+    }).setOrigin(0.5);
+    btn.on("pointerup", onClick);
+  }
+}
+
+/* ---------------------------------------------------------
+   PHASER CONFIG
+--------------------------------------------------------- */
+
+const config = {
+  type: Phaser.AUTO,
+  parent: "game-container",
+  width: 960,
+  height: 540,
+  physics: { default: "arcade" },
+  scene: [BootScene, PreloadScene, MainMenuScene, SettingsScene, GameScene]
+};
+
+new Phaser.Game(config);
+</script>
+
+</body>
+</html>
