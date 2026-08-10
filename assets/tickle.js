@@ -310,3 +310,7 @@
     }
 
     loop();
+document.getElementById("backToGames").addEventListener("click", () => {
+  window.location.href = "../games.html";
+});
+
