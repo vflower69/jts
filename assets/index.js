@@ -48,7 +48,9 @@ function drawPageMarkers(pageItems) {
 // ------------------------------
 function drawAllMarkers() {
   clearMapMarkers();
+
   const bounds = new google.maps.LatLngBounds();
+
   const markers = allLocations.map(loc => {
     const marker = new google.maps.Marker({
       position: { lat: loc.lat, lng: loc.lng },
@@ -58,16 +60,21 @@ function drawAllMarkers() {
     bounds.extend(marker.getPosition());
     return marker;
   });
+
   mapMarkers = markers;
-  // Cluster them
-  markerCluster = new markerClusterer.MarkerClusterer({ 
-    map, 
-    markers 
+
+  // Create clusterer FIRST
+  markerCluster = new markerClusterer.MarkerClusterer({
+    map,
+    markers
   });
-  // Auto-fit map to all markers
-  if (!bounds.isEmpty()) {
-    map.fitBounds(bounds);
-  }
+
+  // Now auto-fit AFTER clusterer finishes
+  google.maps.event.addListenerOnce(map, "idle", () => {
+    if (!bounds.isEmpty()) {
+      map.fitBounds(bounds);
+    }
+  });
 }
 
 
