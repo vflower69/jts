@@ -71,6 +71,7 @@ function drawAllMarkers() {
 
   // For debugging purpose
   console.log("allLocations length:", allLocations.length);
+  console.log("bounds.contains(map.getCenter())", bounds.contains(map.getCenter()));
 
   // Now auto-fit AFTER clusterer finishes
   google.maps.event.addListenerOnce(map, "idle", () => {
