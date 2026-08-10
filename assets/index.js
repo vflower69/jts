@@ -69,6 +69,9 @@ function drawAllMarkers() {
     markers
   });
 
+  // For debugging purpose
+  console.log("allLocations length:", allLocations.length);
+
   // Now auto-fit AFTER clusterer finishes
   google.maps.event.addListenerOnce(map, "idle", () => {
     if (!bounds.isEmpty()) {
