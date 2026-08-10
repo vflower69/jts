@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Jimothy Runner</title>
+<style>
+  body {
+    margin: 0;
+    background: #050510;
+    font-family: system-ui, sans-serif;
+    overflow: hidden;
+  }
+  #game-container {
+    width: 100vw;
+    height: 100vh;
+  }
+</style>
+</head>
+<body>
+<div id="game-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.min.js"></script>
+<script>
+/* ---------- Procedural audio ---------- */
+
+function makeClickSound(scene) {
+  const ctx = scene.sound.context;
+  const buffer = ctx.createBuffer(1, 44100, 44100);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < 200; i++) data[i] = Math.random() * 0.3;
+  scene.cache.audio.add("sfx_ui", { buffer });
+}
+
+function makeShardSound(scene) {
+  const ctx = scene.sound.context;
+  const buffer = ctx.createBuffer(1, 44100, 44100);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < 300; i++) data[i] = Math.sin(i / 10) * 0.4;
+  scene.cache.audio.add("sfx_shard", { buffer });
+}
+
+function makeHitSound(scene) {
+  const ctx = scene.sound.context;
+  const buffer = ctx.createBuffer(1, 44100, 44100);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < 500; i++) data[i] = (Math.random() - 0.5) * (1 - i / 500);
+  scene.cache.audio.add("sfx_hit", { buffer });
+}
+
+function makeAmbientMusic(scene) {
+  const ctx = scene.sound.context;
+  const buffer = ctx.createBuffer(1, 44100 * 4, 44100);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < data.length; i++) {
+    data[i] = Math.sin(i / 200) * 0.1 * Math.sin(i / 5000);
+  }
+  scene.cache.audio.add("music_main", { buffer });
+}
+
+/* ---------- Scenes ---------- */
+
+class BootScene extends Phaser.Scene {
+  constructor() { super("Boot"); }
+  create() { this.scene.start("Preload"); }
+}
+
+class PreloadScene extends Phaser.Scene {
+  constructor() { super("Preload"); }
+  preload() {
+    const { width, height } = this.scale;
+    this.add.text(width/2, height/2, "Loading Jimothy Runner...", {
+      fontSize: "24px",
+      color: "#ffffff"
+    }).setOrigin(0.5);
+
+    makeClickSound(this);
+    makeShardSound(this);
+    makeHitSound(this);
+    makeAmbientMusic(this);
+  }
+  create() { this.scene.start("MainMenu"); }
+}
+
+class MainMenuScene extends Phaser.Scene {
+  constructor() { super("MainMenu"); }
+  create() {
+    const { width, height } = this.scale;
+
+    this.theme = this.registry.get("theme") || "neon";
+
+    this.drawBackground();
+
+    this.add.text(width/2, height*0.2, "Jimothy Runner", {
+      fontSize: "40px",
+      color: "#ffffff"
+    }).setOrigin(0.5);
+
+    this.createButton(width/2, height*0.4, "PLAY", () => {
+      this.sound.play("sfx_ui");
+      this.scene.start("Game");
+    });
+
+    this.createButton(width/2, height*0.5, "SETTINGS", () => {
+      this.sound.play("sfx_ui");
+      this.scene.start("Settings");
+    });
+
+    this.createButton(width/2, height*0.6, "QUIT", () => {
+      this.sound.play("sfx_ui");
+      alert("Thanks for playing Jimothy Runner!");
+    });
+
+    if (!this.registry.get("musicPlaying")) {
+      const music = this.sound.add("music_main", { loop: true });
+      music.play({ volume: 0.4 });
+      this.registry.set("musicPlaying", true);
+    }
+  }
+
+  drawBackground() {
+    const { width, height } = this.scale;
+    const g = this.add.graphics();
+    if (this.theme === "neon") {
+      g.fillGradientStyle(0x1b1b3a, 0x050510, 0x050510, 0x1b1b3a, 1);
+    } else if (this.theme === "pastel") {
+      g.fillGradientStyle(0xffafcc, 0xbde0fe, 0xbde0fe, 0xffafcc, 1);
+    } else {
+      g.fillGradientStyle(0x000000, 0x111111, 0x111111, 0x000000, 1);
+    }
+    g.fillRect(0, 0, width, height);
+  }
+
+  createButton(x, y, label, onClick) {
+    const g = this.add.graphics();
+    g.fillStyle(0x222222, 1);
+    g.fillRoundedRect(x-120, y-30, 240, 60, 16);
+    g.lineStyle(3, 0x00f5ff, 1);
+    g.strokeRoundedRect(x-120, y-30, 240, 60, 16);
+
+    const zone = this.add.zone(x, y, 240, 60).setInteractive();
+    this.add.text(x, y, label, {
+      fontSize: "22px",
+      color: "#00f5ff"
+    }).setOrigin(0.5);
+
+    zone.on("pointerup", onClick);
+  }
+}
+
+class SettingsScene extends Phaser.Scene {
+  constructor() { super("Settings"); }
+  create() {
+    const { width, height } = this.scale;
+    const currentTheme = this.registry.get("theme") || "neon";
+
+    this.add.text(width/2, height*0.2, "Settings", {
+      fontSize: "32px",
+      color: "#ffffff"
+    }).setOrigin(0.5);
+
+    this.add.text(width/2, height*0.3, "Theme", {
+      fontSize: "24px",
+      color: "#ffffff"
+    }).setOrigin(0.5);
+
+    this.createButton(width/2, height*0.4, "Neon", () => {
+      this.registry.set("theme", "neon");
+      this.sound.play("sfx_ui");
+    });
+    this.createButton(width/2, height*0.5, "Pastel", () => {
+      this.registry.set("theme", "pastel");
+      this.sound.play("sfx_ui");
+    });
+    this.createButton(width/2, height*0.6, "Dark", () => {
+      this.registry.set("theme", "dark");
+      this.sound.play("sfx_ui");
+    });
+
+    this.add.text(width/2, height*0.7, "Current: " + currentTheme, {
+      fontSize: "18px",
+      color: "#ffffff"
+    }).setOrigin(0.5);
+
+    this.createButton(width/2, height*0.85, "BACK", () => {
+      this.sound.play("sfx_ui");
+      this.scene.start("MainMenu");
+    });
+  }
+
+  createButton(x, y, label, onClick) {
+    const g = this.add.graphics();
+    g.fillStyle(0x222222, 1);
+    g.fillRoundedRect(x-100, y-25, 200, 50, 12);
+    g.lineStyle(2, 0x00f5ff, 1);
+    g.strokeRoundedRect(x-100, y-25, 200, 50, 12);
+
+    const zone = this.add.zone(x, y, 200, 50).setInteractive();
+    this.add.text(x, y, label, {
+      fontSize: "20px",
+      color: "#00f5ff"
+    }).setOrigin(0.5);
+
+    zone.on("pointerup", onClick);
+  }
+}
+
+class GameScene extends Phaser.Scene {
+  constructor() { super("Game"); }
+
+  create() {
+    const { width, height } = this.scale;
+    this.theme = this.registry.get("theme") || "neon";
+
+    // Background
+    const bg = this.add.graphics();
+    if (this.theme === "neon") {
+      bg.fillGradientStyle(0x1b1b3a, 0x050510, 0x050510, 0x1b1b3a, 1);
+    } else if (this.theme === "pastel") {
+      bg.fillGradientStyle(0xffafcc, 0xbde0fe, 0xbde0fe, 0xffafcc, 1);
+    } else {
+      bg.fillGradientStyle(0x000000, 0x111111, 0x111111, 0x000000, 1);
+    }
+    bg.fillRect(0, 0, width, height);
+
+    // Lanes
+    this.laneY = [height*0.3, height*0.5, height*0.7];
+    this.lane = 1;
+
+    const laneG = this.add.graphics();
+    laneG.lineStyle(2, 0x00f5ff, 0.5);
+    this.laneY.forEach(y => laneG.strokeLineShape(new Phaser.Geom.Line(0, y, width, y)));
+
+    // Player
+    this.player = this.add.circle(120, this.laneY[this.lane], 24, 0x00f5ff);
+    this.physics.add.existing(this.player);
+    this.player.body.setCircle(24);
+
+    // Groups
+    this.obstacles = this.physics.add.group();
+    this.shards = this.physics.add.group();
+
+    // HUD
+    this.score = 0;
+    this.combo = 1;
+    this.elapsed = 0;
+    this.gameOver = false;
+
+    this.scoreText = this.add.text(20, 20, "Score: 0", {
+      fontSize: "18px",
+      color: "#ffffff"
+    });
+    this.comboText = this.add.text(20, 45, "Combo x1.0", {
+      fontSize: "16px",
+      color: "#ffffff"
+    });
+    this.timeText = this.add.text(width-20, 20, "Time: 0.0s", {
+      fontSize: "18px",
+      color: "#ffffff"
+    }).setOrigin(1, 0);
+
+    // Input
+    this.input.keyboard.on("keydown-LEFT", () => this.changeLane(-1));
+    this.input.keyboard.on("keydown-RIGHT", () => this.changeLane(1));
+    this.input.on("pointerup", (pointer) => {
+      if (pointer.upX < width/2) this.changeLane(-1);
+      else this.changeLane(1);
+    });
+
+    // Spawn loop
+    this.spawnTimer = this.time.addEvent({
+      delay: 800,
+      loop: true,
+      callback: () => this.spawnObstacleOrShard()
+    });
+
+    // Collisions
+    this.physics.add.overlap(this.player, this.obstacles, () => this.hitObstacle());
+    this.physics.add.overlap(this.player, this.shards, (player, shard) => this.collectShard(shard));
+
+    this.speedFactor = 1;
+  }
+
+  changeLane(delta) {
+    if (this.gameOver) return;
+    this.lane = Phaser.Math.Clamp(this.lane + delta, 0, 2);
+    this.tweens.add({
+      targets: this.player,
+      y: this.laneY[this.lane],
+      duration: 120,
+      ease: "Sine.easeInOut"
+    });
+  }
+
+  spawnObstacleOrShard() {
+    if (this.gameOver) return;
+    const laneIndex = Phaser.Math.Between(0, 2);
+    const y = this.laneY[laneIndex];
+    const isShard = Math.random() < 0.4;
+
+    if (isShard) {
+      const shard = this.add.star(820, y, 5, 6, 14, 0xfff56b);
+      this.physics.add.existing(shard);
+      shard.body.setVelocityX(-220 * this.speedFactor);
+      this.shards.add(shard);
+    } else {
+      const obs = this.add.rectangle(820, y, 40, 40, 0xff2e63);
+      this.physics.add.existing(obs);
+      obs.body.setVelocityX(-260 * this.speedFactor);
+      this.obstacles.add(obs);
+    }
+  }
+
+  update(time, delta) {
+    if (this.gameOver) return;
+
+    this.elapsed += delta/1000;
+    this.timeText.setText("Time: " + this.elapsed.toFixed(1) + "s");
+
+    if (this.elapsed > 30 && this.elapsed <= 60) this.speedFactor = 1.2;
+    else if (this.elapsed > 60 && this.elapsed <= 90) this.speedFactor = 1.5;
+    else if (this.elapsed > 90) this.speedFactor = 1.8;
+
+    this.obstacles.children.iterate(o => { if (o && o.x < -50) o.destroy(); });
+    this.shards.children.iterate(s => { if (s && s.x < -50) s.destroy(); });
+  }
+
+  hitObstacle() {
+    if (this.gameOver) return;
+    this.gameOver = true;
+
+    this.sound.play("sfx_hit");
+    this.spawnTimer.remove(false);
+
+    const { width, height } = this.scale;
+    this.add.rectangle(width/2, height/2, width, height, 0x000000, 0.6);
+
+    this.add.text(width/2, height*0.4, "Game Over", {
+      fontSize: "36px",
+      color: "#ffffff"
+    }).setOrigin(0.5);
+
+    this.add.text(width/2, height*0.5, `Score: ${this.score}`, {
+      fontSize: "24px",
+      color: "#ffffff"
+    }).setOrigin(0.5);
+
+    this.createButton(width/2, height*0.6, "RETRY", () => this.scene.restart());
+    this.createButton(width/2, height*0.7, "MENU", () => this.scene.start("MainMenu"));
+  }
+
+  collectShard(shard) {
+    shard.destroy();
+    this.score += Math.floor(10 * this.combo);
+    this.combo = Math.min(this.combo + 0.1, 5);
+    this.scoreText.setText("Score: " + this.score);
+    this.comboText.setText("Combo x" + this.combo.toFixed(1));
+
+    this.sound.play("sfx_shard");
+
+    this.tweens.add({
+      targets: this.player,
+      scaleX: 1.2,
+      scaleY: 1.2,
+      duration: 80,
+      yoyo: true
+    });
+  }
+
+  createButton(x, y, label, onClick) {
+    const g = this.add.graphics();
+    g.fillStyle(0x222222, 1);
+    g.fillRoundedRect(x-120, y-30, 240, 60, 16);
+    g.lineStyle(3, 0x00f5ff, 1);
+    g.strokeRoundedRect(x-120, y-30, 240, 60, 16);
+
+    const zone = this.add.zone(x, y, 240, 60).setInteractive();
+    this.add.text(x, y, label, {
+      fontSize: "22px",
+      color: "#00f5ff"
+    }).setOrigin(0.5);
+
+    zone.on("pointerup", onClick);
+  }
+}
+
+/* ---------- Phaser config ---------- */
+
+const config = {
+  type: Phaser.AUTO,
+  parent: "game-container",
+  width: 960,
+  height: 540,
+  physics: { default: "arcade" },
+  scale: {
+    mode: Phaser.Scale.RESIZE,
+    autoCenter: Phaser.Scale.CENTER_BOTH
+  },
+  scene: [BootScene, PreloadScene, MainMenuScene, SettingsScene, GameScene]
+};
+
+new Phaser.Game(config);
+</script>
+</body>
+</html>
