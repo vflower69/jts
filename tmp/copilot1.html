@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Pulse Runner</title>
+  <style>
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top, #1b1b3a, #050510);
+      font-family: "Inter", system-ui, sans-serif;
+      color: #fff;
+      overflow: hidden;
+    }
+    #game-container {
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container"></div>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.min.js"></script>
+  <script>
+    const config = {
+      type: Phaser.AUTO,
+      parent: "game-container",
+      width: 800,
+      height: 450,
+      physics: { default: "arcade" },
+      scene: [MainMenuScene, GameScene]
+    };
+
+    class MainMenuScene extends Phaser.Scene {
+      constructor() { super("MainMenu"); }
+      create() {
+        const { width, height } = this.scale;
+        this.add.text(width / 2, height / 3, "Pulse Runner", {
+          fontSize: "48px",
+          fontFamily: "Inter",
+          color: "#ffffff"
+        }).setOrigin(0.5);
+
+        const playText = this.add.text(width / 2, height / 2, "PLAY", {
+          fontSize: "28px",
+          fontFamily: "Inter",
+          color: "#00f5ff"
+        }).setOrigin(0.5).setInteractive();
+
+        playText.on("pointerover", () => playText.setScale(1.05));
+        playText.on("pointerout", () => playText.setScale(1));
+        playText.on("pointerup", () => this.scene.start("Game"));
+      }
+    }
+
+    class GameScene extends Phaser.Scene {
+      constructor() { super("Game"); }
+
+      create() {
+        const { width, height } = this.scale;
+        this.score = 0;
+        this.combo = 1;
+        this.lane = 1; // 0,1,2
+
+        this.laneY = [
+          height * 0.3,
+          height * 0.5,
+          height * 0.7
+        ];
+
+        this.player = this.add.circle(120, this.laneY[this.lane], 14, 0x00f5ff);
+        this.obstacles = this.physics.add.group();
+        this.shards = this.physics.add.group();
+
+        this.scoreText = this.add.text(20, 20, "Score: 0", {
+          fontSize: "18px",
+          fontFamily: "Inter"
+        });
+
+        this.comboText = this.add.text(20, 45, "Combo x1.0", {
+          fontSize: "16px",
+          fontFamily: "Inter"
+        });
+
+        this.input.keyboard.on("keydown-LEFT", () => this.changeLane(-1));
+        this.input.keyboard.on("keydown-RIGHT", () => this.changeLane(1));
+
+        this.time.addEvent({
+          delay: 800,
+          loop: true,
+          callback: () => this.spawnObstacleOrShard()
+        });
+      }
+
+      changeLane(delta) {
+        this.lane = Phaser.Math.Clamp(this.lane + delta, 0, 2);
+        this.tweens.add({
+          targets: this.player,
+          y: this.laneY[this.lane],
+          duration: 120,
+          ease: "Sine.easeInOut"
+        });
+      }
+
+      spawnObstacleOrShard() {
+        const laneIndex = Phaser.Math.Between(0, 2);
+        const y = this.laneY[laneIndex];
+        const isShard = Math.random() < 0.4;
+
+        if (isShard) {
+          const shard = this.shards.create(820, y, "shard");
+          shard.setCircle(10);
+          shard.setTint(0xfff56b);
+          shard.body.setVelocityX(-220);
+        } else {
+          const obs = this.obstacles.create(820, y, "obstacle");
+          obs.setSize(40, 40);
+          obs.body.setVelocityX(-260);
+        }
+      }
+
+      update() {
+        this.obstacles.children.iterate(o => {
+          if (o && o.x < -50) o.destroy();
+        });
+        this.shards.children.iterate(s => {
+          if (s && s.x < -50) s.destroy();
+        });
+
+        this.physics.overlap(this.player, this.obstacles, () => this.hitObstacle(), null, this);
+        this.physics.overlap(this.player, this.shards, (player, shard) => this.collectShard(shard), null, this);
+      }
+
+      hitObstacle() {
+        this.combo = 1;
+        this.comboText.setText("Combo x1.0");
+        // TODO: play hit sound, flash screen, maybe slow down briefly
+      }
+
+      collectShard(shard) {
+        shard.destroy();
+        this.score += Math.floor(10 * this.combo);
+        this.combo = Math.min(this.combo + 0.1, 5);
+        this.scoreText.setText("Score: " + this.score);
+        this.comboText.setText("Combo x" + this.combo.toFixed(1));
+        // TODO: play shard sound, small particle burst
+      }
+    }
+
+    new Phaser.Game(config);
+  </script>
+</body>
+</html>
