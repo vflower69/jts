@@ -1,0 +1,203 @@
+// hostname check - only run from jimothytracker.org domain
+    if (window.location.hostname !== "jimothytracker.org") {
+      document.body.innerHTML = "🦝 Jimothy says: This is stolen from jimothytracker.org!";}
+
+  // Below are the codes for the game
+    // --- Audio Synthesizer (Zero external dependencies) ---
+    class CozyAudio {
+      constructor() { this.ctx = null; }
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioCtx();
+        }
+      }
+      playNote(freq, type='sine', duration=0.3) {
+        if (!this.ctx) return;
+        let osc = this.ctx.createOscillator();
+        let gain = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + duration);
+      }
+      playChime() {
+        this.init();
+        [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
+          setTimeout(() => this.playNote(f, 'sine', 0.4), i * 100);
+        });
+      }
+      playWater() {
+        this.init();
+        this.playNote(300, 'triangle', 0.2);
+      }
+    }
+    const audio = new CozyAudio();
+
+    // --- Game Configuration & State ---
+    const SEEDS = [
+      { id: 'daisy', name: 'Daisy', icon: '🌼', cost: 0, reward: 15, growTime: 3 },
+      { id: 'tulip', name: 'Tulip', icon: '🌷', cost: 10, reward: 30, growTime: 5 },
+      { id: 'sunflower', name: 'Sunflower', icon: '🌻', cost: 25, reward: 60, growTime: 8 }
+    ];
+
+    let state = {
+      points: 50,
+      selectedSeed: SEEDS[0].id,
+      plots: [
+        { state: 'empty', seed: null, progress: 0 },
+        { state: 'empty', seed: null, progress: 0 },
+        { state: 'empty', seed: null, progress: 0 },
+        { state: 'empty', seed: null, progress: 0 },
+        { state: 'empty', seed: null, progress: 0 },
+        { state: 'empty', seed: null, progress: 0 }
+      ],
+      lastLogin: Date.now()
+    };
+
+    // Save & Load persistence
+    function saveGame() {
+      localStorage.setItem('cozy_garden_save', JSON.stringify(state));
+    }
+
+    function loadGame() {
+      const saved = localStorage.getItem('cozy_garden_save');
+      if (saved) {
+        state = { ...state, ...JSON.parse(saved) };
+      }
+    }
+
+    // --- Render Logic ---
+    const pointsDisplay = document.getElementById('pointsDisplay');
+    const gardenGrid = document.getElementById('gardenGrid');
+    const seedControls = document.getElementById('seedControls');
+    const modal = document.getElementById('modal');
+
+    function updateHUD() {
+      pointsDisplay.textContent = state.points;
+    }
+
+    function renderControls() {
+      seedControls.innerHTML = '';
+      SEEDS.forEach(seed => {
+        const btn = document.createElement('button');
+        btn.className = `seed-btn ${state.selectedSeed === seed.id ? 'active' : ''}`;
+        btn.innerHTML = `${seed.icon} ${seed.name} (Cost: ${seed.cost})`;
+        btn.onclick = () => {
+          state.selectedSeed = seed.id;
+          renderControls();
+        };
+        seedControls.appendChild(btn);
+      });
+    }
+
+    function renderGarden() {
+      gardenGrid.innerHTML = '';
+      state.plots.forEach((plot, index) => {
+        const div = document.createElement('div');
+        div.className = 'plot';
+        div.onclick = (e) => handlePlotClick(index, e);
+
+        let icon = '🌱';
+        let status = 'Tap to Plant';
+
+        if (plot.state === 'growing') {
+          icon = '🌱';
+          status = 'Growing...';
+        } else if (plot.state === 'ready') {
+          const seedData = SEEDS.find(s => s.id === plot.seed);
+          icon = seedData ? seedData.icon : '🌸';
+          status = 'Tap to Harvest! ✨';
+        }
+
+        div.innerHTML = `
+          <div class="plant-icon">${plot.state === 'empty' ? '🕳️' : icon}</div>
+          <div class="plot-status">${status}</div>
+        `;
+        gardenGrid.appendChild(div);
+      });
+    }
+
+    // --- Game Logic ---
+    function handlePlotClick(index, event) {
+      audio.init();
+      const plot = state.plots[index];
+
+      if (plot.state === 'empty') {
+        const seedData = SEEDS.find(s => s.id === state.selectedSeed);
+        if (state.points >= seedData.cost) {
+          state.points -= seedData.cost;
+          plot.state = 'growing';
+          plot.seed = seedData.id;
+          plot.progress = 0;
+          audio.playWater();
+          spawnParticle(event.clientX, event.clientY, '💧');
+          startGrowing(index, seedData.growTime);
+        } else {
+          showModal('Need More Sunshine!', 'Harvest blooming flowers or claim your daily gift to get more Sunshine Points.');
+        }
+      } else if (plot.state === 'ready') {
+        const seedData = SEEDS.find(s => s.id === plot.seed);
+        state.points += seedData.reward;
+        plot.state = 'empty';
+        plot.seed = null;
+        audio.playChime();
+        spawnParticle(event.clientX, event.clientY, `+${seedData.reward} ☀️`);
+      }
+
+      updateHUD();
+      renderGarden();
+      saveGame();
+    }
+
+    function startGrowing(index, growTime) {
+      let interval = setInterval(() => {
+        if (state.plots[index].state !== 'growing') {
+          clearInterval(interval);
+          return;
+        }
+        state.plots[index].progress += 1;
+        if (state.plots[index].progress >= growTime) {
+          state.plots[index].state = 'ready';
+          clearInterval(interval);
+          renderGarden();
+          saveGame();
+        }
+      }, 1000);
+    }
+
+    function spawnParticle(x, y, text) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.textContent = text;
+      p.style.left = `${x - 20}px`;
+      p.style.top = `${y - 20}px`;
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 1200);
+    }
+
+    function showModal(title, message) {
+      document.getElementById('modalTitle').textContent = title;
+      document.getElementById('modalMessage').textContent = message;
+      modal.classList.add('open');
+    }
+
+    document.getElementById('modalCloseBtn').onclick = () => {
+      modal.classList.remove('open');
+    };
+
+    document.getElementById('dailyRewardBtn').onclick = () => {
+      audio.playChime();
+      state.points += 50;
+      updateHUD();
+      saveGame();
+      showModal('Daily Gift Claimed! 🎁', 'You received 50 Sunshine Points! Come back every day for more gifts.');
+    };
+
+    // --- Initialization ---
+    loadGame();
+    updateHUD();
+    renderControls();
+    renderGarden();
