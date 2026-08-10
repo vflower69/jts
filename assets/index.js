@@ -58,21 +58,15 @@ function drawAllMarkers() {
     bounds.extend(marker.getPosition());
     return marker;
   });
-  mapMarkers = markers;
   // Create clusterer FIRST
-  markerCluster = new markerClusterer.MarkerClusterer({
-    map,
-    markers
-  });
+  markerCluster = new MarkerClusterer({map, markers});
   // For debugging purpose
   console.log("allLocations length:", allLocations.length);
   console.log("bounds.contains(map.getCenter())", bounds.contains(map.getCenter()));
   // Now auto-fit AFTER clusterer finishes
-  google.maps.event.addListenerOnce(map, "idle", () => {
-    if (!bounds.isEmpty()) {
-      map.fitBounds(bounds);
-    }
-  });
+  if (!bounds.isEmpty()) {
+    map.fitBounds(bounds);
+  }
 }
 
 
