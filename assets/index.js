@@ -78,7 +78,7 @@ function renderJournalPage() {
           ${new Date(loc.timestamp).toLocaleString("en-US", {
             dateStyle: "medium",
             timeStyle: "short"
-          })}; ${loc.lat}, ${loc.lng}; ${loc.note || ""}
+          })}: lat:${loc.lat}, lng:${loc.lng}; ${loc.note || ""}
         </span>
         <button class="px-3 py-1 bg-blue-600 text-white rounded zoomBtn">
           Zoom
