@@ -1,5 +1,5 @@
 // ---------------------------------------------------------
-// mapmodule.js — Exact Google Pin Shape (Screenshot Color + Label Position)
+// mapmodule.js — Restored Default Google Pin (No Pulse Overlay)
 // ---------------------------------------------------------
 const mapmodule = (() => {
 
@@ -13,7 +13,6 @@ const mapmodule = (() => {
   let heatmapLayer = null;
   let contourCircles = [];
 
-  let J_ICON = null;
   let J_LABEL = null;
 
   // ---------------------------------------------------------
@@ -26,20 +25,7 @@ const mapmodule = (() => {
       gestureHandling: "greedy",
     });
 
-    // ⭐ Exact Google Maps pin shape (round top, pointed bottom)
-    // ⭐ Screenshot color (#EA4335)
-    // ⭐ Screenshot label position (slightly lower)
-    J_ICON = {
-      path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z",
-      fillColor: "#EA4335",
-      fillOpacity: 1,
-      strokeColor: "#B31412",
-      strokeWeight: 2,
-      scale: 2,
-      anchor: new google.maps.Point(12, 22),
-      labelOrigin: new google.maps.Point(12, 15) // ⭐ screenshot-accurate label position
-    };
-
+    // Label for all markers
     J_LABEL = {
       text: "J",
       color: "black",
@@ -99,57 +85,11 @@ const mapmodule = (() => {
   }
 
   // ---------------------------------------------------------
-  // PULSE EFFECT
-  // ---------------------------------------------------------
-  function addPulseEffect(marker) {
-    if (marker.pulseOverlay) {
-      marker.pulseOverlay.setMap(null);
-      marker.pulseOverlay = null;
-    }
-
-    const div = document.createElement("div");
-    div.className = "pulse-marker";
-
-    const overlay = new google.maps.OverlayView();
-
-    overlay.onAdd = function () {
-      this.div = div;
-      this.getPanes().overlayLayer.appendChild(div);
-    };
-
-    overlay.draw = function () {
-      const proj = this.getProjection();
-      const pos = proj.fromLatLngToDivPixel(marker.getPosition());
-      if (this.div) {
-        this.div.style.left = pos.x + "px";
-        this.div.style.top = pos.y + "px";
-      }
-    };
-
-    overlay.onRemove = function () {
-      if (this.div) {
-        this.div.remove();
-        this.div = null;
-      }
-    };
-
-    overlay.setMap(marker.getMap());
-    marker.pulseOverlay = overlay;
-  }
-
-  // ---------------------------------------------------------
   // CLEAR EVERYTHING
   // ---------------------------------------------------------
   function clearAll() {
-    pageMarkers.forEach(m => {
-      if (m.pulseOverlay) m.pulseOverlay.setMap(null);
-      m.setMap(null);
-    });
-
-    allMarkers.forEach(m => {
-      if (m.pulseOverlay) m.pulseOverlay.setMap(null);
-      m.setMap(null);
-    });
+    pageMarkers.forEach(m => m.setMap(null));
+    allMarkers.forEach(m => m.setMap(null));
 
     pageMarkers = [];
     allMarkers = [];
@@ -168,7 +108,6 @@ const mapmodule = (() => {
     contourCircles = [];
 
     if (singleMarker) {
-      if (singleMarker.pulseOverlay) singleMarker.pulseOverlay.setMap(null);
       singleMarker.setMap(null);
       singleMarker = null;
     }
@@ -188,11 +127,10 @@ const mapmodule = (() => {
         map,
         optimized: false,
         label: J_LABEL,
-        icon: J_ICON,
+        icon: null, // default Google pin
       });
 
       fadeInMarker(marker);
-      addPulseEffect(marker);
       attachTooltip(marker, loc.note || "No note");
 
       bounds.extend(marker.getPosition());
@@ -216,11 +154,10 @@ const mapmodule = (() => {
         map,
         optimized: false,
         label: J_LABEL,
-        icon: J_ICON,
+        icon: null, // default Google pin
       });
 
       fadeInMarker(marker);
-      addPulseEffect(marker);
       attachTooltip(marker, loc.note || "No note");
 
       bounds.extend(marker.getPosition());
@@ -236,7 +173,7 @@ const mapmodule = (() => {
             position,
             optimized: false,
             label: J_LABEL,
-            icon: J_ICON,
+            icon: null, // default Google pin
             zIndex: 9999,
           });
         },
@@ -315,17 +252,14 @@ const mapmodule = (() => {
   // SINGLE MARKER
   // ---------------------------------------------------------
   function placeSingleMarker(latLng) {
-    if (singleMarker) {
-      if (singleMarker.pulseOverlay) singleMarker.pulseOverlay.setMap(null);
-      singleMarker.setMap(null);
-    }
+    if (singleMarker) singleMarker.setMap(null);
 
     singleMarker = new google.maps.Marker({
       position: latLng,
       map,
       optimized: false,
       label: J_LABEL,
-      icon: J_ICON,
+      icon: null, // default Google pin
     });
   }
 
