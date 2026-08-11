@@ -73,6 +73,7 @@ function renderJournalPage() {
     const li = document.createElement("li");
     li.className = "p-4 bg-white rounded shadow";
     li.innerHTML = `
+      <div class="flex items-center justify-between text-sm">
         <span class="font-semibold">
           ${new Date(loc.timestamp).toLocaleString("en-US", {
             dateStyle: "medium",
