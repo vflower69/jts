@@ -1,0 +1,17 @@
+<style>
+  .pulse-marker {
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 140, 0, 0.7);
+    border-radius: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    animation: pulse 1.5s infinite ease-out;
+    pointer-events: none;
+  }
+
+  @keyframes pulse {
+    0% { transform: translate(-50%, -50%) scale(0.6); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(2.2); opacity: 0; }
+  }
+</style>
