@@ -14,11 +14,11 @@ let showingAll = false;
 // INIT MAP
 // ---------------------------------------------------------
 window.initMap = function () {
-  MapModule.initMap(document.getElementById("map"));
+  mapmodule.initMap(document.getElementById("map"));
 
   // Click to place marker
-  MapModule.getMap().addListener("click", (e) => {
-    MapModule.placeSingleMarker(e.latLng);
+  mapmodule.getMap().addListener("click", (e) => {
+    mapmodule.placeSingleMarker(e.latLng);
     document.getElementById("locationInput").value =
       `${e.latLng.lat().toFixed(6)}, ${e.latLng.lng().toFixed(6)}`;
   });
@@ -29,8 +29,8 @@ window.initMap = function () {
   autocomplete.addListener("place_changed", () => {
     const place = autocomplete.getPlace();
     if (!place.geometry) return;
-    MapModule.placeSingleMarker(place.geometry.location);
-    MapModule.flyTo(place.geometry.location);
+    mapmodule.placeSingleMarker(place.geometry.location);
+    mapmodule.flyTo(place.geometry.location);
   });
 
   loadJournal();
@@ -87,17 +87,17 @@ function renderJournalPage() {
 
     // Zoom → fly-to
     li.querySelector(".zoomBtn").onclick = () => {
-      MapModule.flyTo({ lat: loc.lat, lng: loc.lng }, 16);
+      mapmodule.flyTo({ lat: loc.lat, lng: loc.lng }, 16);
     };
 
     // Hover glow
     li.onmouseenter = () => {
-      const marker = MapModule.getPageMarker(index);
-      if (marker) MapModule.glowMarker(marker);
+      const marker = mapmodule.getPageMarker(index);
+      if (marker) mapmodule.glowMarker(marker);
     };
   });
 
-  MapModule.drawPageMarkers(pageItems);
+  mapmodule.drawPageMarkers(pageItems);
   renderJournalPagination();
 }
 
@@ -158,7 +158,7 @@ document.getElementById("toggleAllSightings").onclick = () => {
   if (showingAll) {
     document.getElementById("toggleAllSightings").innerText =
       "Show Paginated Sightings On Map";
-    MapModule.drawAllMarkers(allLocations);
+    mapmodule.drawAllMarkers(allLocations);
   } else {
     document.getElementById("toggleAllSightings").innerText =
       "Show All Sightings On Map";
