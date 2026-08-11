@@ -1,0 +1,121 @@
+
+    :root {
+      --bg-color: #1a1a24;
+      --card-bg: #282a36;
+      --accent-color: #50fa7b;
+      --text-color: #f8f8f2;
+      --danger-color: #ff5555;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      user-select: none;
+    }
+
+    h1 {
+      margin: 0 0 10px 0;
+      color: var(--accent-color);
+      letter-spacing: 1px;
+    }
+
+    p.subtitle {
+      margin: 0 0 20px 0;
+      color: #bd93f9;
+      font-size: 0.95rem;
+    }
+
+    #game-container {
+      position: relative;
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      background: #21222c;
+    }
+
+    .ui-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(26, 26, 36, 0.85);
+      backdrop-filter: blur(4px);
+      transition: opacity 0.2s ease;
+    }
+
+    .ui-overlay.hidden {
+      display: none;
+    }
+
+    .btn {
+      background-color: var(--accent-color);
+      color: #282a36;
+      border: none;
+      padding: 12px 28px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(80, 250, 123, 0.4);
+      transition: transform 0.1s ease, background-color 0.2s ease;
+    }
+
+    .btn:hover {
+      background-color: #69ff94;
+      transform: translateY(-2px);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .instructions {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #f1fa8c;
+      line-height: 1.5;
+    }
+
+    .stats {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      right: 15px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.1rem;
+      font-weight: bold;
+      pointer-events: none;
+    }
+
+    .score-badge {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .game-over-title {
+      font-size: 2rem;
+      color: var(--danger-color);
+      margin-bottom: 10px;
+    }
