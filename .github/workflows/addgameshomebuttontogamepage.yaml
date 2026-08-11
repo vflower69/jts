@@ -13,9 +13,12 @@ jobs:
       - name: Inject snippet into HTML files
         run: |
           # Define snippet safely
-          SNIPPET=$(cat <<'EOF'<button id="backToGames">
+          SNIPPET=$(cat <<'EOF'
+          <button id="backToGames">
           <span class="raccoon-face">🦝</span>
-          Back to Games</button>'EOF')
+          Back to Games</button>
+          EOF
+          )
         
           # Loop through HTML files
           for file in $(find ./games -type f -name "*.html"); do
