@@ -655,7 +655,8 @@ async function loadSightings() {
     const data = await response.json();
     const sightings = data.locations || [];
 
-    sightings.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    //sightings.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    sightings.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
     const recent = sightings.slice(0, 5);
     container.innerHTML = recent
