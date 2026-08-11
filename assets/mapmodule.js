@@ -1,5 +1,5 @@
 // ---------------------------------------------------------
-// mapmodule.js — Restored Default Google Pin (No Pulse Overlay)
+// mapmodule.js — Shared Icon & Label Objects (Stable Markers)
 // ---------------------------------------------------------
 const mapmodule = (() => {
 
@@ -13,7 +13,23 @@ const mapmodule = (() => {
   let heatmapLayer = null;
   let contourCircles = [];
 
-  let J_LABEL = null;
+  // Shared icon and label objects (immutable)
+  const J_ICON = {
+    path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z",
+    fillColor: "#EA4335",      // screenshot-accurate Google red
+    fillOpacity: 1,
+    strokeColor: "#B31412",    // darker border
+    strokeWeight: 2,
+    scale: 2,
+    anchor: new google.maps.Point(12, 22),
+    labelOrigin: new google.maps.Point(12, 15),
+  };
+
+  const J_LABEL = {
+    text: "J",
+    color: "black",
+    fontWeight: "bold",
+  };
 
   // ---------------------------------------------------------
   // INIT MAP
@@ -24,13 +40,6 @@ const mapmodule = (() => {
       zoom: 12,
       gestureHandling: "greedy",
     });
-
-    // Label for all markers
-    J_LABEL = {
-      text: "J",
-      color: "black",
-      fontWeight: "bold",
-    };
   }
 
   function getMap() {
@@ -126,8 +135,9 @@ const mapmodule = (() => {
         position: { lat: loc.lat, lng: loc.lng },
         map,
         optimized: false,
-        label: J_LABEL,
-        icon: null, // default Google pin
+        icon: J_ICON,   // shared immutable icon
+        label: J_LABEL, // shared immutable label
+        zIndex: 9999,
       });
 
       fadeInMarker(marker);
@@ -153,8 +163,9 @@ const mapmodule = (() => {
         position: { lat: loc.lat, lng: loc.lng },
         map,
         optimized: false,
+        icon: J_ICON,
         label: J_LABEL,
-        icon: null, // default Google pin
+        zIndex: 9999,
       });
 
       fadeInMarker(marker);
@@ -172,8 +183,8 @@ const mapmodule = (() => {
           return new google.maps.Marker({
             position,
             optimized: false,
+            icon: J_ICON,
             label: J_LABEL,
-            icon: null, // default Google pin
             zIndex: 9999,
           });
         },
@@ -258,8 +269,9 @@ const mapmodule = (() => {
       position: latLng,
       map,
       optimized: false,
+      icon: J_ICON,
       label: J_LABEL,
-      icon: null, // default Google pin
+      zIndex: 9999,
     });
   }
 
