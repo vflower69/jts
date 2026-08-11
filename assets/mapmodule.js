@@ -172,9 +172,9 @@ const mapmodule = (() => {
       const marker = new google.maps.Marker({
         position: { lat: loc.lat, lng: loc.lng },
         map,
-        optimized: false,
+        optimized: false,   // ⭐ REQUIRED to stop marker changing
         label: J_LABEL,
-        icon: null, // default Google pin
+        icon: null,         // default Google pin
       });
 
       fadeInMarker(marker);
@@ -200,9 +200,9 @@ const mapmodule = (() => {
       const marker = new google.maps.Marker({
         position: { lat: loc.lat, lng: loc.lng },
         map,
-        optimized: false,
+        optimized: false,   // ⭐ cluster markers also protected
         label: J_LABEL,
-        icon: null, // default Google pin
+        icon: null,         // default Google pin
       });
 
       fadeInMarker(marker);
@@ -220,9 +220,9 @@ const mapmodule = (() => {
         render({ count, position }) {
           return new google.maps.Marker({
             position,
-            optimized: false,
+            optimized: false,   // ⭐ prevents auto‑optimization
             label: J_LABEL,
-            icon: null, // default Google pin
+            icon: null,         // default Google pin
             zIndex: 9999,
           });
         },
