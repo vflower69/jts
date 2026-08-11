@@ -177,7 +177,7 @@ async function submitFormSighting() {
 
   const loc = document.getElementById("locationInput").value.trim();
   const note = document.getElementById("noteInput").value.trim();
-  const timestamp = document.getElementById("timeInput").value;
+  const time = document.getElementById("timeInput").value;
 
   if (!loc) {
     alert("Please click the map or enter a location.");
@@ -199,7 +199,7 @@ async function submitFormSighting() {
   }
 
   //const timestamp = new Date().toISOString();//for testing only
-
+  const timestamp=new Date(time).toISOString();
   const payload = { lat, lng, timestamp, note };
 
   try {
