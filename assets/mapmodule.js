@@ -1,5 +1,5 @@
 // ---------------------------------------------------------
-// mapmodule.js — Corrected, Fully Working Version
+// mapmodule.js — Fully Updated Version (All Fixes Applied)
 // ---------------------------------------------------------
 const mapmodule = (() => {
 
@@ -24,9 +24,6 @@ const mapmodule = (() => {
     });
   }
 
-  // ---------------------------------------------------------
-  // EXPOSE MAP INSTANCE
-  // ---------------------------------------------------------
   function getMap() {
     return map;
   }
@@ -82,7 +79,6 @@ const mapmodule = (() => {
   // PULSE EFFECT (with proper cleanup)
   // ---------------------------------------------------------
   function addPulseEffect(marker) {
-    // If this marker already has a pulse overlay, clear it first
     if (marker.pulseOverlay) {
       marker.pulseOverlay.setMap(null);
       marker.pulseOverlay = null;
@@ -115,8 +111,6 @@ const mapmodule = (() => {
     };
 
     overlay.setMap(marker.getMap());
-
-    // Store reference on marker so we can clear it later
     marker.pulseOverlay = overlay;
   }
 
@@ -124,21 +118,13 @@ const mapmodule = (() => {
   // CLEAR EVERYTHING (including pulses)
   // ---------------------------------------------------------
   function clearAll() {
-    // Clear page markers and their pulses
     pageMarkers.forEach(m => {
-      if (m.pulseOverlay) {
-        m.pulseOverlay.setMap(null);
-        m.pulseOverlay = null;
-      }
+      if (m.pulseOverlay) m.pulseOverlay.setMap(null);
       m.setMap(null);
     });
 
-    // Clear all markers and their pulses
     allMarkers.forEach(m => {
-      if (m.pulseOverlay) {
-        m.pulseOverlay.setMap(null);
-        m.pulseOverlay = null;
-      }
+      if (m.pulseOverlay) m.pulseOverlay.setMap(null);
       m.setMap(null);
     });
 
@@ -158,16 +144,31 @@ const mapmodule = (() => {
     contourCircles.forEach(c => c.setMap(null));
     contourCircles = [];
 
-    // Clear single marker and its pulse if ever used
     if (singleMarker) {
-      if (singleMarker.pulseOverlay) {
-        singleMarker.pulseOverlay.setMap(null);
-        singleMarker.pulseOverlay = null;
-      }
+      if (singleMarker.pulseOverlay) singleMarker.pulseOverlay.setMap(null);
       singleMarker.setMap(null);
       singleMarker = null;
     }
   }
+
+  // ---------------------------------------------------------
+  // SHARED RED “J” PIN ICON
+  // ---------------------------------------------------------
+  const J_ICON = {
+    path: "M0,-48c-12,0-24,12-24,24s12,24,24,24s24-12,24-24S12,-48,0,-48z M0,0l-8,16h16L0,0z",
+    fillColor: "#e74c3c",
+    fillOpacity: 1,
+    strokeColor: "#b03a2e",
+    strokeWeight: 2,
+    scale: 0.5,
+    anchor: new google.maps.Point(0, 0),
+  };
+
+  const J_LABEL = {
+    text: "J",
+    color: "black",
+    fontWeight: "bold",
+  };
 
   // ---------------------------------------------------------
   // DRAW PAGINATED MARKERS
@@ -181,7 +182,9 @@ const mapmodule = (() => {
       const marker = new google.maps.Marker({
         position: { lat: loc.lat, lng: loc.lng },
         map,
-        label: "J",
+        optimized: false,
+        label: J_LABEL,
+        icon: J_ICON,
       });
 
       fadeInMarker(marker);
@@ -207,7 +210,9 @@ const mapmodule = (() => {
       const marker = new google.maps.Marker({
         position: { lat: loc.lat, lng: loc.lng },
         map,
-        label: "J",
+        optimized: false,
+        label: J_LABEL,
+        icon: J_ICON,
       });
 
       fadeInMarker(marker);
@@ -221,6 +226,17 @@ const mapmodule = (() => {
     markerCluster = new markerClusterer.MarkerClusterer({
       map,
       markers: allMarkers,
+      renderer: {
+        render({ count, position }) {
+          return new google.maps.Marker({
+            position,
+            optimized: false,
+            label: J_LABEL,
+            icon: J_ICON,
+            zIndex: 9999,
+          });
+        },
+      },
     });
 
     markerCluster.addListener("click", (cluster) => {
@@ -296,29 +312,23 @@ const mapmodule = (() => {
   // ---------------------------------------------------------
   function placeSingleMarker(latLng) {
     if (singleMarker) {
-      if (singleMarker.pulseOverlay) {
-        singleMarker.pulseOverlay.setMap(null);
-        singleMarker.pulseOverlay = null;
-      }
+      if (singleMarker.pulseOverlay) singleMarker.pulseOverlay.setMap(null);
       singleMarker.setMap(null);
     }
 
     singleMarker = new google.maps.Marker({
       position: latLng,
       map,
+      optimized: false,
+      label: J_LABEL,
+      icon: J_ICON,
     });
   }
 
-  // ---------------------------------------------------------
-  // GET PAGE MARKER FOR HOVER GLOW
-  // ---------------------------------------------------------
   function getPageMarker(index) {
     return pageMarkers[index] || null;
   }
 
-  // ---------------------------------------------------------
-  // EXPORT PUBLIC API
-  // ---------------------------------------------------------
   return {
     map,
     getMap,
