@@ -1,5 +1,5 @@
 // ---------------------------------------------------------
-// mapmodule.js — Exact Google Pin Shape (Red "J")
+// mapmodule.js — Exact Google Pin Shape (Screenshot Color + Label Position)
 // ---------------------------------------------------------
 const mapmodule = (() => {
 
@@ -26,15 +26,18 @@ const mapmodule = (() => {
       gestureHandling: "greedy",
     });
 
-    // ✅ Exact Google Maps pin shape (round top, pointed bottom)
+    // ⭐ Exact Google Maps pin shape (round top, pointed bottom)
+    // ⭐ Screenshot color (#EA4335)
+    // ⭐ Screenshot label position (slightly lower)
     J_ICON = {
       path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z",
-      fillColor: "#e74c3c",
+      fillColor: "#EA4335",
       fillOpacity: 1,
-      strokeColor: "#b03a2e",
+      strokeColor: "#B31412",
       strokeWeight: 2,
       scale: 2,
       anchor: new google.maps.Point(12, 22),
+      labelOrigin: new google.maps.Point(12, 15) // ⭐ screenshot-accurate label position
     };
 
     J_LABEL = {
@@ -96,7 +99,7 @@ const mapmodule = (() => {
   }
 
   // ---------------------------------------------------------
-  // PULSE EFFECT (with proper cleanup)
+  // PULSE EFFECT
   // ---------------------------------------------------------
   function addPulseEffect(marker) {
     if (marker.pulseOverlay) {
@@ -135,7 +138,7 @@ const mapmodule = (() => {
   }
 
   // ---------------------------------------------------------
-  // CLEAR EVERYTHING (including pulses)
+  // CLEAR EVERYTHING
   // ---------------------------------------------------------
   function clearAll() {
     pageMarkers.forEach(m => {
@@ -172,7 +175,7 @@ const mapmodule = (() => {
   }
 
   // ---------------------------------------------------------
-  // DRAW PAGINATED MARKERS
+  // DRAW PAGE MARKERS
   // ---------------------------------------------------------
   function drawPageMarkers(locations) {
     clearAll();
@@ -331,3 +334,15 @@ const mapmodule = (() => {
   }
 
   return {
+    map,
+    getMap,
+    initMap,
+    flyTo,
+    drawPageMarkers,
+    drawAllMarkers,
+    placeSingleMarker,
+    attachTooltip,
+    glowMarker,
+    getPageMarker,
+  };
+})();
