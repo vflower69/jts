@@ -1,5 +1,5 @@
 // ---------------------------------------------------------
-// mapmodule.js — Fully Updated Version (Delayed Google Maps References)
+// mapmodule.js — Default Google Pin Style (Red "J")
 // ---------------------------------------------------------
 const mapmodule = (() => {
 
@@ -13,8 +13,6 @@ const mapmodule = (() => {
   let heatmapLayer = null;
   let contourCircles = [];
 
-  // These will be initialized AFTER Google Maps loads
-  let J_ICON = null;
   let J_LABEL = null;
 
   // ---------------------------------------------------------
@@ -27,17 +25,7 @@ const mapmodule = (() => {
       gestureHandling: "greedy",
     });
 
-    // Google Maps is now loaded — safe to define icons
-    J_ICON = {
-      path: "M0,-48c-12,0-24,12-24,24s12,24,24,24s24-12,24-24S12,-48,0,-48z M0,0l-8,16h16L0,0z",
-      fillColor: "#e74c3c",
-      fillOpacity: 1,
-      strokeColor: "#b03a2e",
-      strokeWeight: 2,
-      scale: 0.5,
-      anchor: new google.maps.Point(0, 0),
-    };
-
+    // Label for all markers
     J_LABEL = {
       text: "J",
       color: "black",
@@ -186,7 +174,7 @@ const mapmodule = (() => {
         map,
         optimized: false,
         label: J_LABEL,
-        icon: J_ICON,
+        icon: null, // default Google pin
       });
 
       fadeInMarker(marker);
@@ -214,7 +202,7 @@ const mapmodule = (() => {
         map,
         optimized: false,
         label: J_LABEL,
-        icon: J_ICON,
+        icon: null, // default Google pin
       });
 
       fadeInMarker(marker);
@@ -234,7 +222,7 @@ const mapmodule = (() => {
             position,
             optimized: false,
             label: J_LABEL,
-            icon: J_ICON,
+            icon: null, // default Google pin
             zIndex: 9999,
           });
         },
@@ -323,7 +311,7 @@ const mapmodule = (() => {
       map,
       optimized: false,
       label: J_LABEL,
-      icon: J_ICON,
+      icon: null, // default Google pin
     });
   }
 
