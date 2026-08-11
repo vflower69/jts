@@ -79,37 +79,69 @@ const mapmodule = (() => {
   }
 
   // ---------------------------------------------------------
-  // PULSE EFFECT
+  // PULSE EFFECT (with proper cleanup)
   // ---------------------------------------------------------
   function addPulseEffect(marker) {
+    // If this marker already has a pulse overlay, clear it first
+    if (marker.pulseOverlay) {
+      marker.pulseOverlay.setMap(null);
+      marker.pulseOverlay = null;
+    }
+
     const div = document.createElement("div");
     div.className = "pulse-marker";
 
     const overlay = new google.maps.OverlayView();
+
     overlay.onAdd = function () {
+      this.div = div;
       this.getPanes().overlayLayer.appendChild(div);
     };
 
     overlay.draw = function () {
       const proj = this.getProjection();
       const pos = proj.fromLatLngToDivPixel(marker.getPosition());
-      div.style.left = pos.x + "px";
-      div.style.top = pos.y + "px";
+      if (this.div) {
+        this.div.style.left = pos.x + "px";
+        this.div.style.top = pos.y + "px";
+      }
     };
 
     overlay.onRemove = function () {
-      div.remove();
+      if (this.div) {
+        this.div.remove();
+        this.div = null;
+      }
     };
 
     overlay.setMap(marker.getMap());
+
+    // Store reference on marker so we can clear it later
+    marker.pulseOverlay = overlay;
   }
 
   // ---------------------------------------------------------
-  // CLEAR EVERYTHING
+  // CLEAR EVERYTHING (including pulses)
   // ---------------------------------------------------------
   function clearAll() {
-    pageMarkers.forEach(m => m.setMap(null));
-    allMarkers.forEach(m => m.setMap(null));
+    // Clear page markers and their pulses
+    pageMarkers.forEach(m => {
+      if (m.pulseOverlay) {
+        m.pulseOverlay.setMap(null);
+        m.pulseOverlay = null;
+      }
+      m.setMap(null);
+    });
+
+    // Clear all markers and their pulses
+    allMarkers.forEach(m => {
+      if (m.pulseOverlay) {
+        m.pulseOverlay.setMap(null);
+        m.pulseOverlay = null;
+      }
+      m.setMap(null);
+    });
+
     pageMarkers = [];
     allMarkers = [];
 
@@ -125,6 +157,16 @@ const mapmodule = (() => {
 
     contourCircles.forEach(c => c.setMap(null));
     contourCircles = [];
+
+    // Clear single marker and its pulse if ever used
+    if (singleMarker) {
+      if (singleMarker.pulseOverlay) {
+        singleMarker.pulseOverlay.setMap(null);
+        singleMarker.pulseOverlay = null;
+      }
+      singleMarker.setMap(null);
+      singleMarker = null;
+    }
   }
 
   // ---------------------------------------------------------
@@ -253,7 +295,14 @@ const mapmodule = (() => {
   // SINGLE MARKER
   // ---------------------------------------------------------
   function placeSingleMarker(latLng) {
-    if (singleMarker) singleMarker.setMap(null);
+    if (singleMarker) {
+      if (singleMarker.pulseOverlay) {
+        singleMarker.pulseOverlay.setMap(null);
+        singleMarker.pulseOverlay = null;
+      }
+      singleMarker.setMap(null);
+    }
+
     singleMarker = new google.maps.Marker({
       position: latLng,
       map,
