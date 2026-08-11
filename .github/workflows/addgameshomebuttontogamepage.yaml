@@ -12,16 +12,22 @@ jobs:
 
       - name: Inject snippet into HTML files
         run: |
-          read -r -d '' SNIPPET << 'EOF'<button id="backToGames"><span class="raccoon-face">🦝</span>Back to Games</button>EOF
+          # Define snippet safely
+          SNIPPET=$(cat <<'EOF'<button id="backToGames">
+          <span class="raccoon-face">🦝</span>
+          Back to Games</button>'EOF')
         
+          # Loop through HTML files
           for file in $(find ./games -type f -name "*.html"); do
             if ! grep -q "<button id=\"backToGames\"" "$file"; then
-              sed -i "s|</body>|  $SNIPPET\n</body>|" "$file"
+              # Use printf to handle newlines correctly
+              sed -i "s|</body>|$(printf '  %s\n</body>' \"$SNIPPET\")|" "$file"
               echo "Injected snippet into $file"
             else
               echo "Snippet already present in $file"
             fi
           done || true
+
 
 
       - name: Commit changes
