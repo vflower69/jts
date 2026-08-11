@@ -177,7 +177,7 @@ async function submitFormSighting() {
 
   const loc = document.getElementById("locationInput").value.trim();
   const note = document.getElementById("noteInput").value.trim();
-  const time = document.getElementById("timeInput").value;
+  const timestamp = document.getElementById("timeInput").value;
 
   if (!loc) {
     alert("Please click the map or enter a location.");
@@ -198,9 +198,9 @@ async function submitFormSighting() {
     return;
   }
 
-  //const timestamp = new Date().toISOString();
+  //const timestamp = new Date().toISOString();//for testing only
 
-  const payload = { lat, lng, time, note };
+  const payload = { lat, lng, timestamp, note };
 
   try {
     const res = await fetch("https://api.jimothytracker.org", {
