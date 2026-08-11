@@ -1,5 +1,5 @@
 // ---------------------------------------------------------
-// mapmodule.js — Fully Updated Version (All Fixes Applied)
+// mapmodule.js — Fully Updated Version (Delayed Google Maps References)
 // ---------------------------------------------------------
 const mapmodule = (() => {
 
@@ -13,6 +13,10 @@ const mapmodule = (() => {
   let heatmapLayer = null;
   let contourCircles = [];
 
+  // These will be initialized AFTER Google Maps loads
+  let J_ICON = null;
+  let J_LABEL = null;
+
   // ---------------------------------------------------------
   // INIT MAP
   // ---------------------------------------------------------
@@ -22,6 +26,23 @@ const mapmodule = (() => {
       zoom: 12,
       gestureHandling: "greedy",
     });
+
+    // Google Maps is now loaded — safe to define icons
+    J_ICON = {
+      path: "M0,-48c-12,0-24,12-24,24s12,24,24,24s24-12,24-24S12,-48,0,-48z M0,0l-8,16h16L0,0z",
+      fillColor: "#e74c3c",
+      fillOpacity: 1,
+      strokeColor: "#b03a2e",
+      strokeWeight: 2,
+      scale: 0.5,
+      anchor: new google.maps.Point(0, 0),
+    };
+
+    J_LABEL = {
+      text: "J",
+      color: "black",
+      fontWeight: "bold",
+    };
   }
 
   function getMap() {
@@ -150,25 +171,6 @@ const mapmodule = (() => {
       singleMarker = null;
     }
   }
-
-  // ---------------------------------------------------------
-  // SHARED RED “J” PIN ICON
-  // ---------------------------------------------------------
-  const J_ICON = {
-    path: "M0,-48c-12,0-24,12-24,24s12,24,24,24s24-12,24-24S12,-48,0,-48z M0,0l-8,16h16L0,0z",
-    fillColor: "#e74c3c",
-    fillOpacity: 1,
-    strokeColor: "#b03a2e",
-    strokeWeight: 2,
-    scale: 0.5,
-    anchor: new google.maps.Point(0, 0),
-  };
-
-  const J_LABEL = {
-    text: "J",
-    color: "black",
-    fontWeight: "bold",
-  };
 
   // ---------------------------------------------------------
   // DRAW PAGINATED MARKERS
