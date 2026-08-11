@@ -55,13 +55,12 @@ const mapmodule = (() => {
       color: "black",
       fontWeight: "bold",
     };
-  }
 */
 	// Use Google’s default pin using PinView
     J_LABEL = {
       text: "",
     };
-	
+}
   function getMap() {
     return map;
   }
