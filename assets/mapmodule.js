@@ -290,6 +290,7 @@ const mapmodule = (() => {
   // ---------------------------------------------------------
   // GLOW EFFECT
   // ---------------------------------------------------------
+  /*
   function glowMarker(marker) {
     marker.setIcon({
       path: google.maps.SymbolPath.CIRCLE,
@@ -311,6 +312,12 @@ const mapmodule = (() => {
       });
     }, 600);
   }
+  */
+function glowMarker(marker) {
+  const icon = { ...J_ICON, strokeColor: "#ffffff", strokeWeight: 3 };
+  marker.setIcon(icon);
+  setTimeout(() => marker.setIcon(J_ICON), 600);
+}
 
   // ---------------------------------------------------------
   // SINGLE MARKER
