@@ -198,9 +198,9 @@ async function submitFormSighting() {
     return;
   }
 
-  const timestamp = new Date().toISOString();
+  //const timestamp = new Date().toISOString();
 
-  const payload = { lat, lng, timestamp, note };
+  const payload = { lat, lng, time, note };
 
   try {
     const res = await fetch("https://api.jimothytracker.org", {
