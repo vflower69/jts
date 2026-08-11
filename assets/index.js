@@ -1,24 +1,23 @@
 // ---------------------------------------------------------
-// CONFIG VARS
+// CONFIG
 // ---------------------------------------------------------
 const GITHUB_USER = "vflower69";
 const GITHUB_REPO = "jts";
 const GITHUB_FILE_PATH = "data/jimothy.json";
 
-// Pagination
 let currentPage = 1;
 const perPage = 5;
 let allLocations = [];
 let showingAll = false;
 
 // ---------------------------------------------------------
-// GOOGLE MAP INIT — now uses MapModule
+// INIT MAP
 // ---------------------------------------------------------
 window.initMap = function () {
   MapModule.initMap(document.getElementById("map"));
 
   // Click to place marker
-  MapModule.map.addListener("click", (e) => {
+  MapModule.getMap().addListener("click", (e) => {
     MapModule.placeSingleMarker(e.latLng);
     document.getElementById("locationInput").value =
       `${e.latLng.lat().toFixed(6)}, ${e.latLng.lng().toFixed(6)}`;
@@ -60,7 +59,7 @@ async function loadJournal() {
 }
 
 // ---------------------------------------------------------
-// RENDER JOURNAL PAGE
+// RENDER PAGE
 // ---------------------------------------------------------
 function renderJournalPage() {
   const list = document.getElementById("journalList");
@@ -86,7 +85,7 @@ function renderJournalPage() {
 
     list.appendChild(li);
 
-    // Zoom button → fly-to camera
+    // Zoom → fly-to
     li.querySelector(".zoomBtn").onclick = () => {
       MapModule.flyTo({ lat: loc.lat, lng: loc.lng }, 16);
     };
@@ -98,9 +97,7 @@ function renderJournalPage() {
     };
   });
 
-  // Draw paginated markers
   MapModule.drawPageMarkers(pageItems);
-
   renderJournalPagination();
 }
 
