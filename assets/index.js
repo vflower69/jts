@@ -73,9 +73,11 @@ function renderJournalPage() {
     const li = document.createElement("li");
     li.className = "p-4 bg-white rounded shadow";
     li.innerHTML = `
-      <div class="flex items-center justify-between text-sm">
         <span class="font-semibold">
-          ${loc.timestamp}; ${loc.lat}, ${loc.lng}; ${loc.note || ""}
+          ${new Date(loc.timestamp).toLocaleString("en-US", {
+            dateStyle: "medium",
+            timeStyle: "short"
+          })}; ${loc.lat}, ${loc.lng}; ${loc.note || ""}
         </span>
         <button class="px-3 py-1 bg-blue-600 text-white rounded zoomBtn">
           Zoom
