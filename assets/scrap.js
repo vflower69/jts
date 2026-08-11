@@ -1,0 +1,429 @@
+    // hostname check - only run from jimothytracker.org domain
+    if (window.location.hostname !== "jimothytracker.org") {
+      document.body.innerHTML = "🦝 Jimothy says: This is stolen from jimothytracker.org!";}
+
+    // Below are the codes for the game
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Core Game Constants
+        const GROUND_Y = 400;
+        const GRAVITY = 0.8;
+        const MOVE_SPEED = 5;
+        const PLAYER_JUMP = -15;
+
+        // Game State
+        let isRunning = false;
+        let score = 0;
+        let highScore = localStorage.getItem('jimothy_fighter_high') || 21000;
+        document.getElementById('high-score-value').textContent = highScore;
+        let frameCount = 0;
+        let keys = {};
+
+        // Vfx references
+        const powText = document.getElementById('pow-effect');
+        const comboText = document.getElementById('combo-effect');
+
+        // --- Class Definitions ---
+
+        class Fighter {
+            constructor(x, y, width, height, name, maxHealth, isPlayer) {
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.height = height;
+                this.name = name;
+                this.maxHealth = maxHealth;
+                this.health = maxHealth;
+                this.isPlayer = isPlayer;
+
+                // Physics/Movement
+                this.vx = 0;
+                this.vy = 0;
+                this.isGrounded = false;
+                this.facingLeft = isPlayer ? false : true;
+
+                // Combat State
+                this.state = 'idle'; // idle, moving, jumping, punching, kicking, hit, dead
+                this.stateTimer = 0;
+                this.combo = 0;
+                this.comboTimer = 0;
+            }
+
+            update() {
+                // Gravity
+                this.vy += GRAVITY;
+                this.y += this.vy;
+
+                // Movement vx
+                if(this.state !== 'hit') {
+                    this.x += this.vx;
+                }
+
+                // Ground collision
+                if (this.y + this.height >= GROUND_Y) {
+                    this.y = GROUND_Y - this.height;
+                    this.vy = 0;
+                    this.isGrounded = true;
+                    if (this.state === 'jumping') this.state = 'idle';
+                } else {
+                    this.isGrounded = false;
+                }
+
+                // Stage bounds
+                if (this.x < 0) this.x = 0;
+                if (this.x + this.width > canvas.width) this.x = canvas.width - this.width;
+
+                // Handle combat/state timers
+                if (this.stateTimer > 0) {
+                    this.stateTimer--;
+                    if (this.stateTimer === 0) {
+                        this.state = (this.vy !== 0) ? 'jumping' : 'idle';
+                    }
+                }
+
+                // Combo Timer handling
+                if (this.comboTimer > 0) {
+                    this.comboTimer--;
+                    if (this.comboTimer === 0) {
+                        this.combo = 0;
+                    }
+                }
+            }
+
+            jump() {
+                if (this.isGrounded && (this.state === 'idle' || this.state === 'moving')) {
+                    this.vy = PLAYER_JUMP;
+                    this.state = 'jumping';
+                    // Input UI active
+                    document.getElementById('key-jump').classList.add('active');
+                }
+            }
+
+            attack(type) {
+                if (this.state === 'idle' || this.state === 'moving' || this.state === 'jumping') {
+                    this.state = type;
+                    this.stateTimer = 15; // attack duration frames
+                    this.vx = 0; // stop moving during attack
+
+                    // Input UI active
+                    const inputKey = type === 'punching' ? 'key-punch' : 'key-kick';
+                    document.getElementById(inputKey).classList.add('active');
+
+                    // Collision check for the attack (Simplified)
+                    const other = this.isPlayer ? enemy : player;
+                    const attackRange = 30;
+                    const reachX = this.facingLeft ? (this.x - attackRange) : (this.x + this.width);
+
+                    // Simplified collision box for the punch/kick
+                    if (reachX < other.x + other.width &&
+                        reachX + attackRange > other.x &&
+                        this.y + this.height/3 < other.y + other.height &&
+                        this.y + this.height > other.y + other.height/3) {
+                            other.takeDamage(this, type);
+                        }
+                }
+            }
+
+            takeDamage(attacker, attackType) {
+                if(this.state === 'dead' || this.state === 'hit') return;
+
+                this.state = 'hit';
+                this.stateTimer = 10;
+                this.vy = -3; // slight knockback
+
+                const damage = attackType === 'punching' ? 5 : 8;
+                this.health -= damage;
+                if (this.health <= 0) {
+                    this.health = 0;
+                    this.state = 'dead';
+                } else {
+                     this.vx = attacker.facingLeft ? -4 : 4; // knockback vx
+                }
+
+                if (attacker.isPlayer) {
+                    attacker.combo++;
+                    attacker.comboTimer = 60; // 1 second
+                    score += damage * attacker.combo;
+                    updateScoreDisplay();
+                    vfxHit(this, attacker);
+                }
+
+                updateHealthBars();
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+                if (this.facingLeft) ctx.scale(-1, 1);
+
+                // Body color based on state
+                ctx.fillStyle = '#6272a4'; // Default (Fighter gray/blue)
+                if (this.state === 'hit') ctx.fillStyle = '#ff5555';
+                if (this.state === 'dead') ctx.fillStyle = '#44475a';
+
+                if (this.isPlayer) {
+                    // Jimothy the Raccoon (Very simplified drawing)
+                    ctx.fillStyle = (this.state === 'hit') ? '#ff5555' : '#6272a4';
+
+                    // Body
+                    ctx.beginPath(); ctx.ellipse(0, 5, 20, 25, 0, 0, Math.PI * 2); ctx.fill();
+
+                    // Mask/Eyes (Facing right initially)
+                    ctx.fillStyle = (this.state === 'hit') ? '#ffffff' : '#191a21';
+                    ctx.beginPath(); ctx.ellipse(10, -5, 10, 6, 0, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(12, -7, 3, 0, Math.PI * 2); ctx.fill();
+
+                    // Attacks visual
+                    if(this.state === 'punching') {
+                        ctx.fillStyle = (this.state === 'hit') ? '#ff5555' : '#6272a4';
+                        ctx.beginPath(); ctx.ellipse(25, 5, 10, 8, 0.4, 0, Math.PI * 2); ctx.fill();
+                    }
+                    if(this.state === 'kicking') {
+                        ctx.fillStyle = (this.state === 'hit') ? '#ff5555' : '#6272a4';
+                        ctx.beginPath(); ctx.ellipse(22, 18, 12, 10, -0.4, 0, Math.PI * 2); ctx.fill();
+                    }
+
+                } else {
+                    // Waste Bin (Simplified drawing)
+                    ctx.fillStyle = (this.state === 'hit') ? '#ff5555' : '#8be9fd'; // Neon blue/cyan
+
+                    // Bin Body
+                    ctx.beginPath(); ctx.ellipse(0, 0, 25, 30, 0.1, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = '#44475a';
+                    ctx.beginPath(); ctx.ellipse(0, -25, 25, 5, 0.1, 0, Math.PI * 2); ctx.fill();
+
+                     // Face/Eyes
+                     ctx.fillStyle = '#191a21';
+                     ctx.beginPath(); ctx.ellipse(-10, -5, 6, 8, -0.2, 0, Math.PI * 2); ctx.fill();
+                     ctx.beginPath(); ctx.ellipse(10, -5, 6, 8, 0.2, 0, Math.PI * 2); ctx.fill();
+                }
+
+                ctx.restore();
+            }
+        }
+
+        // --- Character Instances ---
+        const player = new Fighter(100, GROUND_Y - 70, 50, 70, 'Jimothy', 100, true);
+        const enemy = new Fighter(600, GROUND_Y - 70, 60, 70, 'Waste Bin', 100, false);
+
+        // --- Visual Effects ---
+
+        function vfxHit(victim, attacker) {
+            // POW Text
+            powText.style.opacity = 1;
+            const hitX = victim.x + victim.width/2;
+            const hitY = victim.y + victim.height/3;
+            powText.style.left = `${hitX - 30}px`;
+            powText.style.top = `${hitY - 20}px`;
+            powText.style.transform = `scale(1.3) rotate(${Math.random() * 20 - 10}deg)`;
+
+            // Combo counter
+            if(attacker.combo > 1) {
+                comboText.textContent = `COMBO x${attacker.combo}`;
+                comboText.style.opacity = 1;
+                comboText.style.left = `${attacker.x + attacker.width/2 - 50}px`;
+                comboText.style.top = `${attacker.y - 30}px`;
+            } else {
+                 comboText.style.opacity = 0;
+            }
+
+            // Hide after a brief moment
+            setTimeout(() => {
+                powText.style.opacity = 0;
+            }, 150);
+        }
+
+        // --- Core Game Functions ---
+
+        function updateHealthBars() {
+            // Player health: Change color from green to red
+            const pHealthPercent = (player.health / player.maxHealth) * 100;
+            const hFill = document.getElementById('player-health');
+            hFill.style.width = `${pHealthPercent}%`;
+            // HSL logic: green (135) to red (0)
+            const hue = (pHealthPercent / 100) * 135;
+            hFill.style.backgroundColor = `hsl(${hue}, 100%, 50%)`;
+
+            // Enemy health
+            const eHealthPercent = (enemy.health / enemy.maxHealth) * 100;
+            const eFill = document.getElementById('enemy-health');
+            eFill.style.width = `${eHealthPercent}%`;
+            // Health percentage text
+            document.getElementById('enemy-name').textContent = `WASTE BIN (🗑️) ${eHealthPercent}%`;
+            document.getElementById('player-name').textContent = `JIMOTHY (🦝) ${pHealthPercent}%`;
+
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('score-text').textContent = score;
+        }
+
+        function drawStage() {
+            // Clear
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Backgraund Color
+            ctx.fillStyle = '#21222c'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Ground
+            ctx.fillStyle = '#44475a'; ctx.fillRect(0, GROUND_Y, canvas.width, canvas.height - GROUND_Y);
+            ctx.strokeStyle = '#6272a4'; ctx.lineWidth = 4;
+            ctx.beginPath(); ctx.moveTo(0, GROUND_Y); ctx.lineTo(canvas.width, GROUND_Y); ctx.stroke();
+        }
+
+        function handleInput() {
+            // Default vx is 0
+            player.vx = 0;
+
+            // Player can move during attack if grounded/jumping, but not punching/kicking
+            if (player.state !== 'punching' && player.state !== 'kicking' && player.state !== 'hit' && player.state !== 'dead') {
+                if (keys['a'] || keys['ArrowLeft']) {
+                    player.vx = -MOVE_SPEED;
+                    player.facingLeft = true;
+                    if (player.isGrounded) player.state = 'moving';
+                } else if (keys['d'] || keys['ArrowRight']) {
+                    player.vx = MOVE_SPEED;
+                    player.facingLeft = false;
+                    if (player.isGrounded) player.state = 'moving';
+                } else {
+                    // No movement keys down, and not attacking, not hit
+                    if (player.isGrounded) player.state = 'idle';
+                }
+            }
+        }
+
+        function enemyAI() {
+            // Simplified AI - Waste bin just faces and periodically moves towards Jimothy, and attempts attacks
+            if (enemy.state === 'dead' || enemy.state === 'hit') return;
+
+            // Simple movement
+            const dist = Math.abs(enemy.x - player.x);
+            const moveThreshold = 100;
+            const attackThreshold = 60;
+
+            // State changes by timer
+            if(enemy.state === 'idle' || enemy.state === 'moving') {
+                enemy.facingLeft = enemy.x > player.x;
+
+                // Move towards player
+                if(dist > moveThreshold) {
+                    enemy.vx = enemy.facingLeft ? -1.5 : 1.5;
+                    enemy.state = 'moving';
+                } else if (dist <= attackThreshold) {
+                    // Attack chance when close
+                    if (Math.random() < 0.05) { // 5% chance per AI frame
+                        enemy.vx = 0;
+                        enemy.attack('punching');
+                    } else if (Math.random() < 0.03) { // 3% chance kick
+                        enemy.vx = 0;
+                        enemy.attack('kicking');
+                    } else {
+                        enemy.vx = 0;
+                        enemy.state = 'idle';
+                    }
+                } else {
+                     enemy.vx = 0;
+                     enemy.state = 'idle';
+                }
+            }
+        }
+
+        function updateGame() {
+            frameCount++;
+            handleInput();
+            enemyAI();
+
+            player.update();
+            enemy.update();
+
+            drawStage();
+            player.draw();
+            enemy.draw();
+
+            // Game over/Win checking
+            if (player.health <= 0) {
+                endGame('player');
+                return;
+            } else if (enemy.health <= 0) {
+                endGame('enemy');
+                return;
+            }
+
+            requestAnimationFrame(updateGame);
+        }
+
+        function startGame() {
+            // State
+            score = 0; updateScoreDisplay();
+            player.health = player.maxHealth;
+            enemy.health = enemy.maxHealth;
+            updateHealthBars();
+
+            // Reset positions/states
+            player.x = 100; player.y = GROUND_Y - player.height; player.state = 'idle'; player.combo = 0;
+            enemy.x = 600; enemy.y = GROUND_Y - enemy.height; enemy.state = 'idle';
+
+            // Screens
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('gameOverScreen').classList.add('hidden');
+            document.getElementById('victoryScreen').classList.add('hidden');
+
+            isRunning = true;
+            requestAnimationFrame(updateGame);
+        }
+
+        function endGame(loser) {
+            isRunning = false;
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('jimothy_fighter_high', highScore);
+                document.getElementById('high-score-value').textContent = highScore;
+            }
+
+            if (loser === 'player') {
+                document.getElementById('finalScoreText').textContent = score;
+                document.getElementById('gameOverScreen').classList.remove('hidden');
+            } else {
+                document.getElementById('winScoreText').textContent = score;
+                document.getElementById('victoryScreen').classList.remove('hidden');
+            }
+        }
+
+        // --- Event Listeners ---
+
+        window.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+
+            // Active combat controls
+            if (isRunning) {
+                if (e.key === 'j' || e.key === 'J') player.attack('punching');
+                if (e.key === 'k' || e.key === 'K') player.attack('kicking');
+                if (e.key === ' ') player.jump();
+            } else {
+                 // Restart game on Start screen using space
+                 if (e.key === ' ' && !document.getElementById('startScreen').classList.contains('hidden')) {
+                     startGame();
+                 }
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+
+            // Remove active UI state for attack inputs
+            if (e.key === 'j' || e.key === 'J') document.getElementById('key-punch').classList.remove('active');
+            if (e.key === 'k' || e.key === 'K') document.getElementById('key-kick').classList.remove('active');
+            if (e.key === ' ') document.getElementById('key-jump').classList.remove('active');
+        });
+
+        document.getElementById('startBtn').addEventListener('click', startGame);
+        document.getElementById('restartBtn').addEventListener('click', startGame);
+        document.getElementById('winBtn').addEventListener('click', startGame);
+
+        // Initial setup
+        drawStage();
+        player.draw();
+        enemy.draw();
+        updateHealthBars();
+

@@ -690,7 +690,9 @@ async function loadSightings() {
 
     // Run all visualizations
     //animateMovement(sightings);
-    animateMovementOnMap(sightings);
+    //animateMovementOnMap(sightings);
+    animateMovementOnMap([...sightings].reverse());//run from oldest to latest sighting location
+
     setupMapModal();
     renderTimeline(sightings);
     renderNeighborhoodHeatmap(sightings);

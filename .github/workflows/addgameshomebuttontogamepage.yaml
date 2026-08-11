@@ -1,0 +1,42 @@
+name: Inject Back to Games Button
+
+on:
+  workflow_dispatch:  # manual trigger only
+
+jobs:
+  inject-snippet:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Inject snippet into HTML files
+        run: |
+          # Define snippet safely
+          SNIPPET=$(cat <<'EOF'
+          <button id="backToGames">
+          <span class="raccoon-face">🦝</span>
+          Back to Games</button>
+          EOF
+          )
+        
+          # Loop through HTML files
+          for file in $(find ./jts/games -type f -name "*.html"); do
+            if ! grep -q "<button id=\"backToGames\"" "$file"; then
+              # Use printf to handle newlines correctly
+              sed -i "s|</body>|$(printf '  %s\n</body>' \"$SNIPPET\")|" "$file"
+              echo "Injected snippet into $file"
+            else
+              echo "Snippet already present in $file"
+            fi
+          done || true
+
+
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Inject Back to Games button snippet" || echo "No changes to commit"
+          git push
