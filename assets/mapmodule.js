@@ -1,10 +1,11 @@
 // ---------------------------------------------------------
-// MapModule.js — Complete, Polished, Fully‑Featured Map System
+// MapModule.js — Corrected, Fully Working Version
 // ---------------------------------------------------------
 const MapModule = (() => {
 
   let map;
   let singleMarker = null;
+
   let pageMarkers = [];
   let allMarkers = [];
   let markerCluster = null;
@@ -21,6 +22,13 @@ const MapModule = (() => {
       zoom: 12,
       gestureHandling: "greedy",
     });
+  }
+
+  // ---------------------------------------------------------
+  // EXPOSE MAP INSTANCE
+  // ---------------------------------------------------------
+  function getMap() {
+    return map;
   }
 
   // ---------------------------------------------------------
@@ -55,7 +63,7 @@ const MapModule = (() => {
   }
 
   // ---------------------------------------------------------
-  // SMOOTH FADE‑IN MARKER
+  // FADE‑IN MARKER
   // ---------------------------------------------------------
   function fadeInMarker(marker) {
     marker.setOpacity(0);
@@ -71,7 +79,7 @@ const MapModule = (() => {
   }
 
   // ---------------------------------------------------------
-  // PULSING MARKER EFFECT
+  // PULSE EFFECT
   // ---------------------------------------------------------
   function addPulseEffect(marker) {
     const div = document.createElement("div");
@@ -97,7 +105,7 @@ const MapModule = (() => {
   }
 
   // ---------------------------------------------------------
-  // CLEAR ALL MARKERS + CLUSTERER + HEATMAP + CONTOURS
+  // CLEAR EVERYTHING
   // ---------------------------------------------------------
   function clearAll() {
     pageMarkers.forEach(m => m.setMap(null));
@@ -173,7 +181,6 @@ const MapModule = (() => {
       markers: allMarkers,
     });
 
-    // Animated cluster expansion
     markerCluster.addListener("click", (cluster) => {
       animateClusterExpansion(cluster);
     });
@@ -182,7 +189,7 @@ const MapModule = (() => {
   }
 
   // ---------------------------------------------------------
-  // ANIMATED CLUSTER EXPANSION
+  // CLUSTER EXPANSION
   // ---------------------------------------------------------
   function animateClusterExpansion(cluster) {
     const center = cluster.getCenter();
@@ -208,56 +215,7 @@ const MapModule = (() => {
   }
 
   // ---------------------------------------------------------
-  // HEATMAP LAYER
-  // ---------------------------------------------------------
-  function drawHeatmap(locations) {
-    if (heatmapLayer) heatmapLayer.setMap(null);
-
-    const points = locations.map(loc => new google.maps.LatLng(loc.lat, loc.lng));
-
-    heatmapLayer = new google.maps.visualization.HeatmapLayer({
-      data: points,
-      map: map,
-      radius: 35,
-      opacity: 0.6,
-    });
-  }
-
-  // ---------------------------------------------------------
-  // DENSITY CONTOURS
-  // ---------------------------------------------------------
-  function drawDensityContours(locations) {
-    contourCircles.forEach(c => c.setMap(null));
-    contourCircles = [];
-
-    locations.forEach(loc => {
-      const circle = new google.maps.Circle({
-        map,
-        center: { lat: loc.lat, lng: loc.lng },
-        radius: 120,
-        strokeColor: "#FF8C00",
-        strokeOpacity: 0.35,
-        strokeWeight: 1,
-        fillColor: "#FF8C00",
-        fillOpacity: 0.08,
-      });
-      contourCircles.push(circle);
-    });
-  }
-
-  // ---------------------------------------------------------
-  // SINGLE MARKER PLACEMENT
-  // ---------------------------------------------------------
-  function placeSingleMarker(latLng) {
-    if (singleMarker) singleMarker.setMap(null);
-    singleMarker = new google.maps.Marker({
-      position: latLng,
-      map,
-    });
-  }
-
-  // ---------------------------------------------------------
-  // MARKER HOVER TOOLTIP
+  // TOOLTIP
   // ---------------------------------------------------------
   function attachTooltip(marker, text) {
     const info = new google.maps.InfoWindow({ content: text });
@@ -267,7 +225,7 @@ const MapModule = (() => {
   }
 
   // ---------------------------------------------------------
-  // MARKER SELECTION GLOW
+  // GLOW EFFECT
   // ---------------------------------------------------------
   function glowMarker(marker) {
     marker.setIcon({
@@ -292,26 +250,36 @@ const MapModule = (() => {
   }
 
   // ---------------------------------------------------------
-  // BOUNCE HIGHLIGHT
+  // SINGLE MARKER
   // ---------------------------------------------------------
-  function highlightMarker(marker) {
-    marker.setAnimation(google.maps.Animation.BOUNCE);
-    setTimeout(() => marker.setAnimation(null), 700);
+  function placeSingleMarker(latLng) {
+    if (singleMarker) singleMarker.setMap(null);
+    singleMarker = new google.maps.Marker({
+      position: latLng,
+      map,
+    });
+  }
+
+  // ---------------------------------------------------------
+  // GET PAGE MARKER FOR HOVER GLOW
+  // ---------------------------------------------------------
+  function getPageMarker(index) {
+    return pageMarkers[index] || null;
   }
 
   // ---------------------------------------------------------
   // EXPORT PUBLIC API
   // ---------------------------------------------------------
   return {
+    map,
+    getMap,
     initMap,
     flyTo,
     drawPageMarkers,
     drawAllMarkers,
-    drawHeatmap,
-    drawDensityContours,
     placeSingleMarker,
     attachTooltip,
     glowMarker,
-    highlightMarker,
+    getPageMarker,
   };
 })();
