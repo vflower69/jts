@@ -41,13 +41,27 @@ const mapmodule = (() => {
       labelOrigin: new google.maps.Point(12, 15) // ⭐ screenshot-accurate label position
     };
 */
+    // ⭐ Default Google pin using PinView
+    J_ICON = new google.maps.marker.PinView({
+      background: "#EA4335",
+      borderColor: "#B31412",
+      glyph: "J",
+      glyphColor: "black",
+      scale: 1.2
+    });
+/*	
     J_LABEL = {
       text: "J",
       color: "black",
       fontWeight: "bold",
     };
   }
-
+*/
+	// Use Google’s default pin using PinView
+    J_LABEL = {
+      text: "",
+    };
+	
   function getMap() {
     return map;
   }
@@ -188,7 +202,7 @@ const mapmodule = (() => {
         position: { lat: loc.lat, lng: loc.lng },
         map,
         optimized: false,
-        label: J_LABEL,
+        //label: J_LABEL, //Google default pin using PinView doesnt need this
         icon: J_ICON,
       });
 
@@ -216,7 +230,7 @@ const mapmodule = (() => {
         position: { lat: loc.lat, lng: loc.lng },
         map,
         optimized: false,
-        label: J_LABEL,
+        //label: J_LABEL, //Google default pin using PinView doesnt need this
         icon: J_ICON,
       });
 
@@ -236,7 +250,7 @@ const mapmodule = (() => {
           return new google.maps.Marker({
             position,
             optimized: false,
-            label: J_LABEL,
+            //label: J_LABEL, //Google default pin using PinView doesnt need this
             icon: J_ICON,
             zIndex: 9999,
           });
@@ -290,6 +304,7 @@ const mapmodule = (() => {
   // ---------------------------------------------------------
   // GLOW EFFECT
   // ---------------------------------------------------------
+/*
   function glowMarker(marker) {
     marker.setIcon({
       path: google.maps.SymbolPath.CIRCLE,
@@ -299,6 +314,7 @@ const mapmodule = (() => {
       strokeColor: "#ffffff",
       strokeWeight: 3,
     });
+*/
   /*
     setTimeout(() => {
       marker.setIcon({
@@ -313,11 +329,28 @@ const mapmodule = (() => {
   }
 
 function glowMarker(marker) {
-*/
+  */
+/*
   const icon = { ...J_ICON, strokeColor: "#ffffff", strokeWeight: 3 };
   marker.setIcon(icon);
   setTimeout(() => marker.setIcon(J_ICON), 600);
 }
+*/
+  function glowMarker(marker) {
+    const glow = new google.maps.marker.PinView({
+      background: "#EA4335",
+      borderColor: "#ffffff",
+      glyph: "J",
+      glyphColor: "black",
+      scale: 1.5
+    });
+
+    marker.setIcon(glow);
+
+    setTimeout(() => {
+      marker.setIcon(J_ICON);
+    }, 600);
+  }
 
   // ---------------------------------------------------------
   // SINGLE MARKER
@@ -332,7 +365,7 @@ function glowMarker(marker) {
       position: latLng,
       map,
       optimized: false,
-      label: J_LABEL,
+      //label: J_LABEL, //Google default pin using PinView doesnt need this
       icon: J_ICON,
     });
   }
