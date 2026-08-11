@@ -1,7 +1,7 @@
 // ---------------------------------------------------------
-// MapModule.js — Corrected, Fully Working Version
+// mapmodule.js — Corrected, Fully Working Version
 // ---------------------------------------------------------
-const MapModule = (() => {
+const mapmodule = (() => {
 
   let map;
   let singleMarker = null;
