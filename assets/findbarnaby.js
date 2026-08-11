@@ -1,0 +1,418 @@
+    // hostname check - only run from jimothytracker.org domain
+    if (window.location.hostname !== "jimothytracker.org") {
+      document.body.innerHTML = "🦝 Jimothy says: This is stolen from jimothytracker.org!";}
+    // Below are the codes for the game
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const snackCountEl = document.getElementById('snackCount');
+    const distTextEl = document.getElementById('distText');
+    const statusEffectEl = document.getElementById('statusEffect');
+
+    const startOverlay = document.getElementById('startOverlay');
+    const gameOverOverlay = document.getElementById('gameOverOverlay');
+    const winOverlay = document.getElementById('winOverlay');
+    const startBtn = document.getElementById('startBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const winBtn = document.getElementById('winBtn');
+
+    // Game Constants & State
+    const LANES = [110, 210, 310];
+    let isRunning = false;
+    let snacksCollected = 0;
+    let distanceToGoal = 500;
+    let gameSpeed = 6;
+    let frameCount = 0;
+    let activeEffect = null;
+    let effectTimer = 0;
+
+    // Floating text popups (visual jokes)
+    let popups = [];
+
+    // Player Object
+    const jimothy = {
+      lane: 1, // 0, 1, 2
+      y: LANES[1],
+      targetY: LANES[1],
+      x: 90,
+      radius: 20,
+      jumpY: 0,
+      jumpVel: 0,
+      isJumping: false,
+      rotation: 0,
+      spinRemaining: 0,
+
+      update() {
+        // Smooth lane change
+        this.y += (this.targetY - this.y) * 0.25;
+
+        // Jump physics
+        if (this.isJumping) {
+          this.jumpY += this.jumpVel;
+          this.jumpVel += 0.8; // gravity
+          if (this.jumpY >= 0) {
+            this.jumpY = 0;
+            this.isJumping = false;
+          }
+        }
+
+        // Spin physics (Banana Peel trick)
+        if (this.spinRemaining > 0) {
+          this.rotation += 0.4;
+          this.spinRemaining--;
+        } else {
+          this.rotation = 0;
+        }
+      },
+
+      jump() {
+        if (!this.isJumping) {
+          this.isJumping = true;
+          this.jumpVel = -12;
+        }
+      },
+
+      draw() {
+        ctx.save();
+        
+        let drawY = this.y + this.jumpY;
+        let drawX = this.x;
+
+        // Espresso shaky jitter effect
+        if (activeEffect === 'espresso') {
+          drawX += (Math.random() - 0.5) * 8;
+          drawY += (Math.random() - 0.5) * 8;
+        }
+
+        ctx.translate(drawX, drawY);
+        ctx.rotate(this.rotation);
+
+        // Pizza Rave Aura
+        if (activeEffect === 'pizza') {
+          ctx.shadowBlur = 20;
+          ctx.shadowColor = `hsl(${(frameCount * 10) % 360}, 100%, 50%)`;
+        }
+
+        // Body
+        ctx.fillStyle = activeEffect === 'pizza' ? `hsl(${(frameCount * 12) % 360}, 90%, 65%)` : '#6272a4';
+        ctx.beginPath();
+        ctx.arc(0, 0, 22, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Raccoon Mask
+        ctx.fillStyle = '#191a21';
+        ctx.beginPath();
+        ctx.ellipse(6, -2, 12, 7, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Eyes
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(8, -4, 3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#000000';
+        ctx.beginPath();
+        ctx.arc(9, -4, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Ears
+        ctx.fillStyle = '#44475a';
+        ctx.beginPath();
+        ctx.moveTo(-10, -18); ctx.lineTo(-4, -28); ctx.lineTo(2, -18); ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(4, -18); ctx.lineTo(10, -28); ctx.lineTo(16, -18); ctx.fill();
+
+        // Tail
+        ctx.fillStyle = '#44475a';
+        ctx.beginPath();
+        ctx.ellipse(-24, 8, 14, 7, 0.3, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Tail Stripes
+        ctx.fillStyle = '#f8f8f2';
+        ctx.fillRect(-28, 4, 4, 8);
+        ctx.fillRect(-20, 6, 4, 8);
+
+        ctx.restore();
+      }
+    };
+
+    // Obstacles and Entities
+    let entities = [];
+
+    const ENTITY_TYPES = {
+      BIN: { type: 'obstacle', symbol: '🗑️', label: 'Overturned Trash', height: 0 },
+      BARISTA: { type: 'obstacle', symbol: '☕', label: 'Angry Barista Trap', height: 0 },
+      FAKE_BARNABY: { type: 'fake_barnaby', symbol: '🦝', label: 'Cardboard Barnaby', height: 0 },
+      BANANA: { type: 'banana', symbol: '🍌', label: 'Banana Peel', height: 0 },
+      PIZZA: { type: 'item', itemType: 'pizza', symbol: '🍕', label: 'Rave Pizza', height: -40 },
+      ESPRESSO: { type: 'item', itemType: 'espresso', symbol: '🧃', label: 'Quad Espresso', height: -30 },
+      TACO: { type: 'snack', symbol: '🌮', label: 'Street Taco', height: -20 },
+    };
+
+    function addPopup(text, x, y, color='#f1fa8c') {
+      popups.push({ text, x, y, alpha: 1.0, color });
+    }
+
+    function spawnEntity() {
+      const lane = Math.floor(Math.random() * 3);
+      const rand = Math.random();
+
+      let key;
+      if (rand < 0.25) key = 'BIN';
+      else if (rand < 0.40) key = 'BARISTA';
+      else if (rand < 0.55) key = 'FAKE_BARNABY';
+      else if (rand < 0.70) key = 'BANANA';
+      else if (rand < 0.82) key = 'TACO';
+      else if (rand < 0.92) key = 'PIZZA';
+      else key = 'ESPRESSO';
+
+      const config = ENTITY_TYPES[key];
+      entities.push({
+        ...config,
+        lane: lane,
+        x: canvas.width + 40,
+        y: LANES[lane] + config.height,
+        collected: false
+      });
+    }
+
+    function handleCollisions() {
+      for (let ent of entities) {
+        if (ent.collected) continue;
+
+        // Distance check
+        const sameLane = ent.lane === jimothy.lane;
+        const inAir = jimothy.jumpY < -15;
+
+        if (sameLane && Math.abs(ent.x - jimothy.x) < 30) {
+          
+          // Can jump over low ground obstacles
+          if (inAir && (ent.type === 'obstacle' || ent.type === 'fake_barnaby')) {
+            addPopup("SICK LEAP! +20", jimothy.x, jimothy.y - 40, "#50fa7b");
+            ent.collected = true;
+            continue;
+          }
+
+          if (ent.type === 'obstacle') {
+            if (activeEffect === 'pizza') {
+              // Smash obstacle!
+              addPopup("SMASHED!", ent.x, ent.y, "#ff79c6");
+              ent.collected = true;
+            } else {
+              triggerGameOver(`Hit a ${ent.label}! Jimothy got distracted by trash...`);
+              return;
+            }
+          } 
+          else if (ent.type === 'fake_barnaby') {
+            if (activeEffect === 'pizza') {
+              ent.collected = true;
+            } else {
+              triggerGameOver("You hugged a Cardboard Cutout of Barnaby! It mocked you!");
+              return;
+            }
+          }
+          else if (ent.type === 'banana') {
+            ent.collected = true;
+            jimothy.spinRemaining = 30;
+            addPopup("SPINOUT! WHEEE!", jimothy.x, jimothy.y - 30, "#ffb86c");
+          }
+          else if (ent.type === 'snack') {
+            ent.collected = true;
+            snacksCollected += 1;
+            snackCountEl.textContent = snacksCollected;
+            addPopup("+1 TACO!", ent.x, ent.y, "#f1fa8c");
+          }
+          else if (ent.type === 'item') {
+            ent.collected = true;
+            activeEffect = ent.itemType;
+            effectTimer = 220; // frame duration
+
+            if (ent.itemType === 'pizza') {
+              statusEffectEl.textContent = "🌈 RAINBOW INVINCIBLE";
+              statusEffectEl.style.color = "#ff79c6";
+              addPopup("TRASH RAVE UNLOCKED!", jimothy.x, jimothy.y - 40, "#ff79c6");
+            } else if (ent.itemType === 'espresso') {
+              statusEffectEl.textContent = "⚡ QUAD ESPRESSO JITTER";
+              statusEffectEl.style.color = "#50fa7b";
+              addPopup("MAXIMUM CAFFEINE!", jimothy.x, jimothy.y - 40, "#50fa7b");
+            }
+          }
+        }
+      }
+    }
+
+    function updateGame() {
+      frameCount++;
+
+      // Speed handling based on effects
+      let currentSpeed = gameSpeed;
+      if (activeEffect === 'espresso') currentSpeed *= 1.8;
+
+      // Distance remaining
+      distanceToGoal -= currentSpeed * 0.05;
+      if (distanceToGoal <= 0) {
+        distanceToGoal = 0;
+        triggerWin();
+        return;
+      }
+      distTextEl.textContent = `${Math.ceil(distanceToGoal)}m`;
+
+      // Effect timer
+      if (activeEffect) {
+        effectTimer--;
+        if (effectTimer <= 0) {
+          activeEffect = null;
+          statusEffectEl.textContent = "Normal";
+          statusEffectEl.style.color = "var(--gold-color)";
+        }
+      }
+
+      // Spawn entities
+      if (frameCount % Math.max(25, Math.floor(60 - (500 - distanceToGoal) * 0.05)) === 0) {
+        spawnEntity();
+      }
+
+      // Update entities
+      for (let i = entities.length - 1; i >= 0; i--) {
+        entities[i].x -= currentSpeed;
+        if (entities[i].x < -50) entities.splice(i, 1);
+      }
+
+      // Update Popups
+      for (let i = popups.length - 1; i >= 0; i--) {
+        popups[i].y -= 1;
+        popups[i].alpha -= 0.02;
+        if (popups[i].alpha <= 0) popups.splice(i, 1);
+      }
+
+      jimothy.update();
+      handleCollisions();
+    }
+
+    function drawGame() {
+      // Clear screen
+      ctx.fillStyle = activeEffect === 'pizza' ? '#282a36' : '#191a21';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw Lanes / Street lines
+      ctx.strokeStyle = '#44475a';
+      ctx.lineWidth = 4;
+      ctx.setLineDash([20, 15]);
+      
+      ctx.beginPath();
+      ctx.moveTo(0, 160); ctx.lineTo(canvas.width, 160);
+      ctx.moveTo(0, 260); ctx.lineTo(canvas.width, 260);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Draw Goal Truck in distance indicator
+      ctx.fillStyle = '#ffb86c';
+      ctx.font = '16px sans-serif';
+      ctx.fillText(`☕ BARNABY'S ESPRESSO TRUCK: ${Math.ceil(distanceToGoal)}m LEFT`, 450, 35);
+
+      // Draw Entities
+      for (let ent of entities) {
+        if (ent.collected) continue;
+
+        ctx.font = '28px sans-serif';
+        ctx.textAlign = 'center';
+
+        // Draw shadow under entity
+        ctx.fillStyle = 'rgba(0,0,0,0.3)';
+        ctx.beginPath();
+        ctx.ellipse(ent.x, LANES[ent.lane] + 15, 16, 6, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillText(ent.symbol, ent.x, ent.y + 10);
+      }
+
+      // Draw Player
+      jimothy.draw();
+
+      // Draw Popups (Hilarious floaters)
+      for (let p of popups) {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, p.alpha);
+        ctx.fillStyle = p.color;
+        ctx.font = 'bold 16px sans-serif';
+        ctx.fillText(p.text, p.x, p.y);
+        ctx.restore();
+      }
+
+      // Background alley humor signs
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+      ctx.font = 'bold 45px sans-serif';
+      ctx.fillText("BALLARD ALLEYWAYS", (frameCount * -1.5) % 1000 + 600, 70);
+    }
+
+    function gameLoop() {
+      if (!isRunning) return;
+      updateGame();
+      drawGame();
+      requestAnimationFrame(gameLoop);
+    }
+
+    function startGame() {
+      isRunning = true;
+      snacksCollected = 0;
+      distanceToGoal = 500;
+      gameSpeed = 6;
+      frameCount = 0;
+      entities = [];
+      popups = [];
+      activeEffect = null;
+
+      snackCountEl.textContent = '0';
+      distTextEl.textContent = '500m';
+      statusEffectEl.textContent = 'Normal';
+
+      jimothy.lane = 1;
+      jimothy.y = LANES[1];
+      jimothy.targetY = LANES[1];
+
+      startOverlay.classList.add('hidden');
+      gameOverOverlay.classList.add('hidden');
+      winOverlay.classList.add('hidden');
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    function triggerGameOver(reason) {
+      isRunning = false;
+      document.getElementById('failReason').textContent = reason;
+      gameOverOverlay.classList.remove('hidden');
+    }
+
+    function triggerWin() {
+      isRunning = false;
+      document.getElementById('winStats').textContent = `Tacos Eaten: ${snacksCollected} | Trash Royalty Status: CONFIRMED!`;
+      winOverlay.classList.remove('hidden');
+    }
+
+    // Input Handlers
+    window.addEventListener('keydown', (e) => {
+      if (!isRunning) return;
+
+      if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+        if (jimothy.lane > 0) {
+          jimothy.lane--;
+          jimothy.targetY = LANES[jimothy.lane];
+        }
+      } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+        if (jimothy.lane < 2) {
+          jimothy.lane++;
+          jimothy.targetY = LANES[jimothy.lane];
+        }
+      } else if (e.code === 'Space') {
+        e.preventDefault();
+        jimothy.jump();
+      }
+    });
+
+    startBtn.addEventListener('click', startGame);
+    restartBtn.addEventListener('click', startGame);
+    winBtn.addEventListener('click', startGame);
+
+    // Initial Static Draw
+    drawGame();
