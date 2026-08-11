@@ -21,7 +21,7 @@ jobs:
           )
         
           # Loop through HTML files
-          for file in $(find ./games -type f -name "*.html"); do
+          for file in $(find ./jts/games -type f -name "*.html"); do
             if ! grep -q "<button id=\"backToGames\"" "$file"; then
               # Use printf to handle newlines correctly
               sed -i "s|</body>|$(printf '  %s\n</body>' \"$SNIPPET\")|" "$file"
