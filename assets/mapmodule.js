@@ -1,5 +1,5 @@
 // ---------------------------------------------------------
-// mapmodule.js — Default Google Pin Style (Red "J")
+// mapmodule.js — Custom Red "J" Pin (Stable on Mouse Move)
 // ---------------------------------------------------------
 const mapmodule = (() => {
 
@@ -13,6 +13,7 @@ const mapmodule = (() => {
   let heatmapLayer = null;
   let contourCircles = [];
 
+  let J_ICON = null;
   let J_LABEL = null;
 
   // ---------------------------------------------------------
@@ -25,7 +26,17 @@ const mapmodule = (() => {
       gestureHandling: "greedy",
     });
 
-    // Label for all markers
+    // Custom pin that visually matches the default Google pin
+    J_ICON = {
+      path: "M0,-48c-12,0-24,12-24,24s12,24,24,24s24-12,24-24S12,-48,0,-48z M0,0l-8,16h16L0,0z",
+      fillColor: "#e74c3c",
+      fillOpacity: 1,
+      strokeColor: "#b03a2e",
+      strokeWeight: 2,
+      scale: 0.5,
+      anchor: new google.maps.Point(0, 0),
+    };
+
     J_LABEL = {
       text: "J",
       color: "black",
@@ -172,9 +183,9 @@ const mapmodule = (() => {
       const marker = new google.maps.Marker({
         position: { lat: loc.lat, lng: loc.lng },
         map,
-        optimized: false,   // ⭐ REQUIRED to stop marker changing
+        optimized: false,
         label: J_LABEL,
-        icon: null,         // default Google pin
+        icon: J_ICON,
       });
 
       fadeInMarker(marker);
@@ -200,9 +211,9 @@ const mapmodule = (() => {
       const marker = new google.maps.Marker({
         position: { lat: loc.lat, lng: loc.lng },
         map,
-        optimized: false,   // ⭐ cluster markers also protected
+        optimized: false,
         label: J_LABEL,
-        icon: null,         // default Google pin
+        icon: J_ICON,
       });
 
       fadeInMarker(marker);
@@ -220,9 +231,9 @@ const mapmodule = (() => {
         render({ count, position }) {
           return new google.maps.Marker({
             position,
-            optimized: false,   // ⭐ prevents auto‑optimization
+            optimized: false,
             label: J_LABEL,
-            icon: null,         // default Google pin
+            icon: J_ICON,
             zIndex: 9999,
           });
         },
@@ -311,7 +322,7 @@ const mapmodule = (() => {
       map,
       optimized: false,
       label: J_LABEL,
-      icon: null, // default Google pin
+      icon: J_ICON,
     });
   }
 
