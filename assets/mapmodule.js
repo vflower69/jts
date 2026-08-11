@@ -1,5 +1,5 @@
 // ---------------------------------------------------------
-// mapmodule.js — Custom Red "J" Pin (Stable on Mouse Move)
+// mapmodule.js — Exact Google Pin Shape (Red "J")
 // ---------------------------------------------------------
 const mapmodule = (() => {
 
@@ -26,15 +26,15 @@ const mapmodule = (() => {
       gestureHandling: "greedy",
     });
 
-    // Custom pin that visually matches the default Google pin
+    // ✅ Exact Google Maps pin shape (round top, pointed bottom)
     J_ICON = {
-      path: "M0,-48c-12,0-24,12-24,24s12,24,24,24s24-12,24-24S12,-48,0,-48z M0,0l-8,16h16L0,0z",
+      path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z",
       fillColor: "#e74c3c",
       fillOpacity: 1,
       strokeColor: "#b03a2e",
       strokeWeight: 2,
-      scale: 0.5,
-      anchor: new google.maps.Point(0, 0),
+      scale: 2,
+      anchor: new google.maps.Point(12, 22),
     };
 
     J_LABEL = {
@@ -331,15 +331,3 @@ const mapmodule = (() => {
   }
 
   return {
-    map,
-    getMap,
-    initMap,
-    flyTo,
-    drawPageMarkers,
-    drawAllMarkers,
-    placeSingleMarker,
-    attachTooltip,
-    glowMarker,
-    getPageMarker,
-  };
-})();
