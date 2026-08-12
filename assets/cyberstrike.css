@@ -1,0 +1,343 @@
+    :root {
+      --bg: #090a0f;
+      --panel-bg: rgba(16, 20, 31, 0.85);
+      --border: rgba(0, 240, 255, 0.25);
+      --neon-cyan: #00f0ff;
+      --neon-pink: #ff0055;
+      --neon-purple: #9d00ff;
+      --neon-yellow: #ffea00;
+      --text: #f0f6fc;
+      --text-muted: #8b949e;
+      --radius: 12px;
+      --glow-cyan: 0 0 15px rgba(0, 240, 255, 0.4);
+      --glow-pink: 0 0 15px rgba(255, 0, 85, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Rajdhani', sans-serif;
+      user-select: none;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(157, 0, 255, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(0, 240, 255, 0.1) 0%, transparent 40%);
+    }
+
+    /* HUD Header */
+    header {
+      width: 100%;
+      max-width: 1200px;
+      background: var(--panel-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      box-shadow: var(--glow-cyan);
+    }
+
+    .brand-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      background: linear-gradient(90deg, #fff, var(--neon-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 10px;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 6px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+    }
+
+    .tab-btn {
+      padding: 8px 20px;
+      border-radius: 99px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+    }
+
+    .tab-btn.active {
+      background: var(--neon-cyan);
+      color: #000;
+      box-shadow: var(--glow-cyan);
+    }
+
+    .stats-badge {
+      display: flex;
+      gap: 16px;
+    }
+
+    .stat-item {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      color: var(--neon-yellow);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Main Grid */
+    main {
+      width: 100%;
+      max-width: 1200px;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 20px;
+    }
+
+    .view-pane {
+      display: none;
+      background: var(--panel-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .view-pane.active {
+      display: block;
+    }
+
+    /* Combat Canvas Area */
+    .game-container {
+      position: relative;
+      width: 100%;
+      height: 480px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      background: #05070a;
+    }
+
+    #arenaCanvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    .overlay-screen {
+      position: absolute;
+      inset: 0;
+      background: rgba(9, 10, 15, 0.85);
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      text-align: center;
+      padding: 30px;
+    }
+
+    .overlay-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      color: var(--neon-pink);
+      text-shadow: var(--glow-pink);
+      text-transform: uppercase;
+    }
+
+    .primary-btn {
+      padding: 14px 40px;
+      border-radius: 8px;
+      border: none;
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+      color: #fff;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: var(--glow-cyan);
+      transition: all 0.25s ease;
+    }
+
+    .primary-btn:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.7);
+    }
+
+    /* Armory / Upgrades Panel */
+    .panel-header {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+      color: var(--neon-cyan);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .upgrade-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .upgrade-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.25s ease;
+    }
+
+    .upgrade-card:hover {
+      background: rgba(0, 240, 255, 0.05);
+      border-color: var(--neon-cyan);
+    }
+
+    .upgrade-info h4 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .upgrade-info p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .buy-btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: 1px solid var(--neon-yellow);
+      background: rgba(255, 234, 0, 0.1);
+      color: var(--neon-yellow);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .buy-btn:hover:not(:disabled) {
+      background: var(--neon-yellow);
+      color: #000;
+      box-shadow: 0 0 12px rgba(255, 234, 0, 0.5);
+    }
+
+    .buy-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      border-color: var(--text-muted);
+      color: var(--text-muted);
+    }
+
+    /* Leaderboard / Ranks Table */
+    .rank-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    .rank-table th, .rank-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 14px;
+    }
+
+    .rank-table th {
+      font-family: 'Orbitron', sans-serif;
+      color: var(--neon-cyan);
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .rank-badge {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      color: var(--neon-yellow);
+    }
+
+    /* Controls Legend */
+    .controls-hint {
+      display: flex;
+      gap: 16px;
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+      justify-content: center;
+    }
+
+    .key {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 4px;
+      color: var(--neon-cyan);
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+      header {
+        flex-direction: column;
+        gap: 16px;
+      }
+    }
