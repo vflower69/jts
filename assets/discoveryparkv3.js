@@ -1,0 +1,695 @@
+    // hostname check - only run from jimothytracker.org domain
+    if (window.location.hostname !== "jimothytracker.org") {
+      document.body.innerHTML = "🦝 Jimothy says: This is stolen from jimothytracker.org!";}
+ 
+    // Below are the codes for the game
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    // UI Elements
+    const distVal = document.getElementById('distVal');
+    const berryVal = document.getElementById('berryVal');
+    const staminaBar = document.getElementById('staminaBar');
+    const bossHud = document.getElementById('boss-hud');
+    const bossHpFill = document.getElementById('bossHpFill');
+    const startOverlay = document.getElementById('startOverlay');
+    const gameOverOverlay = document.getElementById('gameOverOverlay');
+    const winOverlay = document.getElementById('winOverlay');
+    const startBtn = document.getElementById('startBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const winBtn = document.getElementById('winBtn');
+
+    // World Constants
+    const VIEW_W = 900;
+    const VIEW_H = 500;
+    const GRAVITY = 0.55;
+    const TARGET_DIST = 1000;
+
+    // Game Variables
+    let isRunning = false;
+    let cameraX = 0;
+    let distanceCovered = 0;
+    let berriesCollected = 0;
+    let screenShake = 0;
+    let hitStopFrames = 0;
+    let gameTime = 0;
+    let keys = {};
+
+    // ==========================================
+    // WEB AUDIO SYNTHESIZER
+    // ==========================================
+    class SoundSynth {
+      constructor() { this.ctx = null; }
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+      }
+      playJump() {
+        if (!this.ctx) return;
+        let osc = this.ctx.createOscillator(), gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(450, this.ctx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.15);
+      }
+      playDash() {
+        if (!this.ctx) return;
+        let osc = this.ctx.createOscillator(), gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(400, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(80, this.ctx.currentTime + 0.2);
+        gain.gain.setValueAtTime(0.4, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.2);
+      }
+      playBerry() {
+        if (!this.ctx) return;
+        let osc = this.ctx.createOscillator(), gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(523.25, this.ctx.currentTime);
+        osc.frequency.setValueAtTime(659.25, this.ctx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.2);
+      }
+      playKick() {
+        if (!this.ctx) return;
+        let osc = this.ctx.createOscillator(), gain = this.ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(180, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.12);
+        gain.gain.setValueAtTime(0.5, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.12);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.12);
+      }
+      playMetalThud() {
+        if (!this.ctx) return;
+        let osc = this.ctx.createOscillator(), gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(220, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(60, this.ctx.currentTime + 0.25);
+        gain.gain.setValueAtTime(0.6, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.25);
+      }
+    }
+    const audio = new SoundSynth();
+
+    // ==========================================
+    // ATMOSPHERE & PARTICLES
+    // ==========================================
+    let rainDrops = [];
+    for (let i = 0; i < 70; i++) {
+      rainDrops.push({
+        x: Math.random() * VIEW_W,
+        y: Math.random() * VIEW_H,
+        length: 12 + Math.random() * 10,
+        speed: 10 + Math.random() * 6
+      });
+    }
+
+    function drawAtmosphere() {
+      ctx.strokeStyle = 'rgba(174, 194, 224, 0.35)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      for (let r of rainDrops) {
+        r.y += r.speed; r.x -= 1.5;
+        if (r.y > VIEW_H) { r.y = -10; r.x = Math.random() * VIEW_W; }
+        ctx.moveTo(r.x, r.y);
+        ctx.lineTo(r.x - 3, r.y + r.length);
+      }
+      ctx.stroke();
+
+      let fogGrad = ctx.createLinearGradient(0, VIEW_H - 100, 0, VIEW_H);
+      fogGrad.addColorStop(0, 'rgba(200, 220, 240, 0)');
+      fogGrad.addColorStop(1, 'rgba(200, 220, 240, 0.15)');
+      ctx.fillStyle = fogGrad;
+      ctx.fillRect(0, VIEW_H - 100, VIEW_W, 100);
+    }
+
+    let particles = [];
+    function emitParticles(x, y, count, color) {
+      for (let i = 0; i < count; i++) {
+        const ang = Math.random() * Math.PI * 2;
+        const spd = Math.random() * 4 + 1;
+        particles.push({
+          x, y,
+          vx: Math.cos(ang) * spd,
+          vy: Math.sin(ang) * spd - 1,
+          color,
+          size: Math.random() * 3 + 2,
+          life: 25 + Math.random() * 15,
+          maxLife: 40
+        });
+      }
+    }
+
+    // ==========================================
+    // ANIMATED PLAYER & ATTACK STATE
+    // ==========================================
+    const jimothy = {
+      x: 100, y: 200,
+      w: 42, h: 32,
+      vx: 0, vy: 0,
+      speed: 5.5,
+      jumpsLeft: 2,
+      isGrounded: false,
+      isDashing: false,
+      dashTimer: 0,
+      dashCd: 0,
+      stamina: 100,
+      facing: 1,
+      animFrame: 0,
+      isAttacking: false,
+      attackTimer: 0,
+
+      reset() {
+        this.x = 100; this.y = 200;
+        this.vx = 0; this.vy = 0;
+        this.jumpsLeft = 2;
+        this.isGrounded = false;
+        this.isDashing = false;
+        this.dashTimer = 0;
+        this.dashCd = 0;
+        this.stamina = 100;
+        this.facing = 1;
+        this.animFrame = 0;
+        this.isAttacking = false;
+        this.attackTimer = 0;
+      },
+
+      punchKick() {
+        if (!this.isAttacking) {
+          this.isAttacking = true;
+          this.attackTimer = 10;
+          audio.playKick();
+          emitParticles(this.x + (this.facing > 0 ? this.w + 10 : -10), this.y + 15, 6, '#50fa7b');
+        }
+      },
+
+      dash() {
+        if (this.dashCd <= 0 && this.stamina >= 25) {
+          this.isDashing = true;
+          this.dashTimer = 12;
+          this.dashCd = 40;
+          this.stamina -= 25;
+          this.vy = 0;
+          screenShake = 6;
+          audio.playDash();
+          emitParticles(this.x + this.w/2, this.y + this.h/2, 12, '#ff79c6');
+        }
+      },
+
+      update() {
+        if (this.dashCd > 0) this.dashCd--;
+        if (this.stamina < 100 && !this.isDashing) {
+          this.stamina = Math.min(100, this.stamina + 0.4);
+        }
+
+        if (this.attackTimer > 0) {
+          this.attackTimer--;
+          if (this.attackTimer <= 0) this.isAttacking = false;
+        }
+
+        if (this.isDashing) {
+          this.vx = this.facing * 14;
+          this.vy = 0;
+          this.dashTimer--;
+          if (this.dashTimer <= 0) this.isDashing = false;
+        } else {
+          if (keys['KeyD'] || keys['ArrowRight']) {
+            this.vx = this.speed;
+            this.facing = 1;
+          } else if (keys['KeyA'] || keys['ArrowLeft']) {
+            this.vx = -this.speed;
+            this.facing = -1;
+          } else {
+            this.vx *= 0.7;
+          }
+          this.vy += GRAVITY;
+        }
+
+        this.x += this.vx;
+        this.y += this.vy;
+        if (this.x < cameraX) this.x = cameraX;
+
+        this.animFrame += 0.2;
+      },
+
+      draw(c) {
+        c.save();
+        c.translate(this.x - cameraX + this.w/2, this.y + this.h/2);
+        if (this.facing === -1) c.scale(-1, 1);
+
+        if (!this.isGrounded && !this.isDashing) {
+          c.rotate(this.animFrame * 0.5);
+        }
+
+        if (this.isDashing) {
+          c.shadowBlur = 18;
+          c.shadowColor = '#ff79c6';
+        }
+
+        let legOffset = Math.sin(this.animFrame * 2) * 5;
+        c.fillStyle = '#191a21';
+        if (this.isGrounded && Math.abs(this.vx) > 0.5) {
+          c.fillRect(-10 + legOffset, 10, 4, 6);
+          c.fillRect(6 - legOffset, 10, 4, 6);
+        }
+
+        // Punch/Kick Extended Paw Graphic
+        if (this.isAttacking) {
+          c.fillStyle = '#ffb86c';
+          c.beginPath();
+          c.arc(22, 2, 7, 0, Math.PI * 2);
+          c.fill();
+        }
+
+        // Body
+        c.fillStyle = '#6272a4';
+        c.beginPath();
+        c.ellipse(0, 0, 18, 13, 0, 0, Math.PI * 2);
+        c.fill();
+
+        // Eye Mask
+        c.fillStyle = '#191a21';
+        c.beginPath();
+        c.ellipse(6, -2, 9, 5, 0, 0, Math.PI * 2);
+        c.fill();
+
+        // Eye
+        c.fillStyle = '#ffffff';
+        c.beginPath();
+        c.arc(7, -3, 2, 0, Math.PI * 2);
+        c.fill();
+
+        // Fluffy Tail
+        let tailAngle = Math.sin(this.animFrame * 1.5) * 0.15;
+        c.rotate(tailAngle);
+        c.fillStyle = '#44475a';
+        c.beginPath();
+        c.ellipse(-18, 4, 11, 6, 0.2, 0, Math.PI * 2);
+        c.fill();
+
+        c.restore();
+      }
+    };
+
+    // ==========================================
+    // WORLD, TRASH BINS, BOSS & LEVEL SETUP
+    // ==========================================
+    let platforms = [];
+    let berries = [];
+    let crows = [];
+    let trashBins = [];
+
+    const alphaBoss = {
+      x: 3100, y: 180, baseY: 180, w: 70, h: 50, hp: 5, maxHp: 5, phase: 0, active: false, defeated: false,
+      update() {
+        if (!this.active || this.defeated) return;
+        this.phase += 0.06;
+        this.y = this.baseY + Math.sin(this.phase) * 40;
+        this.x = 3100 + Math.cos(this.phase * 0.5) * 120;
+      },
+      draw(c) {
+        if (!this.active || this.defeated) return;
+        c.save();
+        c.translate(this.x - cameraX, this.y);
+        c.shadowBlur = 20; c.shadowColor = '#ff5555';
+        c.fillStyle = '#ff5555'; c.font = '55px sans-serif';
+        c.fillText('🦅', 0, 40);
+        c.restore();
+      }
+    };
+
+    function generateWorld() {
+      platforms = [];
+      berries = [];
+      crows = [];
+      trashBins = [];
+
+      let x = 0;
+      while (x < 3000) {
+        let w = 180 + Math.random() * 200;
+        let y = 300 + Math.random() * 120;
+
+        platforms.push({ x, y, w, h: 200 });
+
+        if (Math.random() < 0.6) {
+          berries.push({ x: x + w/2, y: y - 35, r: 8, collected: false });
+        }
+
+        // Spawn Park Trash Bins
+        if (x > 300 && Math.random() < 0.5) {
+          trashBins.push({
+            x: x + 40 + Math.random() * (w - 80),
+            y: y - 32,
+            w: 24,
+            h: 32,
+            destroyed: false
+          });
+        }
+
+        if (x > 400 && Math.random() < 0.4) {
+          crows.push({
+            x: x + w/2, y: y - 90, baseY: y - 90, phase: Math.random() * 6, w: 26, h: 18
+          });
+        }
+        x += w + (70 + Math.random() * 80);
+      }
+
+      platforms.push({ x: 3000, y: 340, w: 600, h: 200 });
+    }
+
+    // ==========================================
+    // GAME LOGIC & COLLISION
+    // ==========================================
+    function checkCollisions() {
+      jimothy.isGrounded = false;
+      for (let p of platforms) {
+        if (
+          jimothy.x + jimothy.w > p.x &&
+          jimothy.x < p.x + p.w &&
+          jimothy.y + jimothy.h >= p.y &&
+          jimothy.y + jimothy.h <= p.y + 20 &&
+          jimothy.vy >= 0
+        ) {
+          jimothy.y = p.y - jimothy.h;
+          jimothy.vy = 0;
+          jimothy.isGrounded = true;
+          jimothy.jumpsLeft = 2;
+        }
+      }
+
+      if (jimothy.y > VIEW_H + 100) {
+        triggerGameOver("Fell down the Puget Sound bluffs!");
+      }
+
+      // Trash Bin Punching & Kicking Interaction
+      for (let bin of trashBins) {
+        if (!bin.destroyed) {
+          let attackHit = (
+            jimothy.isAttacking &&
+            Math.abs((jimothy.x + jimothy.w/2) - (bin.x + bin.w/2)) < 45 &&
+            Math.abs((jimothy.y + jimothy.h/2) - (bin.y + bin.h/2)) < 40
+          );
+
+          let dashHit = (
+            jimothy.isDashing &&
+            jimothy.x < bin.x + bin.w &&
+            jimothy.x + jimothy.w > bin.x &&
+            jimothy.y < bin.y + bin.h &&
+            jimothy.y + jimothy.h > bin.y
+          );
+
+          if (attackHit || dashHit) {
+            bin.destroyed = true;
+            screenShake = 12;
+            hitStopFrames = 3;
+            audio.playMetalThud();
+            emitParticles(bin.x + 12, bin.y + 16, 16, '#6272a4');
+
+            // Drop Bonus Berry Loot
+            berriesCollected += 3;
+            jimothy.stamina = Math.min(100, jimothy.stamina + 35);
+          }
+        }
+      }
+
+      // Berry pickup
+      for (let b of berries) {
+        if (!b.collected) {
+          let dist = Math.hypot((jimothy.x + jimothy.w/2) - b.x, (jimothy.y + jimothy.h/2) - b.y);
+          if (dist < b.r + 18) {
+            b.collected = true;
+            berriesCollected++;
+            jimothy.stamina = Math.min(100, jimothy.stamina + 20);
+            audio.playBerry();
+            emitParticles(b.x, b.y, 8, '#ffb86c');
+          }
+        }
+      }
+
+      // Crow hazards
+      for (let c of crows) {
+        c.phase += 0.05;
+        c.y = c.baseY + Math.sin(c.phase) * 20;
+
+        let hit = (
+          jimothy.x < c.x + c.w &&
+          jimothy.x + jimothy.w > c.x &&
+          jimothy.y < c.y + c.h &&
+          jimothy.y + jimothy.h > c.y
+        );
+
+        if (hit) {
+          if (jimothy.isDashing || jimothy.isAttacking) {
+            c.x = -999;
+            screenShake = 10;
+            hitStopFrames = 4;
+            audio.playKick();
+            emitParticles(c.x, c.y, 14, '#ff5555');
+          } else {
+            triggerGameOver("Attacked by territorial Discovery Park crows!");
+          }
+        }
+      }
+
+      // Boss Encounters & Hit System
+      if (distanceCovered >= 950 && !alphaBoss.defeated) {
+        alphaBoss.active = true;
+        bossHud.classList.remove('hidden');
+
+        alphaBoss.update();
+
+        let hitBoss = (
+          jimothy.x < alphaBoss.x + alphaBoss.w &&
+          jimothy.x + jimothy.w > alphaBoss.x &&
+          jimothy.y < alphaBoss.y + alphaBoss.h &&
+          jimothy.y + jimothy.h > alphaBoss.y
+        );
+
+        if (hitBoss) {
+          if (jimothy.isDashing || jimothy.isAttacking) {
+            alphaBoss.hp--;
+            screenShake = 16;
+            hitStopFrames = 6;
+            audio.playKick();
+            emitParticles(alphaBoss.x + 20, alphaBoss.y + 20, 20, '#ff79c6');
+            jimothy.vy = -8;
+            jimothy.isDashing = false;
+
+            bossHpFill.style.width = `${(alphaBoss.hp / alphaBoss.maxHp) * 100}%`;
+
+            if (alphaBoss.hp <= 0) {
+              alphaBoss.defeated = true;
+              bossHud.classList.add('hidden');
+              triggerWin();
+            }
+          } else {
+            triggerGameOver("Defeated by Alpha Corvidae at West Point!");
+          }
+        }
+      }
+    }
+
+    // ==========================================
+    // RENDER & LOOP
+    // ==========================================
+    function render() {
+      ctx.save();
+
+      if (screenShake > 0) {
+        ctx.translate((Math.random() - 0.5) * screenShake, (Math.random() - 0.5) * screenShake);
+        screenShake *= 0.85;
+      }
+
+      // Sky Background
+      let bgGrad = ctx.createLinearGradient(0, 0, 0, VIEW_H);
+      bgGrad.addColorStop(0, '#0d131d');
+      bgGrad.addColorStop(1, '#1a2636');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, VIEW_W, VIEW_H);
+
+      // Parallax Mountains
+      ctx.fillStyle = '#141e2b';
+      for (let i = 0; i < 5; i++) {
+        let x = (i * 300) - (cameraX * 0.15) % 300;
+        ctx.beginPath();
+        ctx.moveTo(x, VIEW_H);
+        ctx.lineTo(x + 150, 220);
+        ctx.lineTo(x + 300, VIEW_H);
+        ctx.fill();
+      }
+
+      // Platforms
+      for (let p of platforms) {
+        if (p.x + p.w < cameraX || p.x > cameraX + VIEW_W) continue;
+        ctx.fillStyle = '#282a36';
+        ctx.fillRect(p.x - cameraX, p.y, p.w, p.h);
+        ctx.fillStyle = '#50fa7b';
+        ctx.fillRect(p.x - cameraX, p.y, p.w, 8);
+      }
+
+      // Trash Bins Rendering
+      for (let bin of trashBins) {
+        if (bin.destroyed || bin.x < cameraX || bin.x > cameraX + VIEW_W) continue;
+        ctx.fillStyle = '#44475a';
+        ctx.fillRect(bin.x - cameraX, bin.y, bin.w, bin.h);
+        ctx.fillStyle = '#6272a4';
+        ctx.fillRect(bin.x - cameraX - 2, bin.y, bin.w + 4, 6); // Rim
+        ctx.fillStyle = '#f1fa8c';
+        ctx.font = '12px sans-serif';
+        ctx.fillText('🗑️', bin.x - cameraX + 2, bin.y + 22);
+      }
+
+      // Collectibles & Crows
+      for (let b of berries) {
+        if (b.collected || b.x < cameraX || b.x > cameraX + VIEW_W) continue;
+        ctx.fillStyle = '#ffb86c';
+        ctx.beginPath();
+        ctx.arc(b.x - cameraX, b.y, b.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      for (let c of crows) {
+        if (c.x < cameraX || c.x > cameraX + VIEW_W) continue;
+        ctx.fillStyle = '#ff5555';
+        ctx.font = '20px sans-serif';
+        ctx.fillText('🐦‍⬛', c.x - cameraX, c.y + 14);
+      }
+
+      alphaBoss.draw(ctx);
+
+      // Particles
+      for (let i = particles.length - 1; i >= 0; i--) {
+        let p = particles[i];
+        p.x += p.vx; p.y += p.vy; p.life--;
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = Math.max(0, p.life / p.maxLife);
+        ctx.beginPath();
+        ctx.arc(p.x - cameraX, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
+        if (p.life <= 0) particles.splice(i, 1);
+      }
+
+      jimothy.draw(ctx);
+      drawAtmosphere();
+
+      let goalX = 3300;
+      if (goalX > cameraX && goalX < cameraX + VIEW_W) {
+        ctx.fillStyle = '#f1fa8c';
+        ctx.font = '36px sans-serif';
+        ctx.fillText('🏮 LIGHTHOUSE', goalX - cameraX, 300);
+      }
+
+      ctx.restore();
+    }
+
+    function loop() {
+      if (!isRunning) return;
+
+      if (hitStopFrames > 0) {
+        hitStopFrames--;
+        requestAnimationFrame(loop);
+        return;
+      }
+
+      gameTime++;
+      jimothy.update();
+      cameraX += (jimothy.x - cameraX - 180) * 0.08;
+
+      distanceCovered = Math.min(TARGET_DIST, Math.floor(jimothy.x / 3.3));
+      distVal.textContent = `${distanceCovered}m`;
+      berryVal.textContent = berriesCollected;
+      staminaBar.style.width = `${jimothy.stamina}%`;
+
+      checkCollisions();
+      render();
+      requestAnimationFrame(loop);
+    }
+
+    // ==========================================
+    // INPUT HANDLERS
+    // ==========================================
+    window.addEventListener('keydown', (e) => {
+      audio.init();
+      keys[e.code] = true;
+
+      if (!isRunning) return;
+
+      if ((e.code === 'Space' || e.code === 'KeyW' || e.code === 'ArrowUp')) {
+        e.preventDefault();
+        if (jimothy.jumpsLeft > 0) {
+          jimothy.vy = -11;
+          jimothy.jumpsLeft--;
+          audio.playJump();
+          emitParticles(jimothy.x + jimothy.w/2, jimothy.y + jimothy.h, 6, '#8be9fd');
+        }
+      }
+
+      if (e.code === 'KeyF' || e.code === 'KeyK') {
+        e.preventDefault();
+        jimothy.punchKick();
+      }
+
+      if (e.code === 'ShiftLeft' || e.code === 'KeyJ') {
+        e.preventDefault();
+        jimothy.dash();
+      }
+    });
+
+    window.addEventListener('keyup', (e) => { keys[e.code] = false; });
+
+    function startGame() {
+      audio.init();
+      isRunning = true;
+      cameraX = 0;
+      distanceCovered = 0;
+      berriesCollected = 0;
+      particles = [];
+
+      alphaBoss.hp = alphaBoss.maxHp;
+      alphaBoss.active = false;
+      alphaBoss.defeated = false;
+      bossHpFill.style.width = '100%';
+
+      jimothy.reset();
+      generateWorld();
+
+      startOverlay.classList.add('hidden');
+      gameOverOverlay.classList.add('hidden');
+      winOverlay.classList.add('hidden');
+      bossHud.classList.add('hidden');
+
+      requestAnimationFrame(loop);
+    }
+
+    function triggerGameOver(reason) {
+      isRunning = false;
+      document.getElementById('failReason').textContent = reason;
+      gameOverOverlay.classList.remove('hidden');
+    }
+
+    function triggerWin() {
+      isRunning = false;
+      document.getElementById('winStats').textContent = `Berries Collected: ${berriesCollected} | West Point Cleared!`;
+      winOverlay.classList.remove('hidden');
+    }
+
+    startBtn.addEventListener('click', startGame);
+    restartBtn.addEventListener('click', startGame);
+    winBtn.addEventListener('click', startGame);
+
+    render();
+  
