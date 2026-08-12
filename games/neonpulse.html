@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>NEON PULSE: OVERDRIVE</title>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- Canvas Layer -->
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- Glassmorphism HUD -->
+        <div class="hud">
+            <div class="hud-card">
+                <span class="hud-title">Score</span>
+                <span id="scoreDisplay" class="hud-value" style="color: var(--accent-cyan);">0</span>
+            </div>
+            
+            <div class="hud-card" style="align-items: center;">
+                <span class="hud-title">Phase Dash [SPACE]</span>
+                <div class="ability-bar"><div id="dashBar" class="ability-fill"></div></div>
+            </div>
+
+            <div class="hud-card" style="align-items: flex-end;">
+                <span class="hud-title">Multiplier</span>
+                <span id="multiplierDisplay" class="hud-value" style="color: var(--accent-gold);">x1.0</span>
+            </div>
+        </div>
+
+        <!-- Start Overlay -->
+        <div id="startOverlay" class="overlay">
+            <div class="modal">
+                <div class="logo-title">Neon Pulse</div>
+                <div class="subtitle">Absorb energy shards. Avoid rogue pulses. Master the rhythm of the void.</div>
+                <button id="startBtn" class="btn">Initiate</button>
+                <div class="controls-hint">
+                    <span><span class="key-badge">Mouse/Touch</span> Steer</span>
+                    <span><span class="key-badge">Space</span> Dash</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Over Overlay -->
+        <div id="gameOverOverlay" class="overlay hidden">
+            <div class="modal">
+                <div class="logo-title" style="background: linear-gradient(135deg, #fff, var(--accent-magenta)); -webkit-background-clip: text;">Overload</div>
+                <div id="gameOverSub" class="subtitle">System core destabilized.</div>
+                
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-label">Final Score</div>
+                        <div id="finalScore" class="stat-val" style="color: var(--accent-cyan);">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Best Score</div>
+                        <div id="bestScore" class="stat-val" style="color: var(--accent-gold);">0</div>
+                    </div>
+                </div>
+
+                <button id="restartBtn" class="btn" style="background: linear-gradient(135deg, var(--accent-magenta), #ff5500); box-shadow: 0 0 20px rgba(255, 0, 85, 0.4);">Reboot</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
