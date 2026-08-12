@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TREASURE HUNT: ISLE OF ECHOES - THE ASTRAL CROWN</title>
+    <!-- Treasure Hunt style sheet -->
+  <link rel="stylesheet" href="/assets/treasurehunt.css">
+</head>
+<body>
+
+<div id="game-wrapper">
+    <div id="canvas-container">
+        <canvas id="gameCanvas" width="640" height="640"></canvas>
+        <div id="modal">
+            <h2 id="modal-title">ISLE OF ECHOES</h2>
+            <p id="modal-desc">Explore the forgotten island, locate hidden Obelisks, decipher ancient runes, and unearth the lost Astral Crown.</p>
+            <div id="puzzle-container">
+                <p>Align the 4 Elemental Runes to open the Vault:</p>
+                <div class="rune-wheels">
+                    <div class="rune-wheel" id="rw0" onclick="rotateRune(0)">🔥</div>
+                    <div class="rune-wheel" id="rw1" onclick="rotateRune(1)">🌊</div>
+                    <div class="rune-wheel" id="rw2" onclick="rotateRune(2)">🌪️</div>
+                    <div class="rune-wheel" id="rw3" onclick="rotateRune(3)">🌱</div>
+                </div>
+                <button class="btn" style="margin-top:15px;" onclick="checkVaultPuzzle()">Unlock Vault</button>
+            </div>
+            <button id="modalBtn" class="btn" onclick="startOrResumeGame()">Embark Expedition</button>
+        </div>
+    </div>
+
+    <div id="sidebar">
+        <div class="panel">
+            <div class="panel-title">Sonar Detector</div>
+            <div id="sonar-indicator">
+                <span id="sonar-text">SIGNAL: COLD</span>
+                <div id="sonar-signal"></div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Exploration Gear</div>
+            <div id="inventory-grid">
+                <div class="inv-slot active"><span>🧭</span>Compass</div>
+                <div class="inv-slot active"><span>⛏️</span>Shovel</div>
+                <div class="inv-slot active"><span>🧐</span>Monocle</div>
+                <div class="inv-slot" id="slot-rune1"><span>❓</span>Rune I</div>
+                <div class="inv-slot" id="slot-rune2"><span>❓</span>Rune II</div>
+                <div class="inv-slot" id="slot-rune3"><span>❓</span>Rune III</div>
+                <div class="inv-slot" id="slot-rune4"><span>❓</span>Rune IV</div>
+                <div class="inv-slot" id="slot-key"><span>🗝️</span>Vault Key</div>
+                <div class="inv-slot" id="slot-crown"><span>👑</span>Crown</div>
+            </div>
+        </div>
+
+        <div class="panel" style="flex:1;">
+            <div class="panel-title">Expedition Journal</div>
+            <div id="log-box"></div>
+        </div>
+    </div>
+</div>
+
+  <!-- Treasure Hunt java script -->
+  <script src="/assets/treasurehunt.js"></script>
+  <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8c0d32d91bd347e4990d1409f8061d2f"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
