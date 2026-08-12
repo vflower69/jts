@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aura: Mindful Breathing & Harmony Garden</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Plus+Jakarta+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<!-- Meditation style sheet -->
+  <link rel="stylesheet" href="/assets/meditation.css">
+</head>
+<body>
+
+  <!-- Background Interactive Canvas -->
+  <div id="canvas-container">
+    <canvas id="meditationCanvas"></canvas>
+  </div>
+
+  <!-- UI Overlay Layer -->
+  <div class="ui-layer">
+    <header>
+      <div class="title">AURA</div>
+      <div class="subtitle">Harmony & Mindful Flow</div>
+    </header>
+
+    <div class="breath-indicator" id="breathIndicator">
+      <div class="breath-text" id="breathText">Inhale</div>
+      <div class="breath-hint" id="breathHint">Click or tap anywhere to create soothing harmonic ripples</div>
+    </div>
+
+    <div class="control-dock">
+      <button class="dock-btn active" id="btnSound" onclick="toggleAudio()">
+        <span id="soundIcon">🔔</span> Sound
+      </button>
+      <button class="dock-btn" onclick="clearOrbs()">
+        ✨ Clear Garden
+      </button>
+    </div>
+  </div>
+
+  <!-- Soft Entrance Screen -->
+  <div class="start-overlay" id="startOverlay">
+    <div style="text-align: center;">
+      <h1 class="title" style="font-size: 36px; margin-bottom: 8px;">AURA</h1>
+      <p style="color: var(--text-sub); letter-spacing: 2px;">A Peaceful Journey of Sound & Light</p>
+    </div>
+    <button class="start-btn" onclick="beginSession()">Begin Meditation</button>
+  </div>
+  <!-- Meditation java script -->
+  <script src="/assets/meditation.js"></script>
+  <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8c0d32d91bd347e4990d1409f8061d2f"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
