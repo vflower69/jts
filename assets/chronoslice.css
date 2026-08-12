@@ -1,0 +1,67 @@
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #030305;
+            color: #fff;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+        #game-container {
+            position: relative;
+            box-shadow: 0 0 35px rgba(255, 0, 85, 0.4);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #ff0055;
+        }
+        canvas { display: block; background: #08080c; }
+        #overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(3, 3, 5, 0.88);
+            backdrop-filter: blur(6px);
+            z-index: 10;
+        }
+        h1 {
+            font-size: 3.2rem;
+            letter-spacing: 5px;
+            color: #ff0055;
+            text-shadow: 0 0 20px #ff0055;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        p { font-size: 1.05rem; color: #a0a5b5; margin-bottom: 25px; text-align: center; max-width: 650px; line-height: 1.6; }
+        .btn {
+            background: linear-gradient(45deg, #ff0055, #7900ff);
+            color: white;
+            padding: 14px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 20px rgba(255, 0, 85, 0.6);
+            transition: all 0.2s ease;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 0, 85, 0.9);
+        }
+        #controls-hint {
+            position: absolute;
+            bottom: 12px;
+            left: 20px;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.85rem;
+            pointer-events: none;
+        }
