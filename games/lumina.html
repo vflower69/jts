@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>LUMINA: ECHO DRIFT</title>
+ <!-- Lumina style sheet -->
+  <link rel="stylesheet" href="/assets/lumina.css">
+</head>
+<body>
+
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- Glassmorphism HUD -->
+        <div class="hud">
+            <div class="hud-card">
+                <span class="hud-label">Score</span>
+                <span id="scoreDisplay" class="hud-value" style="color: var(--accent-cyan);">0</span>
+            </div>
+            
+            <div class="hud-card" style="align-items: center; min-width: 160px;">
+                <span class="hud-label">Phase Shift [SPACE]</span>
+                <div class="streak-container"><div id="dashBar" class="streak-bar"></div></div>
+            </div>
+
+            <div class="hud-card" style="align-items: flex-end;">
+                <span class="hud-label">Combo</span>
+                <span id="multiplierDisplay" class="hud-value" style="color: var(--accent-amber);">x1.0</span>
+            </div>
+        </div>
+
+        <!-- Start Screen Overlay -->
+        <div id="startOverlay" class="overlay">
+            <div class="modal">
+                <div class="title">LUMINA</div>
+                <div class="subtitle">Absorb glowing light cores. Weave past void pulses. Near-miss dodges trigger slow motion.</div>
+                <button id="startBtn" class="btn">Start Drift</button>
+                <div class="controls-hint">
+                    <span><span class="key-badge">Cursor</span> Steer</span>
+                    <span><span class="key-badge">Space</span> Phase Dash</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Over Overlay -->
+        <div id="gameOverOverlay" class="overlay hidden">
+            <div class="modal">
+                <div class="title" style="background: linear-gradient(135deg, #ffffff, var(--accent-rose)); -webkit-background-clip: text;">Dissonance</div>
+                <div class="subtitle">Core integrity collapsed.</div>
+                
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-label">Final Score</div>
+                        <div id="finalScore" class="stat-val" style="color: var(--accent-cyan);">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Best Record</div>
+                        <div id="bestScore" class="stat-val" style="color: var(--accent-amber);">0</div>
+                    </div>
+                </div>
+
+                <button id="restartBtn" class="btn" style="background: linear-gradient(135deg, #ffffff, var(--accent-rose)); box-shadow: 0 0 30px rgba(255, 77, 109, 0.4);">Reignite</button>
+            </div>
+        </div>
+    </div>
+      <!-- Lumina java script -->
+  <script src="/assets/lumina.js"></script>
+</body>
+</html>
