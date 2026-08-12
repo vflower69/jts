@@ -1,4 +1,3 @@
-<script>
 // Audio Synthesizer (Web Audio API)
 class SoundFX {
     constructor() {
