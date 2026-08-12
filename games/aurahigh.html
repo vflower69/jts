@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aesthetic High School Life & Style Studio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+  <!-- Aura High style sheet -->
+  <link rel="stylesheet" href="/assets/aurahigh.css">
+</head>
+<body>
+
+  <!-- Header Section -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">✨</div>
+      <div>
+        <h1 class="brand-title">Aura High</h1>
+        <p style="font-size: 12px; color: var(--text-muted); font-weight: 500;">Style, Glam & Campus Life</p>
+      </div>
+    </div>
+
+    <nav class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab('studio')">💄 Studio</button>
+      <button class="tab-btn" onclick="switchTab('minigame')">🎮 Glam Catch</button>
+      <button class="tab-btn" onclick="switchTab('planner')">📌 Moodboard</button>
+    </nav>
+
+    <div class="currency-badge">
+      <span>💎</span>
+      <span id="gemCount">250</span> Gems
+    </div>
+  </header>
+
+  <!-- Main Display Area -->
+  <main>
+    <!-- LEFT PANE: Primary Gameplay Screen -->
+    <div class="left-section">
+      <!-- 1. DRESSING STUDIO VIEW -->
+      <div id="studio-view" class="view-pane active">
+        <div class="studio-stage">
+          <div class="avatar-display" id="avatarDisplay">
+            <!-- Background Aura -->
+            <div id="layer-bg" class="avatar-layer">
+              <div style="width:200px; height:200px; border-radius:50%; background:radial-gradient(circle, #fbcfe8 0%, transparent 70%);"></div>
+            </div>
+
+            <!-- Base Character SVG -->
+            <svg class="avatar-layer" viewBox="0 0 200 300" width="200" height="300">
+              <!-- Body / Skin -->
+              <path id="skin-body" d="M85 100 Q100 110 115 100 L120 180 Q100 190 80 180 Z" fill="#fde047" opacity="0.3"/>
+              <!-- Head shape -->
+              <ellipse cx="100" cy="70" rx="32" ry="38" fill="#fbd5c6"/>
+              <!-- Neck -->
+              <rect x="94" y="102" width="12" height="18" fill="#f8c3b0" rx="4"/>
+              <!-- Eyes -->
+              <ellipse cx="88" cy="68" rx="4" ry="6" fill="#1e1b4b"/>
+              <ellipse cx="112" cy="68" rx="4" ry="6" fill="#1e1b4b"/>
+              <circle cx="89" cy="66" r="1.5" fill="white"/>
+              <circle cx="113" cy="66" r="1.5" fill="white"/>
+              <!-- Lips -->
+              <path id="avatar-lips" d="M94 88 Q100 94 106 88 Q100 90 94 88" fill="#f43f5e"/>
+              <!-- Eyebrows -->
+              <path d="M82 58 Q88 55 94 59" stroke="#475569" stroke-width="2" fill="none" stroke-linecap="round"/>
+              <path d="M106 59 Q112 55 118 58" stroke="#475569" stroke-width="2" fill="none" stroke-linecap="round"/>
+            </svg>
+
+            <!-- Dynamic Clothing Layers -->
+            <div id="layer-outfit" class="avatar-layer"></div>
+            <div id="layer-hair" class="avatar-layer"></div>
+            <div id="layer-acc" class="avatar-layer"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. MINI-GAME VIEW -->
+      <div id="minigame-view" class="view-pane">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <h2 style="font-size:18px; font-weight:700;">Campus Style Rush</h2>
+          <div style="font-weight:700; color:var(--primary)">Score: <span id="gameScore">0</span></div>
+        </div>
+
+        <div class="game-canvas-wrapper">
+          <canvas id="gameCanvas"></canvas>
+          <div id="gameOverlay" class="game-overlay">
+            <h2 style="font-family:'Playfair Display', serif; font-size:28px;">Style Rush Mini-Game</h2>
+            <p style="font-size:14px; opacity:0.9; max-width:300px;">Catch falling fashion accessories and avoid school homework icons!</p>
+            <button class="action-btn" onclick="startGame()">Start Rush</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. MOOD BOARD & PLANNER -->
+      <div id="planner-view" class="view-pane">
+        <h2 style="font-size:18px; font-weight:700; margin-bottom:16px;">Campus Life & Inspiration Board</h2>
+        <div class="board-grid">
+          <div class="board-card">
+            <div class="board-title"><span>💖</span> Daily Goal</div>
+            <textarea class="note-input" rows="3" placeholder="Write today's vibe or mantra..."></textarea>
+          </div>
+          <div class="board-card">
+            <div class="board-title"><span>🎧</span> Playlist Vibe</div>
+            <div style="font-size:13px; color:var(--text-muted); background:#f8fafc; padding:10px; border-radius:10px;">
+              🎵 Lo-Fi Study Beats - 120 BPM<br>
+              ✨ Chill Aesthetic Vibes
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANE: Customization Controls -->
+    <div class="controls-panel">
+      <div style="background:var(--card-bg); backdrop-filter:blur(16px); border:1px solid var(--card-border); border-radius:var(--radius-lg); padding:20px; box-shadow:var(--shadow-sm);">
+        <h3 style="font-size:16px; font-weight:700; margin-bottom:12px;">Wardrobe & Studio</h3>
+        
+        <!-- Category Navigation -->
+        <div class="category-scroll">
+          <button class="cat-chip active" onclick="filterCategory('hair', this)">Hair</button>
+          <button class="cat-chip" onclick="filterCategory('outfit', this)">Outfits</button>
+          <button class="cat-chip" onclick="filterCategory('acc', this)">Accessories</button>
+          <button class="cat-chip" onclick="filterCategory('makeup', this)">Makeup</button>
+        </div>
+
+        <!-- Options Item Grid -->
+        <div class="options-grid" id="optionsGrid" style="margin-top:16px;">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Aura High java script -->
+  <script src="/assets/aurahigh.js"></script>
+  <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8c0d32d91bd347e4990d1409f8061d2f"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
