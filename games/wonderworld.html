@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WonderWorld: Pet Rescue Academy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+  <!-- Wonder World style sheet -->
+  <link rel="stylesheet" href="/assets/wonderworld.css">
+</head>
+<body>
+
+  <!-- Top Playful Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-logo">🐾</div>
+      <div>
+        <h1 class="brand-title">WonderWorld</h1>
+        <p style="font-size: 13px; color: #7f8c8d; font-family:'Quicksand'; font-weight:700;">Pet Rescue & Playground</p>
+      </div>
+    </div>
+
+    <nav class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab('play')">🎮 Catch Game</button>
+      <button class="tab-btn" onclick="switchTab('stickers')">🎨 Stickers</button>
+    </nav>
+
+    <div class="stats-badge">
+      <span>⭐ STARS:</span>
+      <span id="starCount">0</span>
+    </div>
+  </header>
+
+  <!-- Main Game Area -->
+  <main>
+    <!-- Left Section: Interactive Gameplay View -->
+    <div class="left-section">
+      <!-- 1. Catch Stars Game -->
+      <div id="play-view" class="view-pane active">
+        <div class="game-viewport">
+          <canvas id="gameCanvas"></canvas>
+          <div id="startOverlay" class="overlay-screen">
+            <span style="font-size: 60px;">🎈</span>
+            <h2 style="font-size: 32px; color: var(--bubble-purple);">Star Catch Blast!</h2>
+            <p style="font-size: 16px; color: #666; max-width: 320px; font-family:'Quicksand'; font-weight:700;">
+              Move your pet to catch happy stars and balloons! Avoid dark storm clouds!
+            </p>
+            <button class="big-btn" onclick="startGame()">PLAY NOW!</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Sticker Book -->
+      <div id="stickers-view" class="view-pane">
+        <h2 style="font-size: 22px; color: var(--bubble-purple); margin-bottom: 16px;">Your Reward Sticker Collection</h2>
+        <div class="sticker-grid">
+          <div class="sticker-item">🦄</div>
+          <div class="sticker-item">🌈</div>
+          <div class="sticker-item">🍭</div>
+          <div class="sticker-item">🚀</div>
+          <div class="sticker-item">🎨</div>
+          <div class="sticker-item">🧸</div>
+          <div class="sticker-item">👑</div>
+          <div class="sticker-item">🍦</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Section: Pet Selection Panel -->
+    <div class="controls-panel">
+      <div class="panel-box">
+        <div class="panel-title">
+          <span>Choose Companion</span>
+          <span style="font-size: 14px; color: var(--candy-pink);">Level 1</span>
+        </div>
+
+        <div class="pet-selector">
+          <div class="pet-card selected" onclick="selectPet('🐶', this)">
+            <span class="pet-avatar">🐶</span>
+            <span class="pet-name">Puppy</span>
+          </div>
+          <div class="pet-card" onclick="selectPet('🐱', this)">
+            <span class="pet-avatar">🐱</span>
+            <span class="pet-name">Kitty</span>
+          </div>
+          <div class="pet-card" onclick="selectPet('🐰', this)">
+            <span class="pet-avatar">🐰</span>
+            <span class="pet-name">Bunny</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <!-- Wonder World java script -->
+  <script src="/assets/wonderworld.js"></script>
+  <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8c0d32d91bd347e4990d1409f8061d2f"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
