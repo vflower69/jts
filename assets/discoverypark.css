@@ -1,0 +1,159 @@
+
+    :root {
+      --bg: #0b0f19;
+      --card: #161b26;
+      --accent: #50fa7b;
+      --gold: #ffb86c;
+      --text: #f8f8f2;
+      --danger: #ff5555;
+      --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    #game-container {
+      position: relative;
+      width: 900px;
+      height: 500px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 20px rgba(80, 250, 123, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: #0d131d;
+    }
+
+    /* UI Hud */
+    .hud {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .badge {
+      background: rgba(11, 15, 25, 0.75);
+      backdrop-filter: blur(8px);
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .stamina-container {
+      width: 140px;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .stamina-fill {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, #ff79c6, #bd93f9);
+      transition: width 0.1s linear;
+    }
+
+    /* Overlays */
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(11, 15, 25, 0.88);
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 30px;
+      z-index: 20;
+      transition: opacity 0.2s ease;
+    }
+
+    .overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    h1 {
+      font-size: 2.4rem;
+      color: var(--accent);
+      margin-bottom: 8px;
+      text-shadow: 0 0 15px rgba(80, 250, 123, 0.4);
+    }
+
+    p.tagline {
+      color: var(--gold);
+      margin-bottom: 20px;
+      font-size: 1rem;
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 24px;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+
+    .controls-grid div span {
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, var(--accent), #17b978);
+      color: #0b0f19;
+      border: none;
+      padding: 14px 36px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(80, 250, 123, 0.35);
+      transition: all 0.15s ease;
+      letter-spacing: 0.5px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 8px 25px rgba(80, 250, 123, 0.5);
+    }
+
+    .btn:active {
+      transform: translateY(1px) scale(0.98);
+    }
