@@ -237,6 +237,7 @@
 /* ---------------------------------------------------------
    RUNNER ANIMATION
 --------------------------------------------------------- */
+/*
 .arcade #runner {
   position: absolute;
   font-size: 3rem;
@@ -244,6 +245,42 @@
   pointer-events: none;
   z-index: 50;
   text-shadow: 0 0 10px #fff;
+}
+*/
+/* ---------------------------------------------------------
+   RUNNER ANIMATION (Enhanced CRT Pulse)
+--------------------------------------------------------- */
+.arcade #runner {
+  position: absolute;
+  font-size: 3rem;
+  transition: left 0.4s cubic-bezier(0.25, 1.5, 0.5, 1),
+              top 0.4s cubic-bezier(0.25, 1.5, 0.5, 1);
+  pointer-events: none;
+  z-index: 50;
+  text-shadow: 0 0 10px #fff, 0 0 20px #00ffcc;
+}
+
+/* Pulse + glow burst when moving */
+.arcade #runner.pulse {
+  animation: runner-pulse 0.45s ease-out;
+}
+
+@keyframes runner-pulse {
+  0% {
+    transform: scale(1);
+    text-shadow: 0 0 10px #fff, 0 0 20px #00ffcc;
+    filter: brightness(1);
+  }
+  40% {
+    transform: scale(1.25);
+    text-shadow: 0 0 20px #fff, 0 0 40px #00ffee;
+    filter: brightness(1.6) contrast(1.4);
+  }
+  100% {
+    transform: scale(1);
+    text-shadow: 0 0 10px #fff, 0 0 20px #00ffcc;
+    filter: brightness(1);
+  }
 }
 
 /* ---------------------------------------------------------
