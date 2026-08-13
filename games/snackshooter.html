@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raccoon Jimothy's Snack Shooter</title>
+  <!-- Snack Shooter style sheet -->
+  <link rel="stylesheet" href="/assets/snackshooter.css">
+</head>
+<body>
+
+  <div class="game-container">
+    <header>
+      <h1>🦝 Raccoon Jimothy's Snack Shooter</h1>
+      <p class="subtitle">Help Jimothy collect match-3 of his favorite treats!</p>
+    </header>
+
+    <div class="dashboard">
+      <div class="stat-box">
+        <span class="stat-label">Score</span>
+        <span id="score" class="stat-value">0</span>
+      </div>
+      <div class="next-preview">
+        <span class="stat-label">Next:</span>
+        <div id="next-bubble" class="preview-bubble">🫐</div>
+      </div>
+    </div>
+
+    <div class="canvas-wrapper">
+      <canvas id="gameCanvas" width="440" height="560"></canvas>
+      
+      <div id="modal" class="modal">
+        <div class="modal-content">
+          <h2 id="modal-title">Game Over!</h2>
+          <p id="modal-desc">Jimothy ran out of room for snacks!</p>
+          <button class="btn-restart" onclick="resetGame()">Play Again 🦝</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls-hint">
+      Aim with mouse • Click to launch snack • Match 3 or more to clear
+    </div>
+  </div>
+<!-- Snack Shooter java script -->
+  <script src="/assets/snackshooter.js"></script>
+  <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8c0d32d91bd347e4990d1409f8061d2f"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
