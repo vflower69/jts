@@ -1,4 +1,9 @@
-    // Tab Switching
+// hostname check - only run from jimothytracker.org domain
+    if (window.location.hostname !== "jimothytracker.org") {
+      document.body.innerHTML = "🦝 Jimothy says: This is stolen from jimothytracker.org!";}
+
+// Below are the codes for the game
+// Tab Switching
     function switchTab(tabId) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.left-section .view-pane').forEach(pane => pane.classList.remove('active'));
