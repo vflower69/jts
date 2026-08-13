@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Serenity Garden: Mindful Memory Match</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Lora:ital,wght@0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <!-- Serenity Guarden style sheet -->
+  <link rel="stylesheet" href="/assets/serenityguarden.css">
+</head>
+<body>
+
+  <!-- Accessible Header Bar -->
+  <header role="banner">
+    <div class="brand">
+      <div class="brand-icon" aria-hidden="true">🌸</div>
+      <div>
+        <h1 class="brand-title">Serenity Garden</h1>
+        <p class="brand-subtitle">Mindful & Relaxing Memory Matching</p>
+      </div>
+    </div>
+
+    <div class="controls-group" role="toolbar" aria-label="Game options">
+      <button class="icon-btn" id="soundBtn" onclick="toggleSound()" aria-label="Toggle Sound">
+        <span id="soundIcon">🎵</span> <span id="soundLabel">Sound: On</span>
+      </button>
+      <button class="icon-btn" id="fontSizeBtn" onclick="toggleFontSize()" aria-label="Toggle Font Size">
+        <span>🔍</span> <span id="fontLabel">Text: Larger</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Game Arena -->
+  <main role="main">
+    <!-- Center Board -->
+    <div class="game-board-container">
+      <div class="cards-grid" id="cardsGrid" role="grid" aria-label="Memory Matching Cards Grid">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+
+    <!-- Right Information & Helpers Panel -->
+    <aside class="side-panel">
+      <div class="info-card">
+        <div class="info-title">Pairs Found</div>
+        <div class="stat-value"><span id="pairsCount">0</span> / <span id="totalPairsCount">6</span></div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-title">Gentle Turns</div>
+        <div class="stat-value" id="turnsCount">0</div>
+      </div>
+
+      <button class="action-btn-large" onclick="hintPair()" id="hintBtn" aria-label="Show a gentle hint">
+        💡 Gentle Hint
+      </button>
+
+      <button class="action-btn-large" style="background: linear-gradient(135deg, #d4a373, #bc6c25);" onclick="resetGame()" aria-label="Restart game">
+        🔄 New Garden
+      </button>
+
+      <div class="mindful-quote">
+        "Take a deep breath. Enjoy each gentle turn at your own peaceful pace."
+      </div>
+    </aside>
+  </main>
+
+  <!-- Celebration Modal -->
+  <div class="modal-overlay" id="victoryModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <div style="font-size: 3.5rem; margin-bottom: 12px;">🌺🌿✨</div>
+      <h2 class="modal-title" id="modalTitle">Garden Restored!</h2>
+      <p style="color: var(--text-muted); margin-bottom: 24px; font-size: 1.1rem; line-height: 1.6;">
+        Wonderful job! You completed the garden with calm focus in <strong id="finalTurns">0</strong> gentle turns.
+      </p>
+      <button class="action-btn-large" onclick="closeVictoryModal()">
+        🌸 Play Again
+      </button>
+    </div>
+  </div>
+
+  <!-- Serenity Guarden javascript -->
+  <script src="/assets/serenityguarden.js"></script>
+  <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8c0d32d91bd347e4990d1409f8061d2f"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>

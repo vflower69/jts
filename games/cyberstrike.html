@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CyberStrike: Neon Ops</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <!-- Cyber Strike style sheet -->
+  <link rel="stylesheet" href="/assets/cyberstrike.css">
+</head>
+<body>
+
+  <!-- Top Header HUD -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">⚡</div>
+      <div>
+        <h1 class="brand-title">CyberStrike</h1>
+        <p style="font-size: 12px; color: var(--text-muted); letter-spacing: 1px;">Neon Tactical Arena v2.4</p>
+      </div>
+    </div>
+
+    <nav class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab('arena')">🎮 Arena</button>
+      <button class="tab-btn" onclick="switchTab('armory')">⚙️ Armory</button>
+      <button class="tab-btn" onclick="switchTab('ranks')">🏆 Ranks</button>
+    </nav>
+
+    <div class="stats-badge">
+      <div class="stat-item">
+        <span>⚡ CREDITS:</span>
+        <span id="creditsCount">0</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main>
+    <!-- Left Viewport Pane -->
+    <div class="left-section">
+      <!-- Arena View -->
+      <div id="arena-view" class="view-pane active">
+        <div class="game-container">
+          <canvas id="arenaCanvas"></canvas>
+          <div id="startOverlay" class="overlay-screen">
+            <h2 class="overlay-title">Neon Ops: Survival</h2>
+            <p style="color: var(--text-muted); max-width: 400px; line-height: 1.5;">
+              Defend your cyber core against waves of rogue AI drones. Upgrade your loadout and dominate the ranks.
+            </p>
+            <button class="primary-btn" onclick="startGame()">Deploy Operator</button>
+          </div>
+        </div>
+        <div class="controls-hint">
+          <span><span class="key">WASD</span> Move</span>
+          <span><span class="key">MOUSE</span> Aim & Fire</span>
+          <span><span class="key">SPACE</span> Dash</span>
+        </div>
+      </div>
+
+      <!-- Armory View -->
+      <div id="armory-view" class="view-pane">
+        <div class="panel-header">Tactical Loadouts</div>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+          <div style="background: rgba(255,255,255,0.02); padding: 16px; border-radius: 8px; border: 1px solid var(--border);">
+            <h3 style="color: var(--neon-cyan); margin-bottom: 8px;">Plasma Rifle</h3>
+            <p style="font-size: 13px; color: var(--text-muted);">Standard high-frequency automatic energy weapon.</p>
+          </div>
+          <div style="background: rgba(255,255,255,0.02); padding: 16px; border-radius: 8px; border: 1px solid var(--border);">
+            <h3 style="color: var(--neon-pink); margin-bottom: 8px;">Scatter Cannon</h3>
+            <p style="font-size: 13px; color: var(--text-muted);">Close-range heavy burst damage scatter blast.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ranks View -->
+      <div id="ranks-view" class="view-pane">
+        <div class="panel-header">Global Leaderboard</div>
+        <table class="rank-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Operator</th>
+              <th>Score</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="rank-badge">#1</td>
+              <td>Viper_X</td>
+              <td>42,500</td>
+              <td style="color: var(--neon-cyan)">APEX</td>
+            </tr>
+            <tr>
+              <td class="rank-badge">#2</td>
+              <td>Ghost_Rider</td>
+              <td>38,100</td>
+              <td style="color: var(--neon-cyan)">ELITE</td>
+            </tr>
+            <tr>
+              <td class="rank-badge">#3</td>
+              <td>NeonPulse</td>
+              <td>29,800</td>
+              <td style="color: var(--neon-cyan)">ELITE</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Right Side Upgrades Panel -->
+    <div class="controls-panel">
+      <div class="view-pane active" style="display: block;">
+        <div class="panel-header">
+          <span>Core Upgrades</span>
+          <span style="font-size: 12px; color: var(--neon-yellow);" id="waveDisplay">WAVE 1</span>
+        </div>
+        <div class="upgrade-list">
+          <div class="upgrade-card">
+            <div class="upgrade-info">
+              <h4>Fire Rate</h4>
+              <p id="lvlFireRate">Lvl 1 (Rapid Burst)</p>
+            </div>
+            <button class="buy-btn" id="btnFireRate" onclick="buyUpgrade('fireRate')">50 ⚡</button>
+          </div>
+
+          <div class="upgrade-card">
+            <div class="upgrade-info">
+              <h4>Plasma Damage</h4>
+              <p id="lvlDamage">Lvl 1 (+15% Damage)</p>
+            </div>
+            <button class="buy-btn" id="btnDamage" onclick="buyUpgrade('damage')">75 ⚡</button>
+          </div>
+
+          <div class="upgrade-card">
+            <div class="upgrade-info">
+              <h4>Shield Matrix</h4>
+              <p id="lvlShield">Lvl 1 (+20 Max HP)</p>
+            </div>
+            <button class="buy-btn" id="btnShield" onclick="buyUpgrade('shield')">100 ⚡</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+<!-- Cyber Strike javascript -->
+  <script src="/assets/cyberstrike.js"></script>
+  <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8c0d32d91bd347e4990d1409f8061d2f"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>

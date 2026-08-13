@@ -1,0 +1,53 @@
+    body {
+      background: #0f172a;
+      margin: 0;
+      overflow: hidden;
+      font-family: system-ui, sans-serif;
+      color: #e5e7eb;
+      text-align: center;
+      user-select: none;
+    }
+
+    #boss {
+      position: absolute;
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 8rem;
+      transition: left 0.4s ease-out;
+    }
+
+    #jimothy {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 5rem;
+      cursor: pointer;
+    }
+
+    .blast {
+      position: absolute;
+      font-size: 2rem;
+      animation: shoot 0.8s linear forwards;
+    }
+
+    @keyframes shoot {
+      from { transform: translateY(0); }
+      to { transform: translateY(-100vh); }
+    }
+
+    #hp {
+      margin-top: 1rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    #controls-hint {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 0.9rem;
+      color: #9ca3af;
+      text-align: left;
+    }

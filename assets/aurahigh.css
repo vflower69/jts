@@ -1,0 +1,384 @@
+    :root {
+      --bg-gradient: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 50%, #e8eaf6 100%);
+      --card-bg: rgba(255, 255, 255, 0.75);
+      --card-border: rgba(255, 255, 255, 0.9);
+      --primary: #ec4899;
+      --primary-hover: #db2777;
+      --secondary: #8b5cf6;
+      --accent: #f43f5e;
+      --text-main: #1e1b4b;
+      --text-muted: #64748b;
+      --shadow-sm: 0 4px 20px rgba(236, 72, 153, 0.08);
+      --shadow-lg: 0 12px 32px rgba(139, 92, 246, 0.15);
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      user-select: none;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      min-height: 100vh;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+      overflow-x: hidden;
+    }
+
+    /* Glassmorphism Header */
+    header {
+      width: 100%;
+      max-width: 1100px;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: 22px;
+      box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+    }
+
+    .brand-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.5);
+      padding: 6px;
+      border-radius: 99px;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+
+    .tab-btn {
+      padding: 10px 20px;
+      border-radius: 99px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab-btn.active {
+      background: white;
+      color: var(--primary);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    }
+
+    .currency-badge {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border: 1px solid #f59e0b;
+      color: #78350f;
+      padding: 8px 16px;
+      border-radius: 99px;
+      font-weight: 700;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Main Container */
+    main {
+      width: 100%;
+      max-width: 1100px;
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 24px;
+    }
+
+    /* View Sections */
+    .view-pane {
+      display: none;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .view-pane.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Dressing Room Layout */
+    .studio-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 480px;
+      position: relative;
+      background: radial-gradient(circle at center, rgba(255,255,255,0.9) 0%, rgba(253,242,248,0.5) 100%);
+      border-radius: var(--radius-md);
+      border: 2px dashed rgba(236, 72, 153, 0.2);
+      overflow: hidden;
+    }
+
+    .avatar-display {
+      position: relative;
+      width: 260px;
+      height: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    /* Character SVG Custom Layers */
+    .avatar-layer {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: var(--transition);
+    }
+
+    /* Controls & Selector Grid */
+    .controls-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .category-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+    }
+
+    .category-scroll::-webkit-scrollbar {
+      height: 4px;
+    }
+    .category-scroll::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 4px;
+    }
+
+    .cat-chip {
+      padding: 8px 16px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: var(--transition);
+    }
+
+    .cat-chip.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(236, 72, 153, 0.25);
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      max-height: 380px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .item-card {
+      background: white;
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .item-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .item-card.selected {
+      border-color: var(--primary);
+      background: #fdf2f8;
+    }
+
+    .item-preview {
+      width: 54px;
+      height: 54px;
+      border-radius: 12px;
+      background: #f8fafc;
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+    }
+
+    .item-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      text-align: center;
+    }
+
+    /* Mini Game: Campus Rush */
+    .game-canvas-wrapper {
+      position: relative;
+      width: 100%;
+      height: 440px;
+      background: linear-gradient(180deg, #a5f3fc 0%, #fbcfe8 100%);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+
+    #gameCanvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    .game-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(4px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      color: white;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .action-btn {
+      padding: 14px 32px;
+      border-radius: 99px;
+      border: none;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(236, 72, 153, 0.35);
+      transition: var(--transition);
+    }
+
+    .action-btn:hover {
+      transform: scale(1.04);
+      box-shadow: 0 10px 24px rgba(236, 72, 153, 0.45);
+    }
+
+    /* Mood Board / Planner View */
+    .board-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .board-card {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .board-title {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .note-input {
+      width: 100%;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 13px;
+      outline: none;
+      resize: none;
+      transition: var(--transition);
+    }
+
+    .note-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+      header {
+        flex-direction: column;
+        gap: 16px;
+      }
+    }

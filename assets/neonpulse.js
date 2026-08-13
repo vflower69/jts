@@ -1,3 +1,8 @@
+// hostname check - only run from jimothytracker.org domain
+    if (window.location.hostname !== "jimothytracker.org") {
+      document.body.innerHTML = "🦝 Jimothy says: This is stolen from jimothytracker.org!";}
+
+// Below are the codes for the game
 // --- Web Audio Synthesizer Engine ---
         class SoundEngine {
             constructor() {

@@ -1,0 +1,125 @@
+
+    :root {
+      --bg-color: #0d130e;
+      --card-bg: #18241a;
+      --accent-color: #e07a5f;
+      --text-color: #f0f4eb;
+      --border-color: #2a3a2c;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    .game-container {
+      background-color: var(--card-bg);
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      border: 3px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 800px;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 22px;
+      color: #f2cc8f;
+      text-shadow: 2px 2px 0px #0a0f0b;
+    }
+
+    .instructions {
+      font-size: 14px;
+      color: #a3c2a8;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+    }
+
+    canvas {
+      background-color: #121c13;
+      border-radius: 12px;
+      border: 2px solid var(--border-color);
+      cursor: none; /* Custom Jimothy icon follows mouse */
+      box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+    }
+
+    .btn {
+      margin-top: 12px;
+      padding: 8px 20px;
+      font-size: 15px;
+      font-weight: bold;
+      color: #ffffff;
+      background-color: var(--accent-color);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #b2533e;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+
+    .btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #b2533e;
+    }
+
+    /* Win / Lose Modal */
+    .modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.82);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      border: 3px solid var(--accent-color);
+      padding: 30px;
+      border-radius: 16px;
+      text-align: center;
+      max-width: 380px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.9);
+    }
+
+    .modal-content h2 {
+      margin-top: 0;
+      font-size: 26px;
+    }
+  

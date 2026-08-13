@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RHYTHM PULSE PRO - Ultimate Rhythm Experience</title>
+  <!-- Rhythm style sheet -->
+  <link rel="stylesheet" href="/assets/rhythm.css">
+</head>
+<body>
+
+  <div id="game-container">
+    <div id="hud">
+      <div id="health-bar-container">
+        <div id="health-bar"></div>
+      </div>
+      <div class="hud-stats">
+        <div class="hud-block">
+          <span class="hud-label">Score</span>
+          <span class="hud-val" id="score">0000000</span>
+        </div>
+        <div class="hud-block" style="text-align: center;">
+          <span class="hud-label">Combo</span>
+          <span class="hud-val" id="combo" style="color: #ffbe00;">0x</span>
+        </div>
+        <div class="hud-block" style="text-align: right;">
+          <span class="hud-label">Accuracy</span>
+          <span class="hud-val" id="accuracy">100.00%</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="track-area">
+      <div class="lane-divider" style="left: 25%;"></div>
+      <div class="lane-divider" style="left: 50%;"></div>
+      <div class="lane-divider" style="left: 75%;"></div>
+      <div id="hit-line"></div>
+      <div id="feedback">300</div>
+      <canvas id="effects-canvas"></canvas>
+    </div>
+
+    <div id="key-binds">
+      <div class="key-btn" id="btn-0">D<span class="key-hint">LANE 1</span></div>
+      <div class="key-btn" id="btn-1">F<span class="key-hint">LANE 2</span></div>
+      <div class="key-btn" id="btn-2">J<span class="key-hint">LANE 3</span></div>
+      <div class="key-btn" id="btn-3">K<span class="key-hint">LANE 4</span></div>
+    </div>
+
+    <!-- Start Overlay -->
+    <div id="start-overlay" class="overlay">
+      <h1>RHYTHM PULSE</h1>
+      <div class="subtitle">PRO EDITION</div>
+      
+      <div class="stats-card">
+        <div class="stats-row"><span>Song:</span> <strong>Cyberstorm (Stream Beatmap)</strong></div>
+        <div class="stats-row"><span>BPM:</span> <strong>150</strong></div>
+        <div class="stats-row"><span>Controls:</span> <strong>D / F / J / K</strong></div>
+        <div class="stats-row"><span>Personal Best:</span> <strong id="pb-score">0</strong></div>
+      </div>
+
+      <button class="btn" id="start-btn">START MAP</button>
+    </div>
+
+    <!-- Results Overlay -->
+    <div id="end-overlay" class="overlay hidden">
+      <div id="result-grade" class="grade grade-SS">SS</div>
+      <h1 id="result-title">STAGE CLEAR</h1>
+      <div class="subtitle" id="result-subtitle">PERFECT PERFORMANCE</div>
+
+      <div class="stats-card">
+        <div class="stats-row"><span>Final Score:</span> <strong id="res-score">0</strong></div>
+        <div class="stats-row"><span>Max Combo:</span> <strong id="res-combo">0x</strong></div>
+        <div class="stats-row"><span>Accuracy:</span> <strong id="res-accuracy">0%</strong></div>
+        <div class="stats-row"><span>Judgements:</span> <strong id="res-judgements">0 / 0 / 0 / 0</strong></div>
+      </div>
+
+      <button class="btn" id="restart-btn">RETRY MAP</button>
+    </div>
+  </div>
+
+   <!-- Rhythm javascript -->
+   <script src="/assets/rhythm.js"></script>
+   <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8c0d32d91bd347e4990d1409f8061d2f"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>

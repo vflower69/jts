@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Apex Table Tennis - Pro Edition</title>
+  <link href="https://fonts.googleapis.com/css2?family=Teko:wght@500;700&family=Plus+Jakarta+Sans:wght@600;800&display=swap" rel="stylesheet">
+  <!-- Tennis style sheet -->
+  <link rel="stylesheet" href="/assets/tabletennis.css">
+</head>
+<body>
+
+  <div id="game-container">
+    <canvas id="stage"></canvas>
+
+    <!-- HUD Overlay -->
+    <div class="hud-layer">
+      <div class="scoreboard">
+        <div class="score-team player">
+          <span class="team-label">Player</span>
+          <span class="team-score" id="playerScore">0</span>
+        </div>
+        <div class="score-divider">:</div>
+        <div class="score-team cpu">
+          <span class="team-label">CPU</span>
+          <span class="team-score" id="cpuScore">0</span>
+        </div>
+      </div>
+
+      <div class="power-container">
+        <div class="power-header">
+          <span>Extra Power</span>
+          <span id="powerText">0%</span>
+        </div>
+        <div class="power-bar-bg">
+          <div class="power-bar-fill" id="powerBar"></div>
+        </div>
+        <div class="dir-indicator" id="dirText">Hit Dir: Center</div>
+        <div class="dir-pad-visual">
+          <div class="dir-cell" id="d-AW">AW</div>
+          <div class="dir-cell" id="d-W">W</div>
+          <div class="dir-cell" id="d-WD">WD</div>
+          <div class="dir-cell" id="d-A">A</div>
+          <div class="dir-cell active" id="d-NONE">•</div>
+          <div class="dir-cell" id="d-D">D</div>
+          <div class="dir-cell" id="d-AZ">AZ</div>
+          <div class="dir-cell" id="d-Z">Z</div>
+          <div class="dir-cell" id="d-ZD">ZD</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Toast -->
+    <div class="status-toast" id="statusToast">PLAYER SERVES</div>
+
+    <!-- Mobile Touch Controls -->
+    <div class="touch-overlay" id="touchOverlay">
+      <div class="touch-dpad">
+        <div class="dpad-btn" id="tb-AW">AW</div>
+        <div class="dpad-btn" id="tb-W">W</div>
+        <div class="dpad-btn" id="tb-WD">WD</div>
+        <div class="dpad-btn" id="tb-A">A</div>
+        <div class="dpad-btn" id="tb-MID">•</div>
+        <div class="dpad-btn" id="tb-D">D</div>
+        <div class="dpad-btn" id="tb-AZ">AZ</div>
+        <div class="dpad-btn" id="tb-Z">Z</div>
+        <div class="dpad-btn" id="tb-ZD">ZD</div>
+      </div>
+      <div class="touch-btn-power" id="tb-power">SERVE/POWER</div>
+    </div>
+
+    <!-- Start / Menu Overlay -->
+    <div class="menu-overlay" id="menuOverlay">
+      <div class="menu-card">
+        <h1 class="game-title">APEX PING PONG</h1>
+        <div class="game-subtitle">Pro Table Tennis Engine</div>
+        
+        <div class="controls-guide">
+          <strong>🎮 HOW TO PLAY & HIT:</strong><br>
+          • <strong>Move Paddle:</strong> Mouse / Arrow Keys / Touch<br>
+          • <strong>Auto-Hit:</strong> Paddle automatically returns ball on contact!<br>
+          • <strong>Serve / Extra Power:</strong> Press <strong>SPACEBAR</strong> or Click<br>
+          • <strong>Hit Directions:</strong> Key combinations:<br>
+          &nbsp;&nbsp;- <strong>W:</strong> Up | <strong>Z:</strong> Down | <strong>A:</strong> Left | <strong>D:</strong> Right<br>
+          &nbsp;&nbsp;- <strong>AW:</strong> Up-Left | <strong>WD:</strong> Up-Right | <strong>AZ:</strong> Down-Left | <strong>ZD:</strong> Down-Right
+        </div>
+
+        <button class="btn-primary" onclick="startGame()">Start Game</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table Tennis javascript -->
+  <script src="/assets/tabletennis.js"></script>
+  <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8c0d32d91bd347e4990d1409f8061d2f"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>

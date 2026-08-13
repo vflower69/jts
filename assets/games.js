@@ -50,6 +50,7 @@ window.addEventListener("load", () => {
 /* ---------------------------------------------------------
    Runner movement + hover sound
 --------------------------------------------------------- */
+/*
 cards.forEach(card => {
   card.addEventListener("mouseenter", () => {
     const rect = card.getBoundingClientRect();
@@ -69,6 +70,35 @@ cards.forEach(card => {
     clickSound.play();
   });
 });
+*/
+/* ---------------------------------------------------------
+   Runner movement + hover sound (with scroll offset + pulse)
+--------------------------------------------------------- */
+cards.forEach(card => {
+  card.addEventListener("mouseenter", () => {
+    const rect = card.getBoundingClientRect();
+
+    // Center runner above card (with scroll offset)
+    runner.style.left = rect.left + rect.width / 2 + window.scrollX + "px";
+    runner.style.top = rect.top - 40 + window.scrollY + "px";
+
+    // Trigger CRT pulse animation
+    runner.classList.remove("pulse");
+    void runner.offsetWidth; // Force reflow so animation restarts
+    runner.classList.add("pulse");
+
+    // Play hover sound
+    hoverSound.currentTime = 0;
+    hoverSound.play();
+  });
+
+  // Click sound
+  card.addEventListener("click", () => {
+    clickSound.currentTime = 0;
+    clickSound.play();
+  });
+});
+
 
 /* ---------------------------------------------------------
    Surprise Me button

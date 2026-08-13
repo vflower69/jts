@@ -1,4 +1,9 @@
-        // --- Synthesizer Sound Engine (Polyphonic Audio Context) ---
+// hostname check - only run from jimothytracker.org domain
+    if (window.location.hostname !== "jimothytracker.org") {
+      document.body.innerHTML = "🦝 Jimothy says: This is stolen from jimothytracker.org!";}
+
+// Below are the codes for the game
+// --- Synthesizer Sound Engine (Polyphonic Audio Context) ---
         class SoundEngine {
             constructor() { this.ctx = null; }
 
