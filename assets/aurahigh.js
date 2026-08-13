@@ -5,6 +5,11 @@ Interactive Dressing & Glam Studio: Layered SVG character system allowing instan
 Campus Style Rush Mini-Game: Built-in HTML5 Canvas game with real-time collision detection, reward currency drops (Gems), and interactive cursor controls.
 Campus Life Mood Board: Interactive workspace for daily goals and study beats.
 */
+// hostname check - only run from jimothytracker.org domain
+    if (window.location.hostname !== "jimothytracker.org") {
+      document.body.innerHTML = "🦝 Jimothy says: This is stolen from jimothytracker.org!";}
+
+// Below are the codes for the game
 // Game Data & Assets
     const wardrobeData = {
       hair: [
