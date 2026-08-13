@@ -1,4 +1,9 @@
-    // Audio Synthesis Engine (Harmonic Pentatonic Scale)
+// hostname check - only run from jimothytracker.org domain
+    if (window.location.hostname !== "jimothytracker.org") {
+      document.body.innerHTML = "🦝 Jimothy says: This is stolen from jimothytracker.org!";}
+
+// Below are the codes for the game
+// Audio Synthesis Engine (Harmonic Pentatonic Scale)
     let audioCtx = null;
     let audioEnabled = true;
     const baseFreqs = [130.81, 146.83, 164.81, 196.00, 220.00, 261.63, 293.66, 329.63, 392.00, 440.00]; // C Major Pentatonic Scale
