@@ -1,4 +1,9 @@
-    /* Audio Synthesis Engine (Web Audio API - No external files required) */
+// hostname check - only run from jimothytracker.org domain
+    if (window.location.hostname !== "jimothytracker.org") {
+      document.body.innerHTML = "🦝 Jimothy says: This is stolen from jimothytracker.org!";}
+
+// Below are the codes for the game
+/* Audio Synthesis Engine (Web Audio API - No external files required) */
     let audioCtx = null;
     let soundEnabled = true;
 
