@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Jimothy's Fox Den Sweeper</title>
+  <!-- Sweepv2 style sheet -->
+  <link rel="stylesheet" href="/assets/foxsweepv2.css">
+</head>
+<body>
+
+  <div class="game-card">
+    <h1>🦝 Jimothy's Fox Den Sweeper</h1>
+
+    <div class="legend">
+      <span class="legend-item">🫐 Safe</span>
+      <span class="legend-item">🍎 1 Den</span>
+      <span class="legend-item">🧃 2 Dens</span>
+      <span class="legend-item">🍌 3 Dens</span>
+      <span class="legend-item">⚠️ 4+ Dens</span>
+    </div>
+
+    <div class="stats-bar">
+      <div>🦊 Dens Left: <span id="dens-left">10</span></div>
+      <div>⏱️ Time: <span id="timer">0</span>s</div>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <div class="status-message" id="status">
+      Tap to dig! Long-press or right-click to place a flag 🚩.
+    </div>
+
+    <button class="reset-btn" id="reset-btn">New Search</button>
+  </div>
+   <!-- Fox Sweepv2 javascript -->
+  <script src="/assets/foxsweepv2.js"></script>
+</body>
+</html>
