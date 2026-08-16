@@ -1,4 +1,3 @@
-/* RESET */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -20,7 +19,6 @@ body {
     overflow: hidden;
 }
 
-/* GAME CONTAINER */
 #game-container {
     position: relative;
     width: 100vw;
@@ -33,7 +31,6 @@ body {
     padding: 8px;
 }
 
-/* UI BAR */
 #ui-bar {
     width: 100%;
     display: flex;
@@ -52,7 +49,6 @@ body {
     color: #ffd700;
 }
 
-/* CANVAS WRAPPER */
 #canvas-wrapper {
     position: relative;
     flex-grow: 1;
@@ -64,8 +60,7 @@ body {
     overflow: hidden;
 }
 
-/* MAIN GAME CANVAS */
-canvas#gameCanvas {
+#gameCanvas {
     background-color: #121418;
     border-radius: 12px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
@@ -75,7 +70,6 @@ canvas#gameCanvas {
     object-fit: contain;
 }
 
-/* MINIMAP */
 #minimapCanvas {
     position: absolute;
     right: 8px;
@@ -88,11 +82,10 @@ canvas#gameCanvas {
     opacity: 0.9;
 }
 
-/* TOUCH D-PAD */
 #touch-controls {
     display: grid;
     width: 100%;
-    height: 160px; /* FIX: ensures all 4 arrows show */
+    height: 160px;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
     gap: 6px;
@@ -121,7 +114,6 @@ canvas#gameCanvas {
 #btn-right { grid-column: 3; grid-row: 2; }
 #btn-down { grid-column: 2; grid-row: 3; }
 
-/* FULLSCREEN OVERLAY */
 #overlay {
     position: fixed;
     inset: 0;
@@ -133,24 +125,10 @@ canvas#gameCanvas {
     z-index: 9999;
     text-align: center;
     padding: 16px;
-
-    opacity: 0;
-    transform: scale(0.96);
-
-    pointer-events: none; /* hidden by default */
-}
-
-.overlay-visible {
     opacity: 1;
-    transform: scale(1);
-    pointer-events: auto; /* clickable */
+    pointer-events: auto;
 }
 
-#overlay * {
-    pointer-events: auto; /* FIX: children clickable on mobile */
-}
-
-/* OVERLAY CONTENT */
 #overlay h1 {
     font-size: 2rem;
     color: #ff9d00;
@@ -177,7 +155,6 @@ canvas#gameCanvas {
     box-shadow: 0 4px 15px rgba(255, 108, 0, 0.4);
 }
 
-/* DESKTOP: hide D-Pad */
 @media (pointer: fine) {
     #touch-controls {
         display: none;
