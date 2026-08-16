@@ -3,37 +3,66 @@ if (window.location.hostname !== "jimothytracker.org") {
   document.body.innerHTML = "🦝 Jimothy says: This is stolen from jimothytracker.org!";}
 
 // Below are the codes for the game
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 let width = 0, height = 0, waterY = 0;
+
+// Solfège frequencies: C4, D4, E4, F4, G4, A4, B4, C5, D5
 const solfegeFreqs = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25, 587.33];
 let audioCtx = null;
 
-function playSkipSound(skipCount) {
+// Global Audio Unlocker for Mobile & Desktop Web Browsers
+function initOrResumeAudio() {
     if (!audioCtx) {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     }
     if (audioCtx.state === 'suspended') {
         audioCtx.resume();
     }
+}
 
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
+// Unlock audio on any initial touch, pointer, or key press
+['pointerdown', 'touchstart', 'keydown'].forEach(evt => {
+    window.addEventListener(evt, initOrResumeAudio, { once: true });
+});
 
-    osc.type = 'sine';
+function playSkipSound(skipCount) {
+    initOrResumeAudio();
+    if (!audioCtx) return;
+
+    const now = audioCtx.currentTime;
     const noteIdx = Math.min(skipCount, solfegeFreqs.length - 1);
-    osc.frequency.setValueAtTime(solfegeFreqs[noteIdx], audioCtx.currentTime);
+    const baseFreq = solfegeFreqs[noteIdx];
 
-    gain.gain.setValueAtTime(0, audioCtx.currentTime);
-    gain.gain.linearRampToValueAtTime(0.35, audioCtx.currentTime + 0.04);
-    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.8);
+    // Master gain for ambient mix
+    const masterGain = audioCtx.createGain();
+    masterGain.gain.setValueAtTime(0.3, now);
+    masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
+    masterGain.connect(audioCtx.destination);
 
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
+    // Fundamental Sine Tone (Warm Base)
+    const osc1 = audioCtx.createOscillator();
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(baseFreq, now);
 
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.8);
+    // Subtle Harmonic Overtone (Gives a bell/chime softness)
+    const osc2 = audioCtx.createOscillator();
+    const gain2 = audioCtx.createGain();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(baseFreq * 2, now); // Octave higher
+    gain2.gain.setValueAtTime(0.15, now);
+    gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+    osc2.connect(gain2);
+    gain2.connect(masterGain);
+
+    osc1.connect(masterGain);
+
+    osc1.start(now);
+    osc2.start(now);
+    osc1.stop(now + 1.2);
+    osc2.stop(now + 1.2);
 }
 
 let rock = { x: 0, y: 0, vx: 0, vy: 0, active: false, inHand: true };
@@ -81,6 +110,7 @@ function getPos(e) {
 }
 
 function onDown(e) {
+    initOrResumeAudio();
     if (!rock.inHand) return;
     const pos = getPos(e);
     if (Math.hypot(pos.x - rock.x, pos.y - rock.y) < 80) {
