@@ -20,14 +20,8 @@ Key upgrades included in this version:
 
 // Below are the codes for the game
 /*
-Dumpster Dash: Raccoon Digger – adaptive, juicy version
+Dumpster Dash: Raccoon Digger – fully adaptive, juicy version
 */
-
-// hostname check - only run from jimothytracker.org domain
-if (window.location.hostname !== "jimothytracker.org") {
-    document.body.innerHTML = "🦝 Jimothy says: This is stolen from jimothytracker.org!";
-}
-
 // --- Adaptive Grid System ---
 let GRID_SIZE = 12;      // default fallback
 let CANVAS_SIZE = 600;   // dynamic
@@ -75,7 +69,7 @@ function getSpawnRates(gridSize, level) {
     };
 }
 
-// super-food helper (no grid structure change)
+// super-food helper
 function isSuperFood(x, y, gridSize, level) {
     return gridSize >= 12 && ((x + y + level) % 5 === 0);
 }
@@ -84,6 +78,8 @@ class SoundEngine {
     constructor() {
         this.ctx = null;
         this.bgInterval = null;
+        this.heartbeatInterval = null;
+        this.heartbeatRate = 900;
     }
 
     init() {
@@ -226,6 +222,87 @@ class SoundEngine {
         osc.start();
         osc.stop(this.ctx.currentTime + 0.35);
     }
+
+    playHeartbeat() {
+        if (!this.ctx) return;
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(55, this.ctx.currentTime);
+
+        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.18);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.18);
+    }
+
+    startHeartbeat() {
+        this.stopHeartbeat();
+        this.heartbeatInterval = setInterval(() => {
+            this.playHeartbeat();
+        }, this.heartbeatRate);
+    }
+
+    stopHeartbeat() {
+        if (this.heartbeatInterval) {
+            clearInterval(this.heartbeatInterval);
+            this.heartbeatInterval = null;
+        }
+    }
+
+    updateHeartbeatRate(dist) {
+        const minRate = 250;
+        const maxRate = 900;
+        const danger = Math.max(0, Math.min(1, (6 - dist) / 6));
+        this.heartbeatRate = maxRate - danger * (maxRate - minRate);
+        if (this.heartbeatInterval) {
+            this.startHeartbeat();
+        }
+    }
+
+    playHowl() {
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(220, now);
+        osc.frequency.linearRampToValueAtTime(440, now + 0.6);
+
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.6);
+
+        const echo = this.ctx.createOscillator();
+        const echoGain = this.ctx.createGain();
+
+        echo.type = 'sine';
+        echo.frequency.setValueAtTime(180, now + 0.3);
+        echo.frequency.linearRampToValueAtTime(120, now + 1.2);
+
+        echoGain.gain.setValueAtTime(0.12, now + 0.3);
+        echoGain.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
+
+        echo.connect(echoGain);
+        echoGain.connect(this.ctx.destination);
+
+        echo.start(now + 0.3);
+        echo.stop(now + 1.2);
+    }
 }
 
 const TILE_EMPTY = 0;
@@ -272,20 +349,53 @@ class Game {
         this.minimap = document.getElementById('minimapCanvas');
         this.minictx = this.minimap.getContext('2d');
 
+        this.prevGridSize = GRID_SIZE;
+
+        this.scaleAnim = {
+            active: false,
+            startTile: TILE_SIZE,
+            targetTile: TILE_SIZE,
+            startCanvas: CANVAS_SIZE,
+            targetCanvas: CANVAS_SIZE,
+            startTime: 0,
+            duration: 250
+        };
+
+        this.camera = {
+            x: 0,
+            y: 0,
+            zoom: 1,
+            targetZoom: 1
+        };
+
+        this.lastHowlTime = 0;
+
         this.setupResizing();
         this.setupEventListeners();
     }
 
     setupResizing() {
         const resize = () => {
-            computeAdaptiveGrid();
+            const oldSize = GRID_SIZE;
 
-            this.canvas.width = CANVAS_SIZE;
-            this.canvas.height = CANVAS_SIZE;
+            computeAdaptiveGrid();   // updates GRID_SIZE + TILE_SIZE
 
-            this.tileSize = TILE_SIZE;
+            const newSize = GRID_SIZE;
 
-            if (this.isGameRunning) this.render();
+            this.scaleAnim.active = true;
+            this.scaleAnim.startTile = this.tileSize;
+            this.scaleAnim.targetTile = TILE_SIZE;
+            this.scaleAnim.startCanvas = this.canvas.width;
+            this.scaleAnim.targetCanvas = CANVAS_SIZE;
+            this.scaleAnim.startTime = performance.now();
+
+            if (this.isGameRunning) {
+                this.scaleGameState(oldSize, newSize);
+                this.camera.targetZoom = this.computeCameraZoom();
+                this.render();
+            } else {
+                this.render();
+            }
         };
 
         window.addEventListener('resize', resize);
@@ -294,6 +404,49 @@ class Game {
         });
 
         resize();
+    }
+
+    scaleGameState(oldSize, newSize) {
+        if (oldSize === newSize || !this.grid.length) return;
+
+        const scale = newSize / oldSize;
+
+        this.player.x = Math.floor(this.player.x * scale);
+        this.player.y = Math.floor(this.player.y * scale);
+        this.player.x = Math.max(0, Math.min(newSize - 1, this.player.x));
+        this.player.y = Math.max(0, Math.min(newSize - 1, this.player.y));
+
+        this.coyotes.forEach(c => {
+            c.x = Math.floor(c.x * scale);
+            c.y = Math.floor(c.y * scale);
+            c.x = Math.max(0, Math.min(newSize - 1, c.x));
+            c.y = Math.max(0, Math.min(newSize - 1, c.y));
+        });
+
+        const newGrid = [];
+        for (let y = 0; y < newSize; y++) {
+            const row = [];
+            for (let x = 0; x < newSize; x++) {
+                const oldX = Math.floor(x / scale);
+                const oldY = Math.floor(y / scale);
+                if (oldX < oldSize && oldY < oldSize) {
+                    row.push(this.grid[oldY][oldX]);
+                } else {
+                    row.push(TILE_DIRT);
+                }
+            }
+            newGrid.push(row);
+        }
+        this.grid = newGrid;
+
+        this.foodRemaining = 0;
+        for (let y = 0; y < newSize; y++) {
+            for (let x = 0; x < newSize; x++) {
+                if (this.grid[y][x] === TILE_FOOD) {
+                    this.foodRemaining++;
+                }
+            }
+        }
     }
 
     setupEventListeners() {
@@ -305,7 +458,6 @@ class Game {
             this.startLevelCore();
         });
 
-        // Keyboard Controls
         window.addEventListener('keydown', (e) => {
             if (!this.isGameRunning) return;
             switch (e.key) {
@@ -316,7 +468,6 @@ class Game {
             }
         });
 
-        // Touch D-Pad Bindings
         const bindBtn = (id, dir) => {
             const btn = document.getElementById(id);
             btn.addEventListener('pointerdown', (e) => {
@@ -331,15 +482,16 @@ class Game {
         bindBtn('btn-left', { x: -1, y: 0 });
         bindBtn('btn-right', { x: 1, y: 0 });
 
-        // Canvas Direct Swipe Gesture Handling
         this.canvas.addEventListener('touchstart', (e) => {
             if (e.touches.length > 0) {
+                e.preventDefault();
                 this.touchStartX = e.touches[0].clientX;
                 this.touchStartY = e.touches[0].clientY;
             }
-        }, { passive: true });
+        }, { passive: false });
 
         this.canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
             if (!this.isGameRunning || e.changedTouches.length === 0) return;
             const diffX = e.changedTouches[0].clientX - this.touchStartX;
             const diffY = e.changedTouches[0].clientY - this.touchStartY;
@@ -354,7 +506,13 @@ class Game {
                     this.inputDir = { x: 0, y: diffY > 0 ? 1 : -1 };
                 }
             }
-        }, { passive: true });
+        }, { passive: false });
+    }
+
+    computeCameraZoom() {
+        const base = 1.0;
+        const factor = 12 / GRID_SIZE;
+        return Math.max(0.6, Math.min(1.2, base * factor));
     }
 
     showLevelIntro() {
@@ -403,7 +561,6 @@ class Game {
             this.grid.push(row);
         }
 
-        // guaranteed safe corridor for small grids
         if (GRID_SIZE <= 9) {
             const corridorLength = Math.floor(GRID_SIZE / 2);
             for (let i = 0; i < corridorLength; i++) {
@@ -428,7 +585,9 @@ class Game {
             this.grid[GRID_SIZE - 1][GRID_SIZE - 1 - i] = TILE_EMPTY;
         }
 
+        this.camera.targetZoom = this.computeCameraZoom();
         this.sound.startBackground(this.level, GRID_SIZE);
+        this.sound.startHeartbeat();
         this.updateUI();
         requestAnimationFrame((timestamp) => this.gameLoop(timestamp));
     }
@@ -495,6 +654,30 @@ class Game {
             this.shakeTime -= delta;
         }
 
+        if (this.scaleAnim.active) {
+            const t = (timestamp - this.scaleAnim.startTime) / this.scaleAnim.duration;
+            if (t >= 1) {
+                this.scaleAnim.active = false;
+                this.tileSize = this.scaleAnim.targetTile;
+                this.canvas.width = this.scaleAnim.targetCanvas;
+                this.canvas.height = this.scaleAnim.targetCanvas;
+            } else {
+                const ease = t * (2 - t);
+                this.tileSize = this.scaleAnim.startTile +
+                    (this.scaleAnim.targetTile - this.scaleAnim.startTile) * ease;
+                const newCanvas = this.scaleAnim.startCanvas +
+                    (this.scaleAnim.targetCanvas - this.scaleAnim.startCanvas) * ease;
+                this.canvas.width = newCanvas;
+                this.canvas.height = newCanvas;
+            }
+        }
+
+        this.camera.zoom += (this.camera.targetZoom - this.camera.zoom) * 0.1;
+        const targetX = this.player.x * this.tileSize + this.tileSize / 2;
+        const targetY = this.player.y * this.tileSize + this.tileSize / 2;
+        this.camera.x += (targetX - this.camera.x) * 0.15;
+        this.camera.y += (targetY - this.camera.y) * 0.15;
+
         this.render();
 
         if (this.isGameRunning) {
@@ -531,6 +714,7 @@ class Game {
                 this.sound.playWin();
                 this.level++;
                 this.sound.stopBackground();
+                this.sound.stopHeartbeat();
                 this.startLevel();
                 return;
             }
@@ -588,6 +772,22 @@ class Game {
             }
         });
 
+        let nearest = Infinity;
+        this.coyotes.forEach(c => {
+            const d = Math.hypot(c.x - this.player.x, c.y - this.player.y);
+            if (d < nearest) nearest = d;
+        });
+
+        this.sound.updateHeartbeatRate(nearest);
+
+        if (nearest <= 4) {
+            const now = performance.now();
+            if (now - this.lastHowlTime > 3000) {
+                this.sound.playHowl();
+                this.lastHowlTime = now;
+            }
+        }
+
         this.checkCoyoteCollisions();
     }
 
@@ -609,6 +809,7 @@ class Game {
             this.isGameOver = true;
             this.isGameRunning = false;
             this.sound.stopBackground();
+            this.sound.stopHeartbeat();
             this.showOverlay('GAME OVER', `${reason} Score: ${this.score}`);
         } else {
             this.player = { x: 0, y: 0 };
@@ -665,7 +866,12 @@ class Game {
             offsetY = (Math.random() - 0.5) * this.shakeIntensity;
         }
 
-        this.ctx.setTransform(1, 0, 0, 1, offsetX, offsetY);
+        this.ctx.setTransform(
+            this.camera.zoom, 0,
+            0, this.camera.zoom,
+            offsetX + (this.canvas.width / 2 - this.camera.x * this.camera.zoom),
+            offsetY + (this.canvas.height / 2 - this.camera.y * this.camera.zoom)
+        );
         this.ctx.clearRect(-offsetX, -offsetY, this.canvas.width, this.canvas.height);
 
         for (let y = 0; y < GRID_SIZE; y++) {
