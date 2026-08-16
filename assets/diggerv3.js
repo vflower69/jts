@@ -20,12 +20,12 @@ Key upgrades included in this version:
 
 // Below are the codes for the game
 /*
-Dumpster Dash: Raccoon Digger – fully adaptive, juicy version
+Dumpster Dash: Raccoon Digger – adaptive, animated, juicy version
 */
 // --- Adaptive Grid System ---
-let GRID_SIZE = 12;      // default fallback
-let CANVAS_SIZE = 600;   // dynamic
-let TILE_SIZE = 50;      // dynamic
+let GRID_SIZE = 12;
+let CANVAS_SIZE = 600;
+let TILE_SIZE = 50;
 
 function computeAdaptiveGrid() {
     const w = window.innerWidth;
@@ -47,7 +47,6 @@ function computeAdaptiveGrid() {
     }
 
     TILE_SIZE = CANVAS_SIZE / GRID_SIZE;
-    console.log(`Adaptive grid: ${GRID_SIZE}x${GRID_SIZE}, tile=${TILE_SIZE}px`);
 }
 
 // spawn distribution helper
@@ -69,7 +68,6 @@ function getSpawnRates(gridSize, level) {
     };
 }
 
-// super-food helper
 function isSuperFood(x, y, gridSize, level) {
     return gridSize >= 12 && ((x + y + level) % 5 === 0);
 }
@@ -344,12 +342,8 @@ class Game {
         this.shakeTime = 0;
         this.shakeIntensity = 0;
 
-        this.levelIntroShowing = false;
-
         this.minimap = document.getElementById('minimapCanvas');
         this.minictx = this.minimap.getContext('2d');
-
-        this.prevGridSize = GRID_SIZE;
 
         this.scaleAnim = {
             active: false,
@@ -370,30 +364,41 @@ class Game {
 
         this.lastHowlTime = 0;
 
+        this.overlay = document.getElementById('overlay');
+        this.overlayTitle = document.getElementById('overlay-title');
+        this.overlayMsg = document.getElementById('overlay-msg');
+        this.overlayBtn = document.getElementById('start-btn');
+        this.overlayMode = 'title'; // 'title', 'next', 'gameover'
+
         this.setupResizing();
         this.setupEventListeners();
+        this.showTitleScreen();
     }
 
     setupResizing() {
         const resize = () => {
             const oldSize = GRID_SIZE;
 
-            computeAdaptiveGrid();   // updates GRID_SIZE + TILE_SIZE
+            computeAdaptiveGrid();
 
             const newSize = GRID_SIZE;
 
             this.scaleAnim.active = true;
             this.scaleAnim.startTile = this.tileSize;
             this.scaleAnim.targetTile = TILE_SIZE;
-            this.scaleAnim.startCanvas = this.canvas.width;
+            this.scaleAnim.startCanvas = this.canvas.width || CANVAS_SIZE;
             this.scaleAnim.targetCanvas = CANVAS_SIZE;
             this.scaleAnim.startTime = performance.now();
 
-            if (this.isGameRunning) {
+            if (this.isGameRunning && this.grid.length) {
                 this.scaleGameState(oldSize, newSize);
                 this.camera.targetZoom = this.computeCameraZoom();
                 this.render();
             } else {
+                this.canvas.width = CANVAS_SIZE;
+                this.canvas.height = CANVAS_SIZE;
+                this.tileSize = TILE_SIZE;
+                this.camera.targetZoom = this.computeCameraZoom();
                 this.render();
             }
         };
@@ -450,12 +455,19 @@ class Game {
     }
 
     setupEventListeners() {
-        document.getElementById('start-btn').addEventListener('click', () => {
+        this.overlayBtn.addEventListener('click', () => {
             this.sound.init();
-            document.getElementById('overlay').style.display = 'none';
-            this.isGameRunning = true;
-            this.isGameOver = false;
-            this.startLevelCore();
+            this.hideOverlay();
+
+            if (this.overlayMode === 'title') {
+                this.resetGame();
+                this.startLevelCore();
+            } else if (this.overlayMode === 'next') {
+                this.startLevelCore();
+            } else if (this.overlayMode === 'gameover') {
+                this.resetGame();
+                this.startLevelCore();
+            }
         });
 
         window.addEventListener('keydown', (e) => {
@@ -515,18 +527,52 @@ class Game {
         return Math.max(0.6, Math.min(1.2, base * factor));
     }
 
-    showLevelIntro() {
-        const overlay = document.getElementById('overlay');
-        this.levelIntroShowing = true;
-        document.getElementById('overlay-title').textContent = `LEVEL ${this.level}`;
-        document.getElementById('overlay-msg').textContent =
-            `Dig for snacks and avoid traps, bombs, and coyotes.`;
-        document.getElementById('start-btn').textContent = 'START LEVEL';
-        overlay.style.display = 'flex';
+    showTitleScreen() {
+        this.overlayMode = 'title';
+        this.overlayTitle.textContent = 'DUMPSTER DASH';
+        this.overlayMsg.textContent =
+            'Jimothy the raccoon is ready to raid the dumpsters. Swipe or use buttons to dig for snacks!';
+        this.overlayBtn.textContent = 'PLAY NOW';
+        this.overlayTitle.classList.add('overlay-title-pulse');
+        this.showOverlay();
     }
 
-    startLevel() {
-        this.showLevelIntro();
+    showLevelComplete() {
+        this.overlayMode = 'next';
+        this.overlayTitle.textContent = 'LEVEL COMPLETE!';
+        this.overlayMsg.textContent = `Nice digging, Jimothy! Your score: ${this.score}`;
+        this.overlayBtn.textContent = 'NEXT LEVEL';
+        this.overlayTitle.classList.add('overlay-title-pulse');
+        this.showOverlay();
+    }
+
+    showGameOver(reason) {
+        this.overlayMode = 'gameover';
+        this.overlayTitle.textContent = 'GAME OVER';
+        this.overlayMsg.textContent = `${reason} Final score: ${this.score}`;
+        this.overlayBtn.textContent = 'RETRY';
+        this.overlayTitle.classList.add('overlay-title-pulse');
+        this.showOverlay();
+    }
+
+    showOverlay() {
+        this.overlay.classList.remove('overlay-hidden');
+        this.overlay.classList.add('overlay-visible');
+    }
+
+    hideOverlay() {
+        this.overlay.classList.remove('overlay-visible');
+        this.overlay.classList.add('overlay-hidden');
+        this.overlayTitle.classList.remove('overlay-title-pulse');
+    }
+
+    resetGame() {
+        this.score = 0;
+        this.level = 1;
+        this.lives = 3;
+        this.isGameOver = false;
+        this.isGameRunning = true;
+        this.updateUI();
     }
 
     startLevelCore() {
@@ -586,9 +632,15 @@ class Game {
         }
 
         this.camera.targetZoom = this.computeCameraZoom();
+        this.camera.x = this.player.x * this.tileSize + this.tileSize / 2;
+        this.camera.y = this.player.y * this.tileSize + this.tileSize / 2;
+
         this.sound.startBackground(this.level, GRID_SIZE);
         this.sound.startHeartbeat();
         this.updateUI();
+        this.canvas.width = CANVAS_SIZE;
+        this.canvas.height = CANVAS_SIZE;
+        this.tileSize = TILE_SIZE;
         requestAnimationFrame((timestamp) => this.gameLoop(timestamp));
     }
 
@@ -715,7 +767,8 @@ class Game {
                 this.level++;
                 this.sound.stopBackground();
                 this.sound.stopHeartbeat();
-                this.startLevel();
+                this.isGameRunning = false;
+                this.showLevelComplete();
                 return;
             }
         } else if (currentTile === TILE_TRAP) {
@@ -810,19 +863,11 @@ class Game {
             this.isGameRunning = false;
             this.sound.stopBackground();
             this.sound.stopHeartbeat();
-            this.showOverlay('GAME OVER', `${reason} Score: ${this.score}`);
+            this.showGameOver(reason);
         } else {
             this.player = { x: 0, y: 0 };
             this.grid[0][0] = TILE_EMPTY;
         }
-    }
-
-    showOverlay(title, msg) {
-        const overlay = document.getElementById('overlay');
-        document.getElementById('overlay-title').textContent = title;
-        document.getElementById('overlay-msg').textContent = msg;
-        document.getElementById('start-btn').textContent = this.isGameOver ? 'RETRY' : 'NEXT LEVEL';
-        overlay.style.display = 'flex';
     }
 
     renderMinimap() {
