@@ -7,6 +7,12 @@ Volatile Bombs (💣): Touch them and they explode on impact.
 Coyotes (🐺): Roam through cleared tunnels. They use pathfinding to pursue Jimothy whenever open pathways connect.
 Proportional Scaling & Controls: Responsive canvas scaling with integrated touch-button controls for smartphones and tablets, plus full keyboard binding (WASD / Arrow Keys) for desktop and laptop play.
 */
+
+// hostname check - only run from jimothytracker.org domain
+    if (window.location.hostname !== "jimothytracker.org") {
+      document.body.innerHTML = "🦝 Jimothy says: This is stolen from jimothytracker.org!";}
+
+// Below are the codes for the game
 /**
  * Audio Synthesizer Module (Web Audio API)
  * Generates elegant arcade sound effects natively without external files.
