@@ -377,8 +377,6 @@ class Game {
 
     setupResizing() {
     const resize = () => {
-        const oldSize = GRID_SIZE;
-
         computeAdaptiveGrid();
 
         this.canvas.width = CANVAS_SIZE;
@@ -386,15 +384,17 @@ class Game {
         this.tileSize = TILE_SIZE;
 
         if (this.isGameRunning && this.grid.length) {
-            this.scaleGameState(oldSize, GRID_SIZE);
+            this.scaleGameState(this.prevGridSize, GRID_SIZE);
         }
+
+        this.prevGridSize = GRID_SIZE;
 
         this.camera.targetZoom = this.computeCameraZoom();
         this.render();
     };
 
-    window.addEventListener('resize', resize);
-    window.addEventListener('orientationchange', () => setTimeout(resize, 200));
+    window.addEventListener("resize", resize);
+    window.addEventListener("orientationchange", () => setTimeout(resize, 200));
 
     resize();
 }
@@ -893,6 +893,43 @@ class Game {
         });
     }
 
+//temp
+render() {
+    const ctx = this.ctx;
+
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    // Safety check
+    if (!this.grid || !this.grid.length) {
+        console.log("Grid missing");
+        return;
+    }
+
+    for (let y = 0; y < GRID_SIZE; y++) {
+        for (let x = 0; x < GRID_SIZE; x++) {
+            const px = x * this.tileSize;
+            const py = y * this.tileSize;
+
+            ctx.fillStyle = "#333";
+            ctx.fillRect(px, py, this.tileSize, this.tileSize);
+
+            ctx.strokeStyle = "#555";
+            ctx.strokeRect(px, py, this.tileSize, this.tileSize);
+        }
+    }
+
+    // Draw player
+    ctx.fillStyle = "yellow";
+    ctx.fillRect(
+        this.player.x * this.tileSize,
+        this.player.y * this.tileSize,
+        this.tileSize,
+        this.tileSize
+    );
+}
+
+/*
     render() {
         let offsetX = 0, offsetY = 0;
         if (this.shakeTime > 0) {
@@ -962,6 +999,7 @@ class Game {
 
         this.renderMinimap();
     }
+    */
 }
 
 window.onload = () => {
