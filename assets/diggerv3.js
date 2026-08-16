@@ -444,19 +444,20 @@ class Game {
 
     setupEventListeners() {
         this.overlayBtn.addEventListener('click', () => {
-            this.sound.init();
-            this.hideOverlay();
+        this.sound.init();
+        this.hideOverlay();
+    
+        if (this.overlayMode === 'title') {
+            this.resetGame();
+            this.startLevelCore();
+        } else if (this.overlayMode === 'next') {
+            this.startLevelCore();
+        } else if (this.overlayMode === 'gameover') {
+            this.resetGame();
+            this.startLevelCore();
+        }
+    });
 
-            if (this.overlayMode === 'title') {
-                this.resetGame();
-                this.startLevelCore();
-            } else if (this.overlayMode === 'next') {
-                this.startLevelCore();
-            } else if (this.overlayMode === 'gameover') {
-                this.resetGame();
-                this.startLevelCore();
-            }
-        });
 
         window.addEventListener('keydown', (e) => {
             if (!this.isGameRunning) return;
