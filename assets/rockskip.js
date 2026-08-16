@@ -6,10 +6,7 @@ if (window.location.hostname !== "jimothytracker.org") {
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-let width, height;
-let waterY;
-
-// Solfège notes (C4 up to D5)
+let width = 0, height = 0, waterY = 0;
 const solfegeFreqs = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25, 587.33];
 let audioCtx = null;
 
@@ -28,47 +25,44 @@ function playSkipSound(skipCount) {
     const noteIdx = Math.min(skipCount, solfegeFreqs.length - 1);
     osc.frequency.setValueAtTime(solfegeFreqs[noteIdx], audioCtx.currentTime);
 
-    // Warm, soothing envelope
     gain.gain.setValueAtTime(0, audioCtx.currentTime);
-    gain.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.03);
-    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.7);
+    gain.gain.linearRampToValueAtTime(0.35, audioCtx.currentTime + 0.04);
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.8);
 
     osc.connect(gain);
     gain.connect(audioCtx.destination);
 
     osc.start();
-    osc.stop(audioCtx.currentTime + 0.7);
+    osc.stop(audioCtx.currentTime + 0.8);
 }
 
+let rock = { x: 0, y: 0, vx: 0, vy: 0, active: false, inHand: true };
+let pawPos = { x: 0, y: 0 };
+let dragStart = null, currentDrag = null;
+let currentSkips = 0, bestSkips = 0;
+let ripples = [];
+
 function resize() {
-    width = canvas.width = window.innerWidth;
-    height = canvas.height = window.innerHeight;
-    waterY = height * 0.65;
+    const rect = canvas.parentElement.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    
+    width = rect.width;
+    height = rect.height;
+    
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    
+    ctx.resetTransform();
+    ctx.scale(dpr, dpr);
+    
+    waterY = height * 0.62;
     resetRock();
 }
 
-let rock = {
-    x: 0,
-    y: 0,
-    vx: 0,
-    vy: 0,
-    radius: 12,
-    active: false,
-    inHand: true
-};
-
-let pawPos = { x: 0, y: 0 };
-let dragStart = null;
-let currentDrag = null;
-
-let currentSkips = 0;
-let bestSkips = 0;
-let ripples = [];
-
 function resetRock() {
-    pawPos = { x: width * 0.18, y: waterY - 30 };
-    rock.x = pawPos.x;
-    rock.y = pawPos.y - 10;
+    pawPos = { x: width * 0.78, y: height * 0.78 };
+    rock.x = pawPos.x - 40;
+    rock.y = pawPos.y - 25;
     rock.vx = 0;
     rock.vy = 0;
     rock.active = false;
@@ -79,7 +73,6 @@ function resetRock() {
 
 window.addEventListener('resize', resize);
 
-// Input handling for dragging and launching
 function getPos(e) {
     const rect = canvas.getBoundingClientRect();
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -90,7 +83,7 @@ function getPos(e) {
 function onDown(e) {
     if (!rock.inHand) return;
     const pos = getPos(e);
-    if (Math.hypot(pos.x - rock.x, pos.y - rock.y) < 60) {
+    if (Math.hypot(pos.x - rock.x, pos.y - rock.y) < 80) {
         dragStart = pos;
         currentDrag = pos;
     }
@@ -107,10 +100,9 @@ function onUp() {
         const dx = dragStart.x - currentDrag.x;
         const dy = dragStart.y - currentDrag.y;
 
-        // Launch rock if pulled back sufficiently
-        if (dx > 10) {
-            rock.vx = dx * 0.12;
-            rock.vy = dy * 0.10;
+        if (dx > 15) {
+            rock.vx = -dx * 0.09;
+            rock.vy = dy * 0.08;
             rock.active = true;
             rock.inHand = false;
         }
@@ -123,21 +115,18 @@ canvas.addEventListener('mousedown', onDown);
 canvas.addEventListener('mousemove', onMove);
 window.addEventListener('mouseup', onUp);
 
-canvas.addEventListener('touchstart', onDown);
-canvas.addEventListener('touchmove', onMove);
+canvas.addEventListener('touchstart', onDown, { passive: true });
+canvas.addEventListener('touchmove', onMove, { passive: true });
 window.addEventListener('touchend', onUp);
 
 function update() {
-    // Update rock physics
     if (rock.active) {
         rock.x += rock.vx;
         rock.y += rock.vy;
-        rock.vy += 0.22; // Gravity
+        rock.vy += 0.18; // Gravity
 
-        // Check water collision
-        if (rock.y >= waterY) {
-            if (rock.vy > 0.8 && rock.vx > 1.5) {
-                // Successful skip!
+        if (rock.y >= waterY && rock.vy > 0) {
+            if (Math.abs(rock.vy) > 0.6 && Math.abs(rock.vx) > 1.2) {
                 currentSkips++;
                 document.getElementById('skips').innerText = currentSkips;
                 if (currentSkips > bestSkips) {
@@ -146,89 +135,133 @@ function update() {
                 }
 
                 playSkipSound(currentSkips - 1);
+                ripples.push({ x: rock.x, y: waterY, r: 4, alpha: 1.0 });
 
-                // Add water ripple
-                ripples.push({ x: rock.x, y: waterY, r: 5, alpha: 1.0 });
-
-                // Bounce mechanics
                 rock.y = waterY;
-                rock.vy = -rock.vy * 0.65;
-                rock.vx *= 0.88;
+                rock.vy = -rock.vy * 0.62;
+                rock.vx *= 0.86;
             } else {
-                // Sink
                 ripples.push({ x: rock.x, y: waterY, r: 8, alpha: 1.0 });
                 rock.active = false;
                 setTimeout(resetRock, 1200);
             }
         }
 
-        if (rock.x > width + 50 || rock.y > height + 50) {
+        if (rock.x < -50 || rock.y > height + 50) {
             rock.active = false;
             setTimeout(resetRock, 800);
         }
     }
 
-    // Update ripples
     for (let i = ripples.length - 1; i >= 0; i--) {
-        ripples[i].r += 1.2;
-        ripples[i].alpha -= 0.02;
+        ripples[i].r += 1.4;
+        ripples[i].alpha -= 0.018;
         if (ripples[i].alpha <= 0) ripples.splice(i, 1);
     }
 }
 
-function drawBackground() {
-    // Sky gradient
+function drawWatercolorBackground() {
+    // Sunset Sky Gradient
     const skyGrad = ctx.createLinearGradient(0, 0, 0, waterY);
-    skyGrad.addColorStop(0, '#0f172a');
-    skyGrad.addColorStop(0.6, '#1e293b');
-    skyGrad.addColorStop(1, '#334155');
+    skyGrad.addColorStop(0, '#7dd3fc');
+    skyGrad.addColorStop(0.35, '#bae6fd');
+    skyGrad.addColorStop(0.7, '#fde68a');
+    skyGrad.addColorStop(1, '#f97316');
     ctx.fillStyle = skyGrad;
     ctx.fillRect(0, 0, width, waterY);
 
-    // Lake water gradient
+    // Distant Forest Silhouettes
+    ctx.fillStyle = '#2d4a3e';
+    ctx.beginPath();
+    ctx.moveTo(0, waterY);
+    for (let x = 0; x <= width; x += 15) {
+        const h = Math.sin(x * 0.02) * 18 + Math.cos(x * 0.05) * 8 + 35;
+        ctx.lineTo(x, waterY - h);
+    }
+    ctx.lineTo(width, waterY);
+    ctx.fill();
+
+    ctx.fillStyle = '#1b3328';
+    ctx.beginPath();
+    ctx.moveTo(0, waterY);
+    for (let x = 0; x <= width; x += 10) {
+        const h = Math.sin(x * 0.03 + 2) * 12 + Math.cos(x * 0.08) * 6 + 20;
+        ctx.lineTo(x, waterY - h);
+    }
+    ctx.lineTo(width, waterY);
+    ctx.fill();
+
+    // Lake Water Base
     const waterGrad = ctx.createLinearGradient(0, waterY, 0, height);
-    waterGrad.addColorStop(0, '#0284c7');
-    waterGrad.addColorStop(0.3, '#0369a1');
+    waterGrad.addColorStop(0, '#38bdf8');
+    waterGrad.addColorStop(0.2, '#0284c7');
+    waterGrad.addColorStop(0.6, '#0369a1');
     waterGrad.addColorStop(1, '#0c4a6e');
     ctx.fillStyle = waterGrad;
     ctx.fillRect(0, waterY, width, height - waterY);
 
-    // Horizon waterline
-    ctx.beginPath();
-    ctx.moveTo(0, waterY);
-    ctx.lineTo(width, waterY);
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
-    ctx.lineWidth = 2;
-    ctx.stroke();
+    // Sunset Water Reflection
+    const reflGrad = ctx.createLinearGradient(0, waterY, 0, waterY + 90);
+    reflGrad.addColorStop(0, 'rgba(251, 146, 60, 0.45)');
+    reflGrad.addColorStop(1, 'rgba(251, 146, 60, 0.0)');
+    ctx.fillStyle = reflGrad;
+    ctx.fillRect(0, waterY, width, 90);
+
+    // Subtle Water Waves
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+    ctx.lineWidth = 1.5;
+    for (let y = waterY + 12; y < height; y += 18) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        for (let x = 0; x < width; x += 40) {
+            ctx.quadraticCurveTo(x + 20, y + Math.sin(x * 0.05) * 2, x + 40, y);
+        }
+        ctx.stroke();
+    }
 }
 
-function drawRaccoonPaw(x, y) {
+function drawDetailedPaw(x, y) {
     ctx.save();
     ctx.translate(x, y);
+    ctx.rotate(-0.35);
 
-    // Dark grey raccoon fur arm
-    ctx.fillStyle = '#334155';
+    // Arm fur
+    const furGrad = ctx.createLinearGradient(-100, 80, 20, -20);
+    furGrad.addColorStop(0, '#e5e7eb');
+    furGrad.addColorStop(0.5, '#9ca3af');
+    furGrad.addColorStop(1, '#374151');
+
+    ctx.fillStyle = furGrad;
     ctx.beginPath();
-    ctx.moveTo(-60, 40);
-    ctx.lineTo(0, 0);
-    ctx.lineTo(20, 20);
-    ctx.lineTo(-40, 80);
+    ctx.moveTo(80, 140);
+    ctx.quadraticCurveTo(30, 40, -10, -10);
+    ctx.quadraticCurveTo(-40, -20, -80, 20);
+    ctx.quadraticCurveTo(-20, 80, 20, 160);
     ctx.fill();
 
-    // Main paw pad
-    ctx.fillStyle = '#1e293b';
+    // Main Paw Pad
+    ctx.fillStyle = '#1f2937';
     ctx.beginPath();
-    ctx.ellipse(0, 0, 18, 14, 0, 0, Math.PI * 2);
+    ctx.ellipse(-15, -10, 26, 20, 0.2, 0, Math.PI * 2);
     ctx.fill();
 
-    // Raccoon fingers/claws
-    const fingers = [-0.6, -0.2, 0.2, 0.6];
-    ctx.fillStyle = '#0f172a';
-    fingers.forEach(angle => {
-        const fx = Math.cos(angle - Math.PI/2) * 22;
-        const fy = Math.sin(angle - Math.PI/2) * 22;
+    // Toe Pads & Claws
+    const toes = [
+        { x: -42, y: -30, rot: -0.4 },
+        { x: -24, y: -44, rot: -0.1 },
+        { x: -2, y: -45, rot: 0.2 },
+        { x: 18, y: -34, rot: 0.5 }
+    ];
+
+    toes.forEach(toe => {
+        ctx.fillStyle = '#111827';
         ctx.beginPath();
-        ctx.arc(fx, fy, 5, 0, Math.PI * 2);
+        ctx.ellipse(toe.x, toe.y, 8, 12, toe.rot, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#fbbf24';
+        ctx.beginPath();
+        ctx.ellipse(toe.x - 2, toe.y - 2, 3, 5, toe.rot, 0, Math.PI * 2);
         ctx.fill();
     });
 
@@ -236,44 +269,58 @@ function drawRaccoonPaw(x, y) {
 }
 
 function draw() {
-    drawBackground();
+    drawWatercolorBackground();
 
-    // Draw ripples
+    // Animated Ripples
     ripples.forEach(rip => {
         ctx.beginPath();
-        ctx.ellipse(rip.x, rip.y, rip.r * 2, rip.r * 0.6, 0, 0, Math.PI * 2);
+        ctx.ellipse(rip.x, rip.y, rip.r * 2.5, rip.r * 0.6, 0, 0, Math.PI * 2);
         ctx.strokeStyle = `rgba(255, 255, 255, ${rip.alpha})`;
         ctx.lineWidth = 2;
         ctx.stroke();
     });
 
-    // Draw Aiming trajectory line
+    // Trajectory Aiming Line
     if (dragStart && currentDrag) {
         const dx = dragStart.x - currentDrag.x;
         const dy = dragStart.y - currentDrag.y;
 
         ctx.beginPath();
-        ctx.setLineDash([6, 6]);
+        ctx.setLineDash([8, 6]);
         ctx.moveTo(rock.x, rock.y);
-        ctx.lineTo(rock.x + dx * 2, rock.y + dy * 2);
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+        ctx.quadraticCurveTo(
+            rock.x - dx * 0.8, 
+            rock.y + dy * 0.8 - 40, 
+            rock.x - dx * 1.8, 
+            rock.y + dy * 1.8
+        );
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
         ctx.lineWidth = 3;
         ctx.stroke();
         ctx.setLineDash([]);
     }
 
-    // Draw Jimothy's Paw
-    drawRaccoonPaw(pawPos.x, pawPos.y);
+    // Jimothy's Paw
+    drawDetailedPaw(pawPos.x, pawPos.y);
 
-    // Draw Skipping Stone
+    // Smooth Skipping Stone
     if (rock.inHand || rock.active) {
+        ctx.save();
+        ctx.translate(rock.x, rock.y);
+        
+        const stoneGrad = ctx.createRadialGradient(-3, -3, 2, 0, 0, 16);
+        stoneGrad.addColorStop(0, '#d1d5db');
+        stoneGrad.addColorStop(0.6, '#6b7280');
+        stoneGrad.addColorStop(1, '#374151');
+
+        ctx.fillStyle = stoneGrad;
         ctx.beginPath();
-        ctx.ellipse(rock.x, rock.y, rock.radius * 1.2, rock.radius * 0.7, -0.2, 0, Math.PI * 2);
-        ctx.fillStyle = '#94a3b8';
+        ctx.ellipse(0, 0, 18, 11, -0.2, 0, Math.PI * 2);
         ctx.fill();
-        ctx.strokeStyle = '#475569';
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#1f2937';
+        ctx.lineWidth = 1.5;
         ctx.stroke();
+        ctx.restore();
     }
 }
 
