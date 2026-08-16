@@ -376,40 +376,28 @@ class Game {
     }
 
     setupResizing() {
-        const resize = () => {
-            const oldSize = GRID_SIZE;
+    const resize = () => {
+        const oldSize = GRID_SIZE;
 
-            computeAdaptiveGrid();
+        computeAdaptiveGrid();
 
-            const newSize = GRID_SIZE;
+        this.canvas.width = CANVAS_SIZE;
+        this.canvas.height = CANVAS_SIZE;
+        this.tileSize = TILE_SIZE;
 
-            this.scaleAnim.active = true;
-            this.scaleAnim.startTile = this.tileSize;
-            this.scaleAnim.targetTile = TILE_SIZE;
-            this.scaleAnim.startCanvas = this.canvas.width || CANVAS_SIZE;
-            this.scaleAnim.targetCanvas = CANVAS_SIZE;
-            this.scaleAnim.startTime = performance.now();
+        if (this.isGameRunning && this.grid.length) {
+            this.scaleGameState(oldSize, GRID_SIZE);
+        }
 
-            if (this.isGameRunning && this.grid.length) {
-                this.scaleGameState(oldSize, newSize);
-                this.camera.targetZoom = this.computeCameraZoom();
-                this.render();
-            } else {
-                this.canvas.width = CANVAS_SIZE;
-                this.canvas.height = CANVAS_SIZE;
-                this.tileSize = TILE_SIZE;
-                this.camera.targetZoom = this.computeCameraZoom();
-                this.render();
-            }
-        };
+        this.camera.targetZoom = this.computeCameraZoom();
+        this.render();
+    };
 
-        window.addEventListener('resize', resize);
-        window.addEventListener('orientationchange', () => {
-            setTimeout(resize, 200);
-        });
+    window.addEventListener('resize', resize);
+    window.addEventListener('orientationchange', () => setTimeout(resize, 200));
 
-        resize();
-    }
+    resize();
+}
 
     scaleGameState(oldSize, newSize) {
         if (oldSize === newSize || !this.grid.length) return;
@@ -711,16 +699,16 @@ class Game {
             if (t >= 1) {
                 this.scaleAnim.active = false;
                 this.tileSize = this.scaleAnim.targetTile;
-                this.canvas.width = this.scaleAnim.targetCanvas;
-                this.canvas.height = this.scaleAnim.targetCanvas;
+                //this.canvas.width = this.scaleAnim.targetCanvas;
+                //this.canvas.height = this.scaleAnim.targetCanvas;
             } else {
                 const ease = t * (2 - t);
                 this.tileSize = this.scaleAnim.startTile +
                     (this.scaleAnim.targetTile - this.scaleAnim.startTile) * ease;
                 const newCanvas = this.scaleAnim.startCanvas +
                     (this.scaleAnim.targetCanvas - this.scaleAnim.startCanvas) * ease;
-                this.canvas.width = newCanvas;
-                this.canvas.height = newCanvas;
+                //this.canvas.width = newCanvas;
+                //this.canvas.height = newCanvas;
             }
         }
 
