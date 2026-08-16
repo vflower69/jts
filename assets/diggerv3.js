@@ -20,9 +20,9 @@ Key upgrades included in this version:
 
 // Below are the codes for the game
 /*
-Dumpster Dash: Raccoon Digger – adaptive, animated, juicy version
+Dumpster Dash: Raccoon Digger – stable, adaptive, fullscreen overlay build
 */
-// --- Adaptive Grid System ---
+/* --- Adaptive Grid System --- */
 let GRID_SIZE = 12;
 let CANVAS_SIZE = 600;
 let TILE_SIZE = 50;
@@ -32,7 +32,7 @@ function computeAdaptiveGrid() {
     const h = window.innerHeight;
     const shortest = Math.min(w, h);
 
-    CANVAS_SIZE = shortest * 0.90;
+    CANVAS_SIZE = Math.max(360, shortest * 0.9);
 
     if (shortest >= 1200) {
         GRID_SIZE = 14;
@@ -49,7 +49,6 @@ function computeAdaptiveGrid() {
     TILE_SIZE = CANVAS_SIZE / GRID_SIZE;
 }
 
-// spawn distribution helper
 function getSpawnRates(gridSize, level) {
     const baseFood = 0.15;
     const baseTrap = 0.05 + Math.min(level * 0.02, 0.10);
@@ -72,6 +71,7 @@ function isSuperFood(x, y, gridSize, level) {
     return gridSize >= 12 && ((x + y + level) % 5 === 0);
 }
 
+/* --- Sound Engine --- */
 class SoundEngine {
     constructor() {
         this.ctx = null;
@@ -223,19 +223,14 @@ class SoundEngine {
 
     playHeartbeat() {
         if (!this.ctx) return;
-
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
-
         osc.type = 'sine';
         osc.frequency.setValueAtTime(55, this.ctx.currentTime);
-
         gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.18);
-
         osc.connect(gain);
         gain.connect(this.ctx.destination);
-
         osc.start();
         osc.stop(this.ctx.currentTime + 0.18);
     }
@@ -266,43 +261,35 @@ class SoundEngine {
 
     playHowl() {
         if (!this.ctx) return;
-
         const now = this.ctx.currentTime;
 
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
-
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(220, now);
         osc.frequency.linearRampToValueAtTime(440, now + 0.6);
-
         gain.gain.setValueAtTime(0.25, now);
         gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
-
         osc.connect(gain);
         gain.connect(this.ctx.destination);
-
         osc.start(now);
         osc.stop(now + 0.6);
 
         const echo = this.ctx.createOscillator();
         const echoGain = this.ctx.createGain();
-
         echo.type = 'sine';
         echo.frequency.setValueAtTime(180, now + 0.3);
         echo.frequency.linearRampToValueAtTime(120, now + 1.2);
-
         echoGain.gain.setValueAtTime(0.12, now + 0.3);
         echoGain.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
-
         echo.connect(echoGain);
         echoGain.connect(this.ctx.destination);
-
         echo.start(now + 0.3);
         echo.stop(now + 1.2);
     }
 }
 
+/* --- Tiles & Icons --- */
 const TILE_EMPTY = 0;
 const TILE_DIRT = 1;
 const TILE_FOOD = 2;
@@ -312,6 +299,7 @@ const TILE_BOMB = 4;
 const FOOD_ITEMS = ['🍕', '🍔', '🍩', '🍎', '🍉', '🍗'];
 const SUPER_FOOD_ITEMS = ['🍖', '🍰', '🍤', '🍗'];
 
+/* --- Game Class --- */
 class Game {
     constructor() {
         this.canvas = document.getElementById('gameCanvas');
@@ -326,8 +314,8 @@ class Game {
 
         this.player = { x: 0, y: 0 };
         this.coyotes = [];
-
         this.foodRemaining = 0;
+
         this.isGameOver = false;
         this.isGameRunning = false;
 
@@ -345,16 +333,6 @@ class Game {
         this.minimap = document.getElementById('minimapCanvas');
         this.minictx = this.minimap.getContext('2d');
 
-        this.scaleAnim = {
-            active: false,
-            startTile: TILE_SIZE,
-            targetTile: TILE_SIZE,
-            startCanvas: CANVAS_SIZE,
-            targetCanvas: CANVAS_SIZE,
-            startTime: 0,
-            duration: 250
-        };
-
         this.camera = {
             x: 0,
             y: 0,
@@ -363,12 +341,13 @@ class Game {
         };
 
         this.lastHowlTime = 0;
+        this.prevGridSize = GRID_SIZE;
 
         this.overlay = document.getElementById('overlay');
         this.overlayTitle = document.getElementById('overlay-title');
         this.overlayMsg = document.getElementById('overlay-msg');
         this.overlayBtn = document.getElementById('start-btn');
-        this.overlayMode = 'title'; // 'title', 'next', 'gameover'
+        this.overlayMode = 'title';
 
         this.setupResizing();
         this.setupEventListeners();
@@ -376,28 +355,29 @@ class Game {
     }
 
     setupResizing() {
-    const resize = () => {
-        computeAdaptiveGrid();
+        const resize = () => {
+            const oldSize = GRID_SIZE;
 
-        this.canvas.width = CANVAS_SIZE;
-        this.canvas.height = CANVAS_SIZE;
-        this.tileSize = TILE_SIZE;
+            computeAdaptiveGrid();
 
-        if (this.isGameRunning && this.grid.length) {
-            this.scaleGameState(this.prevGridSize, GRID_SIZE);
-        }
+            this.canvas.width = CANVAS_SIZE;
+            this.canvas.height = CANVAS_SIZE;
+            this.tileSize = TILE_SIZE;
 
-        this.prevGridSize = GRID_SIZE;
+            if (this.isGameRunning && this.grid.length) {
+                this.scaleGameState(oldSize, GRID_SIZE);
+            }
 
-        this.camera.targetZoom = this.computeCameraZoom();
-        this.render();
-    };
+            this.prevGridSize = GRID_SIZE;
+            this.camera.targetZoom = this.computeCameraZoom();
+            this.render();
+        };
 
-    window.addEventListener("resize", resize);
-    window.addEventListener("orientationchange", () => setTimeout(resize, 200));
+        window.addEventListener('resize', resize);
+        window.addEventListener('orientationchange', () => setTimeout(resize, 200));
 
-    resize();
-}
+        resize();
+    }
 
     scaleGameState(oldSize, newSize) {
         if (oldSize === newSize || !this.grid.length) return;
@@ -444,28 +424,43 @@ class Game {
 
     setupEventListeners() {
         this.overlayBtn.addEventListener('click', () => {
-        this.sound.init();
-        this.hideOverlay();
-    
-        if (this.overlayMode === 'title') {
-            this.resetGame();
-            this.startLevelCore();
-        } else if (this.overlayMode === 'next') {
-            this.startLevelCore();
-        } else if (this.overlayMode === 'gameover') {
-            this.resetGame();
-            this.startLevelCore();
-        }
-    });
+            this.sound.init();
+            this.hideOverlay();
 
+            if (this.overlayMode === 'title') {
+                this.resetGame();
+                this.startLevelCore();
+            } else if (this.overlayMode === 'next') {
+                this.startLevelCore();
+            } else if (this.overlayMode === 'gameover') {
+                this.resetGame();
+                this.startLevelCore();
+            }
+        });
 
         window.addEventListener('keydown', (e) => {
             if (!this.isGameRunning) return;
             switch (e.key) {
-                case 'ArrowUp': case 'w': case 'W': this.inputDir = { x: 0, y: -1 }; break;
-                case 'ArrowDown': case 's': case 'S': this.inputDir = { x: 0, y: 1 }; break;
-                case 'ArrowLeft': case 'a': case 'A': this.inputDir = { x: -1, y: 0 }; break;
-                case 'ArrowRight': case 'd': case 'D': this.inputDir = { x: 1, y: 0 }; break;
+                case 'ArrowUp':
+                case 'w':
+                case 'W':
+                    this.inputDir = { x: 0, y: -1 };
+                    break;
+                case 'ArrowDown':
+                case 's':
+                case 'S':
+                    this.inputDir = { x: 0, y: 1 };
+                    break;
+                case 'ArrowLeft':
+                case 'a':
+                case 'A':
+                    this.inputDir = { x: -1, y: 0 };
+                    break;
+                case 'ArrowRight':
+                case 'd':
+                case 'D':
+                    this.inputDir = { x: 1, y: 0 };
+                    break;
             }
         });
 
@@ -522,7 +517,6 @@ class Game {
         this.overlayMsg.textContent =
             'Jimothy the raccoon is ready to raid the dumpsters. Swipe or use buttons to dig for snacks!';
         this.overlayBtn.textContent = 'PLAY NOW';
-        this.overlayTitle.classList.add('overlay-title-pulse');
         this.showOverlay();
     }
 
@@ -531,7 +525,6 @@ class Game {
         this.overlayTitle.textContent = 'LEVEL COMPLETE!';
         this.overlayMsg.textContent = `Nice digging, Jimothy! Your score: ${this.score}`;
         this.overlayBtn.textContent = 'NEXT LEVEL';
-        this.overlayTitle.classList.add('overlay-title-pulse');
         this.showOverlay();
     }
 
@@ -540,19 +533,15 @@ class Game {
         this.overlayTitle.textContent = 'GAME OVER';
         this.overlayMsg.textContent = `${reason} Final score: ${this.score}`;
         this.overlayBtn.textContent = 'RETRY';
-        this.overlayTitle.classList.add('overlay-title-pulse');
         this.showOverlay();
     }
 
     showOverlay() {
-        this.overlay.classList.remove('overlay-hidden');
         this.overlay.classList.add('overlay-visible');
     }
 
     hideOverlay() {
         this.overlay.classList.remove('overlay-visible');
-        this.overlay.classList.add('overlay-hidden');
-        this.overlayTitle.classList.remove('overlay-title-pulse');
     }
 
     resetGame() {
@@ -627,9 +616,11 @@ class Game {
         this.sound.startBackground(this.level, GRID_SIZE);
         this.sound.startHeartbeat();
         this.updateUI();
+
         this.canvas.width = CANVAS_SIZE;
         this.canvas.height = CANVAS_SIZE;
         this.tileSize = TILE_SIZE;
+
         requestAnimationFrame((timestamp) => this.gameLoop(timestamp));
     }
 
@@ -693,24 +684,6 @@ class Game {
 
         if (this.shakeTime > 0) {
             this.shakeTime -= delta;
-        }
-
-        if (this.scaleAnim.active) {
-            const t = (timestamp - this.scaleAnim.startTime) / this.scaleAnim.duration;
-            if (t >= 1) {
-                this.scaleAnim.active = false;
-                this.tileSize = this.scaleAnim.targetTile;
-                //this.canvas.width = this.scaleAnim.targetCanvas;
-                //this.canvas.height = this.scaleAnim.targetCanvas;
-            } else {
-                const ease = t * (2 - t);
-                this.tileSize = this.scaleAnim.startTile +
-                    (this.scaleAnim.targetTile - this.scaleAnim.startTile) * ease;
-                const newCanvas = this.scaleAnim.startCanvas +
-                    (this.scaleAnim.targetCanvas - this.scaleAnim.startCanvas) * ease;
-                //this.canvas.width = newCanvas;
-                //this.canvas.height = newCanvas;
-            }
         }
 
         this.camera.zoom += (this.camera.targetZoom - this.camera.zoom) * 0.1;
@@ -893,43 +866,6 @@ class Game {
         });
     }
 
-//temp
-render() {
-    const ctx = this.ctx;
-
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-    // Safety check
-    if (!this.grid || !this.grid.length) {
-        console.log("Grid missing");
-        return;
-    }
-
-    for (let y = 0; y < GRID_SIZE; y++) {
-        for (let x = 0; x < GRID_SIZE; x++) {
-            const px = x * this.tileSize;
-            const py = y * this.tileSize;
-
-            ctx.fillStyle = "#333";
-            ctx.fillRect(px, py, this.tileSize, this.tileSize);
-
-            ctx.strokeStyle = "#555";
-            ctx.strokeRect(px, py, this.tileSize, this.tileSize);
-        }
-    }
-
-    // Draw player
-    ctx.fillStyle = "yellow";
-    ctx.fillRect(
-        this.player.x * this.tileSize,
-        this.player.y * this.tileSize,
-        this.tileSize,
-        this.tileSize
-    );
-}
-
-/*
     render() {
         let offsetX = 0, offsetY = 0;
         if (this.shakeTime > 0) {
@@ -996,10 +932,8 @@ render() {
         this.renderParticles();
 
         this.ctx.setTransform(1, 0, 0, 1, 0, 0);
-
         this.renderMinimap();
     }
-    */
 }
 
 window.onload = () => {
