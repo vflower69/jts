@@ -5,9 +5,11 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Dumpster Dash: Raccoon Digger</title>
+     <!-- Digger v3 style sheet -->
     <link rel="stylesheet" href="/assets/diggerv3.css">
 </head>
 <body>
+
 <div id="game-container">
     <div id="ui-bar">
         <div>SCORE: <span id="score-val" class="ui-value">0</span></div>
@@ -15,15 +17,17 @@
         <div>LIVES: <span id="lives-val" class="ui-value">🦝🦝🦝</span></div>
     </div>
 
-    <!-- Minimap for large grids -->
-    <canvas id="minimapCanvas" width="160" height="160"></canvas>
-
     <div id="canvas-wrapper">
         <canvas id="gameCanvas" width="600" height="600"></canvas>
-        <div id="overlay">
+
+        <!-- Minimap for large grids -->
+        <canvas id="minimapCanvas" width="160" height="160"></canvas>
+
+        <div id="overlay" class="overlay-hidden">
             <h1 id="overlay-title">DUMPSTER DASH</h1>
             <p id="overlay-msg">
-                Swipe on screen or use touch buttons to dig for snacks! Avoid traps, bombs, and coyotes.
+                Jimothy the raccoon is ready to raid the dumpsters.
+                Swipe or use buttons to dig for snacks!
             </p>
             <button class="btn-start" id="start-btn">PLAY NOW</button>
         </div>
