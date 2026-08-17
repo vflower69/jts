@@ -28,23 +28,14 @@ let CANVAS_SIZE = 600;
 let TILE_SIZE = 50;
 
 function computeAdaptiveGrid() {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-    const shortest = Math.min(w, h);
-
+    const shortest = Math.min(window.innerWidth, window.innerHeight);
     CANVAS_SIZE = Math.max(360, shortest * 0.9);
 
-    if (shortest >= 1200) {
-        GRID_SIZE = 14;
-    } else if (shortest >= 900) {
-        GRID_SIZE = 12;
-    } else if (shortest >= 700) {
-        GRID_SIZE = 10;
-    } else if (shortest >= 500) {
-        GRID_SIZE = 9;
-    } else {
-        GRID_SIZE = 8;
-    }
+    if (shortest >= 1200) GRID_SIZE = 14;
+    else if (shortest >= 900) GRID_SIZE = 12;
+    else if (shortest >= 700) GRID_SIZE = 10;
+    else if (shortest >= 500) GRID_SIZE = 9;
+    else GRID_SIZE = 8;
 
     TILE_SIZE = CANVAS_SIZE / GRID_SIZE;
 }
@@ -53,7 +44,6 @@ function getSpawnRates(gridSize, level) {
     const baseFood = 0.15;
     const baseTrap = 0.05 + Math.min(level * 0.02, 0.10);
     const baseBomb = 0.05 + Math.min(level * 0.02, 0.10);
-
     const scale = gridSize / 12;
 
     const foodRate = baseFood * (1 / scale);
@@ -341,7 +331,6 @@ class Game {
         };
 
         this.lastHowlTime = 0;
-        this.prevGridSize = GRID_SIZE;
 
         this.overlay = document.getElementById('overlay');
         this.overlayTitle = document.getElementById('overlay-title');
@@ -356,70 +345,17 @@ class Game {
 
     setupResizing() {
         const resize = () => {
-            const oldSize = GRID_SIZE;
-
             computeAdaptiveGrid();
-
             this.canvas.width = CANVAS_SIZE;
             this.canvas.height = CANVAS_SIZE;
             this.tileSize = TILE_SIZE;
-
-            if (this.isGameRunning && this.grid.length) {
-                this.scaleGameState(oldSize, GRID_SIZE);
-            }
-
-            this.prevGridSize = GRID_SIZE;
             this.camera.targetZoom = this.computeCameraZoom();
-            this.render();
+            if (this.isGameRunning) this.render();
         };
 
         window.addEventListener('resize', resize);
         window.addEventListener('orientationchange', () => setTimeout(resize, 200));
-
         resize();
-    }
-
-    scaleGameState(oldSize, newSize) {
-        if (oldSize === newSize || !this.grid.length) return;
-
-        const scale = newSize / oldSize;
-
-        this.player.x = Math.floor(this.player.x * scale);
-        this.player.y = Math.floor(this.player.y * scale);
-        this.player.x = Math.max(0, Math.min(newSize - 1, this.player.x));
-        this.player.y = Math.max(0, Math.min(newSize - 1, this.player.y));
-
-        this.coyotes.forEach(c => {
-            c.x = Math.floor(c.x * scale);
-            c.y = Math.floor(c.y * scale);
-            c.x = Math.max(0, Math.min(newSize - 1, c.x));
-            c.y = Math.max(0, Math.min(newSize - 1, c.y));
-        });
-
-        const newGrid = [];
-        for (let y = 0; y < newSize; y++) {
-            const row = [];
-            for (let x = 0; x < newSize; x++) {
-                const oldX = Math.floor(x / scale);
-                const oldY = Math.floor(y / scale);
-                if (oldX < oldSize && oldY < oldSize) {
-                    row.push(this.grid[oldY][oldX]);
-                } else {
-                    row.push(TILE_DIRT);
-                }
-            }
-            newGrid.push(row);
-        }
-        this.grid = newGrid;
-
-        this.foodRemaining = 0;
-        for (let y = 0; y < newSize; y++) {
-            for (let x = 0; x < newSize; x++) {
-                if (this.grid[y][x] === TILE_FOOD) {
-                    this.foodRemaining++;
-                }
-            }
-        }
     }
 
     setupEventListeners() {
@@ -517,7 +453,7 @@ class Game {
         this.overlayMsg.textContent =
             'Jimothy the raccoon is ready to raid the dumpsters. Swipe or use buttons to dig for snacks!';
         this.overlayBtn.textContent = 'PLAY NOW';
-        this.showOverlay();
+        this.overlay.style.display = 'flex';
     }
 
     showLevelComplete() {
@@ -525,7 +461,7 @@ class Game {
         this.overlayTitle.textContent = 'LEVEL COMPLETE!';
         this.overlayMsg.textContent = `Nice digging, Jimothy! Your score: ${this.score}`;
         this.overlayBtn.textContent = 'NEXT LEVEL';
-        this.showOverlay();
+        this.overlay.style.display = 'flex';
     }
 
     showGameOver(reason) {
@@ -533,15 +469,11 @@ class Game {
         this.overlayTitle.textContent = 'GAME OVER';
         this.overlayMsg.textContent = `${reason} Final score: ${this.score}`;
         this.overlayBtn.textContent = 'RETRY';
-        this.showOverlay();
-    }
-
-    showOverlay() {
-        this.overlay.classList.add('overlay-visible');
+        this.overlay.style.display = 'flex';
     }
 
     hideOverlay() {
-        this.overlay.classList.remove('overlay-visible');
+        this.overlay.style.display = 'none';
     }
 
     resetGame() {
