@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Jimothy's Night Snack Run</title>
+    <!-- Night Runv2 style sheet -->
+    <link rel="stylesheet" href="/assets/nightrunv2.css">
+</head>
+<body>
+
+<div id="game-container">
+    <canvas id="gameCanvas"></canvas>
+    
+    <div id="winModal" class="overlay hidden">
+        <div class="modal">
+            <h1>🎉 Midnight Snack Secured!</h1>
+            <p>Jimothy successfully snuck past all the cougars and got a refreshing drink from the vending machine!</p>
+            <button onclick="resetGame()">Play Again</button>
+        </div>
+    </div>
+
+    <div id="loseModal" class="overlay hidden">
+        <div class="modal">
+            <h1>🐾 Caught!</h1>
+            <p>A cougar spotted Jimothy in their spotlight!</p>
+            <button onclick="resetGame()">Try Again</button>
+        </div>
+    </div>
+</div>
+
+<!-- Night Runv2 javascript -->
+  <script src="/assets/nightrunv2.js"></script>
+</body>
+</html>

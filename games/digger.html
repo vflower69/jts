@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dumpster Dash: Raccoon Digger</title>
+   <!-- Digger style sheet -->
+  <link rel="stylesheet" href="/assets/digger.css">
+</head>
+<body>
+
+<div id="game-container">
+    <div id="ui-bar">
+        <div class="ui-item">SCORE: <span id="score-val" class="ui-value">0</span></div>
+        <div class="ui-item">LEVEL: <span id="level-val" class="ui-value">1</span></div>
+        <div class="ui-item">LIVES: <span id="lives-val" class="ui-value">🦝🦝🦝</span></div>
+    </div>
+
+    <div id="canvas-wrapper">
+        <canvas id="gameCanvas" width="600" height="600"></canvas>
+        <div id="overlay">
+            <h1 id="overlay-title">DUMPSTER DASH</h1>
+            <p id="overlay-msg">Help Jimothy the Raccoon dig through the waste dump for delicious snacks! Avoid bear traps, volatile bombs, and roaming coyotes!</p>
+            <button class="btn-start" id="start-btn">PLAY NOW</button>
+        </div>
+    </div>
+
+    <div id="touch-controls">
+        <div class="touch-btn" id="btn-up">▲</div>
+        <div class="touch-btn" id="btn-left">◀</div>
+        <div class="touch-btn" id="btn-right">▶</div>
+        <div class="touch-btn" id="btn-down">▼</div>
+    </div>
+</div>
+
+  <!-- Digger javascript -->
+  <script src="/assets/digger.js"></script>
+  <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8c0d32d91bd347e4990d1409f8061d2f"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>

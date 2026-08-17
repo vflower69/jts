@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jimothy the Raccoon's Clam Hunt</title>
+    <!-- Clam Hunt style sheet -->
+  <link rel="stylesheet" href="/assets/clamhunt.css">
+</head>
+<body>
+
+    <div id="game-container">
+        <div id="ui-bar">
+            <div class="stat-box" id="score-display">Score: 0</div>
+            <div class="stat-box" id="round-display">Round 1</div>
+            <div class="stat-box" id="high-score-display">High Score: 0</div>
+        </div>
+
+        <div id="status-message">Watch closely where the Clam is!</div>
+
+        <div id="timer-bar-container">
+            <div id="timer-bar"></div>
+        </div>
+
+        <canvas id="canvas" width="900" height="600"></canvas>
+
+        <div id="overlay">
+            <h1 id="overlay-title">Jimothy's Clam Hunt</h1>
+            <p class="desc" id="overlay-desc">
+                Help cute <b>Jimothy the Raccoon</b> find his favorite treat!<br><br>
+                1. Watch where the <b>Clam</b> is hidden under the rocks.<br>
+                2. Keep your eye on it as the rocks shuffle rapidly for 15 seconds.<br>
+                3. Click the right rock to feed Jimothy. Avoid the pinching <b>Crabs</b>!
+            </p>
+            <button class="btn" id="start-btn" onclick="startGame()">Start Game</button>
+        </div>
+    </div>
+
+    <!-- Clam Hunt javascript -->
+  <script src="/assets/clamhunt.js"></script>
+</body>
+</html>

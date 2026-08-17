@@ -1,0 +1,163 @@
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+
+        body {
+            background-color: #0d0f12;
+            color: #f0f4f8;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        #game-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100vw;
+            height: 100vh;
+            max-width: 800px;
+            max-height: 950px;
+            justify-content: space-between;
+            padding: 10px;
+        }
+
+        #ui-bar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1a1d24;
+            padding: 10px 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            font-weight: bold;
+            font-size: 1.1rem;
+            z-index: 10;
+        }
+
+        .ui-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ui-value {
+            color: #ffd700;
+        }
+
+        #canvas-wrapper {
+            position: relative;
+            flex-grow: 1;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 8px 0;
+        }
+
+        canvas {
+            background-color: #121418;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+            max-width: 100%;
+            max-height: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: contain;
+        }
+
+        /* Virtual D-Pad / Touch Controls for Mobile */
+        #touch-controls {
+            display: none;
+            width: 100%;
+            height: 160px;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 6px;
+            max-width: 320px;
+            margin-bottom: 6px;
+        }
+
+        .touch-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #ffffff;
+            touch-action: manipulation;
+        }
+
+        .touch-btn:active {
+            background: rgba(255, 215, 0, 0.4);
+        }
+
+        #btn-up { grid-column: 2; grid-row: 1; }
+        #btn-left { grid-column: 1; grid-row: 2; }
+        #btn-right { grid-column: 3; grid-row: 2; }
+        #btn-down { grid-column: 2; grid-row: 3; }
+
+        /* Overlay for Menus */
+        #overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(13, 15, 18, 0.88);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            z-index: 20;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #overlay h1 {
+            font-size: 2.2rem;
+            color: #ff9d00;
+            margin-bottom: 12px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+        }
+
+        #overlay p {
+            font-size: 1rem;
+            color: #cbd5e1;
+            margin-bottom: 20px;
+            max-width: 80%;
+            line-height: 1.4;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #ff9d00, #ff6c00);
+            border: none;
+            padding: 12px 28px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fff;
+            border-radius: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 108, 0, 0.4);
+            transition: transform 0.1s;
+        }
+
+        .btn-start:active {
+            transform: scale(0.95);
+        }
+
+        @media (pointer: coarse) {
+            #touch-controls {
+                display: grid;
+            }
+        }

@@ -6,11 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
-      font-family: system-ui, sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: #0f172a;
       color: #e5e7eb;
       margin: 0;
       padding: 0;
+      min-height: 100vh;
     }
 
     header {
@@ -76,6 +77,10 @@
       box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
     }
 
+    #lightbox.close-area {
+      cursor: pointer;
+    }
+
     footer {
       text-align: center;
       padding: 1rem;
@@ -87,13 +92,21 @@
 <body>
 
   <header>
-    <h1>Jimothy’s Auto‑Updating Gallery</h1>
-    <p class="subtitle">Every new raccoon photo you upload appears here automatically.</p>
+    <h1>Jimothy’s Official Gallery</h1>
+    <p class="subtitle">A curated collection of Seattle’s most chaotic raccoon.</p>
   </header>
 
-  <main class="gallery" id="gallery"></main>
+  <main class="gallery">
+    <!-- Replace these image URLs with your own Jimothy photos -->
+    <div class="gallery-item"><img src="images/jimothy1.jpg" alt="Jimothy 1"></div>
+    <div class="gallery-item"><img src="images/jimothy2.jpg" alt="Jimothy 2"></div>
+    <div class="gallery-item"><img src="images/jimothy3.jpg" alt="Jimothy 3"></div>
+    <div class="gallery-item"><img src="images/jimothy4.jpg" alt="Jimothy 4"></div>
+    <div class="gallery-item"><img src="images/jimothy5.jpg" alt="Jimothy 5"></div>
+    <div class="gallery-item"><img src="images/jimothy6.jpg" alt="Jimothy 6"></div>
+  </main>
 
-  <div id="lightbox">
+  <div id="lightbox" class="close-area">
     <img id="lightbox-img" src="" alt="Expanded view">
   </div>
 
@@ -102,57 +115,20 @@
   </footer>
 
   <script>
-    const gallery = document.getElementById("gallery");
+    const items = document.querySelectorAll(".gallery-item img");
     const lightbox = document.getElementById("lightbox");
     const lightboxImg = document.getElementById("lightbox-img");
 
-    // CONFIG — CHANGE THESE
-    const username = "vflower69";
-    const repo = "jts";
-    const branch = "main"; // or "master"
-    const folderPath = "images";
-
-    async function loadImages() {
-      const apiUrl = `https://api.github.com/repos/${username}/${repo}/contents/${folderPath}?ref=${branch}`;
-
-      try {
-        const response = await fetch(apiUrl);
-        const files = await response.json();
-
-        const imageFiles = files.filter(file =>
-          /\.(jpg|jpeg|png|webp|gif)$/i.test(file.name)
-        );
-
-        imageFiles.forEach(file => {
-          const imgUrl = `https://${username}.github.io/${repo}/${folderPath}/${file.name}`;
-
-          const item = document.createElement("div");
-          item.className = "gallery-item";
-
-          const img = document.createElement("img");
-          img.src = imgUrl;
-          img.alt = file.name;
-
-          img.addEventListener("click", () => {
-            lightboxImg.src = imgUrl;
-            lightbox.style.display = "flex";
-          });
-
-          item.appendChild(img);
-          gallery.appendChild(item);
-        });
-
-      } catch (err) {
-        gallery.innerHTML = "<p style='text-align:center;color:#f87171;'>Failed to load images.</p>";
-        console.error(err);
-      }
-    }
+    items.forEach(img => {
+      img.addEventListener("click", () => {
+        lightboxImg.src = img.src;
+        lightbox.style.display = "flex";
+      });
+    });
 
     lightbox.addEventListener("click", () => {
       lightbox.style.display = "none";
     });
-
-    loadImages();
   </script>
 
   <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8c0d32d91bd347e4990d1409f8061d2f"}'></script><!-- End Cloudflare Web Analytics -->
