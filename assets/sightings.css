@@ -19,3 +19,23 @@
   50% { transform: scale(1.4); opacity: 1; }
   100% { transform: scale(0.8); opacity: 0.7; }
 }
+
+/* Floating the Back to top button */
+#backToTop {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #a64f3c;
+  color: white;
+  padding: 12px 16px;
+  border-radius: 9999px;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 50;
+}
+#backToTop.visible {
+  opacity: 1;
+}
