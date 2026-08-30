@@ -1,0 +1,15 @@
+name = "jt-github-delayed"
+main = "src/worker-main.js"
+compatibility_date = "2026-08-30"
+
+[vars]
+GH_OWNER = "vflower69"
+GH_REPO = "jts"
+
+[[queues.producers]]
+queue = "sightingpub-delayed"
+binding = "DELAYED_PUBLISH_SIGHTING"
+
+[[queues.consumers]]
+queue = "sightingpub-delayed"
+script = "jt-github-delayed"
