@@ -8,23 +8,15 @@ compatibility_date = "2026-08-30"
 [vars]
 GH_OWNER = "vflower69"
 GH_REPO = "jts"
+GH_TOKEN = "" # if needed here
 
 # Only the producer binding goes here
 [[queues.producers]]
 queue = "sightingpub-delayed"
 binding = "DELAYED_PUBLISH_SIGHTING"
 
-
 ###############################################
-# Worker B — Queue Consumer Worker (delayed publish)
-###############################################
-workflows = [
-  { name = "jt-github-delayed-queue", main = "src/worker-queue.js", queue = "sightingpub-delayed" }
-]
-
-
-###############################################
-# Optional Observability (safe to keep)
+# Optional Observability
 ###############################################
 [observability]
 enabled = false
