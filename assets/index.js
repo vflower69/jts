@@ -203,7 +203,7 @@ async function submitFormSighting() {
   const payload = { lat, lng, timestamp, note };
 
   try {
-    const res = await fetch("https://delayedapi.jimothytracker.org", {
+    const res = await fetch("https://api.jimothytracker.org", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
