@@ -19,13 +19,7 @@ binding = "DELAYED_PUBLISH_SIGHTING"
 # Worker B — Queue Consumer Worker (delayed publish)
 ###############################################
 [workflows]
-consumers = [
-  {
-    name = "jt-github-delayed-queue",
-    main = "src/worker-queue.js",
-    queue = "sightingpub-delayed"
-  }
-]
+consumers = [{ name = "jt-github-delayed-queue", main = "src/worker-queue.js", queue = "sightingpub-delayed" }]
 
 
 ###############################################
