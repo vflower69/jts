@@ -1,19 +1,36 @@
+###############################################
+# Worker A — Public HTTP Worker (enqueue only)
+###############################################
 name = "jt-github-delayed"
-main = "src/worker-main.js"
+main = "src/worker-http.js"
 compatibility_date = "2026-08-30"
 
 [vars]
 GH_OWNER = "vflower69"
 GH_REPO = "jts"
 
+# Only the producer binding goes here
 [[queues.producers]]
 queue = "sightingpub-delayed"
 binding = "DELAYED_PUBLISH_SIGHTING"
 
-[[queues.consumers]]
-queue = "sightingpub-delayed"
-script = "jt-github-delayed"
 
+###############################################
+# Worker B — Queue Consumer Worker (delayed publish)
+###############################################
+[workflows]
+consumers = [
+  { 
+    name = "jt-github-delayed-queue",
+    main = "src/worker-queue.js",
+    queue = "sightingpub-delayed"
+  }
+]
+
+
+###############################################
+# Optional Observability (safe to keep)
+###############################################
 [observability]
 enabled = false
 head_sampling_rate = 1
