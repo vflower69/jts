@@ -1,0 +1,15 @@
+###############################################
+# Worker B — Queue Consumer Worker
+###############################################
+name = "jt-github-delayed-queue"
+main = "src/worker-queue.js"
+compatibility_date = "2026-08-30"
+
+# This Worker consumes from the queue
+[[queues.consumers]]
+queue = "sightingpub-delayed"
+
+[vars]
+GH_OWNER = "vflower69"
+GH_REPO = "jts"
+GH_TOKEN = "" # must be here for GitHub dispatch
