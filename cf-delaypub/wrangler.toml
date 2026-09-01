@@ -8,7 +8,7 @@ compatibility_date = "2026-08-30"
 [vars]
 GH_OWNER = "vflower69"
 GH_REPO = "jts"
-GH_TOKEN = "" # if needed here
+#GH_TOKEN = "" # if needed here
 
 # Only the producer binding goes here
 [[queues.producers]]
