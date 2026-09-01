@@ -1,7 +1,7 @@
 ###############################################
 # Worker A — Public HTTP Worker (enqueue only)
 ###############################################
-name = "jt-github-delayed"
+name = "jt-github-delayed-http"
 main = "src/worker-http.js"
 compatibility_date = "2026-08-30"
 
