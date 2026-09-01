@@ -12,7 +12,7 @@ queue = "sightingpub-delayed"
 [vars]
 GH_OWNER = "vflower69"
 GH_REPO = "jts"
-GH_TOKEN = "" # must be here for GitHub dispatch
+#GH_TOKEN = "" # must be here for GitHub dispatch
 
 [observability]
 enabled = false
