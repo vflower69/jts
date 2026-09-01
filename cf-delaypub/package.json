@@ -1,0 +1,8 @@
+{
+  "name": "jt-github-delayed",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Delayed GitHub dispatch worker for JimothyTracker.Org",
+  "author": "Emily Liu",
+  "license": "MIT"
+}

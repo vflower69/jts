@@ -1,0 +1,35 @@
+###############################################
+# Worker A — Public HTTP Worker (enqueue only)
+###############################################
+name = "jt-github-delayed-http"
+main = "src/worker-http.js"
+compatibility_date = "2026-08-30"
+
+[vars]
+GH_OWNER = "vflower69"
+GH_REPO = "jts"
+#GH_TOKEN = "" # if needed here
+
+# Only the producer binding goes here
+[[queues.producers]]
+queue = "sightingpub-delayed"
+binding = "DELAYED_PUBLISH_SIGHTING"
+
+###############################################
+# Optional Observability
+###############################################
+[observability]
+enabled = false
+head_sampling_rate = 1
+redact_query_string = false
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+persist = true
+invocation_logs = true
+
+[observability.traces]
+enabled = true
+persist = true
+head_sampling_rate = 1
