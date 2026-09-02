@@ -167,13 +167,6 @@
       "lng": -122.400613,
       "note": "see a raccoon has no tail",
       "timestamp": "2026-09-01T22:20:00.000Z"
-    },
-    {
-      "constructor": {
-        "prototype": {
-          "R2S2_POLLUTED_1788353986442": "polluted"
-        }
-      }
     }
   ]
 }
