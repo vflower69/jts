@@ -74,8 +74,8 @@ export default {
       return new Response(
         JSON.stringify({
           status: "alive",
-          worker: "delayed",
-          queue_binding: "DELAYED"
+          worker: "monitor",
+          task: "tracking"
         }),
         {
           status: 200,
