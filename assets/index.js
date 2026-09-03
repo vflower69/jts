@@ -183,7 +183,10 @@ async function submitFormSighting() {
     alert("Please click the map or enter a location.");
     return;
   }
-
+ if (!time) {
+    alert("Please click the calendar icon and select a datetime.");
+    return;
+  }
   const parts = loc.split(",");
   if (parts.length !== 2) {
     alert("Location must be in 'lat, lng' format.");
