@@ -92,7 +92,7 @@ export default {
     };
 
     try {
-      // OPTIONS — CORS preflight
+      // Handle preflight OPTIONS request
       if (request.method === "OPTIONS") {
         return new Response(null, { headers: corsHeaders });
       }
@@ -168,7 +168,7 @@ export default {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${env.GH_TOKEN}`,
             "Accept": "application/vnd.github+json",
-            "User-Agent": "jimothy-tracker-worker"
+            "User-Agent": "jimothy-tracker-worker" //required by GitHub
           },
           body: JSON.stringify(dispatch)
         }
@@ -184,7 +184,7 @@ export default {
         });
       }
 
-      // Success
+      // Success response
       return new Response(JSON.stringify({ success: true }), {
         status: 200,
         headers: {
