@@ -10,7 +10,7 @@ function validateSighting(body) {
   // Dangerous keys (prototype pollution vectors)
   const dangerous = ["constructor", "prototype", "__proto__"];
   for (const key of dangerous) {
-    if (key in body) {
+    if (Object.prototype.hasOwnProperty.call(body, key)) {
       return { ok: false, error: `Key '${key}' is not allowed` };
     }
   }
