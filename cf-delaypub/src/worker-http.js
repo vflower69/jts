@@ -74,8 +74,8 @@ export default {
       return new Response(
         JSON.stringify({
           status: "alive",
-          worker: "jt-github-delayed (HTTP)",
-          queue_binding: "DELAYED_PUBLISH_SIGHTING"
+          worker: "jt-delayed (HTTP)",
+          queue_binding: "DELAYED_PUB"
         }),
         {
           status: 200,
