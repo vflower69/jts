@@ -180,7 +180,7 @@ async function submitFormSighting() {
   const time = document.getElementById("timeInput").value;
 
   if (!loc) {
-    alert("Please click the map or enter a location.");
+    alert("Please click the map to enter a location.");
     return;
   }
  if (!time) {
