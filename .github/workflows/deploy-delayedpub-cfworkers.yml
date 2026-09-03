@@ -1,4 +1,4 @@
-name: Deploy Cloudflare Worker (Delayed Publish)
+name: Deploy Delayed Publish Cloudflare Workers
 
 on:
   push:
