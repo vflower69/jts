@@ -73,9 +73,8 @@ export default {
     if (request.method === "GET") {
       return new Response(
         JSON.stringify({
-          status: "alive",
-          worker: "monitor",
-          task: "tracking"
+          status: "403",
+          description: "Not Allowed"
         }),
         {
           status: 200,
