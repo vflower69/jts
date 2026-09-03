@@ -178,7 +178,8 @@ export default {
       console.log("GitHub response text:", await res.text());
 
       if (!res.ok) {
-        return new Response("GitHub error", {
+        const text = await res.text();
+        return new Response("GitHub error: " + text, {
           status: 500,
           headers: corsHeaders
         });
