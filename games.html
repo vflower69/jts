@@ -31,6 +31,10 @@
         content="Play Jimothy games online — latest releases, retro arcade classics, and new Jimothy adventures." />
   <meta name="twitter:image" content="https://jimothytracker.org/assets/jimothy-games-og.png" />
 
+  <!--
+  JSON‑LD Structured Data — Game Schema:
+  This tells Google: “This page is a game hub. Index it as a game.”
+  -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -49,6 +53,53 @@
     "publisher": {
       "@type": "Organization",
       "name": "JimothyTracker"
+    }
+  }
+  </script>
+
+  <!--
+  Breadcrumb Schema (JSON‑LD):
+  Breadcrumbs increase ranking and give Google a clear hierarchy.
+  This helps Google understand the site structure and improves SERP appearance.
+  -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://jimothytracker.org"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Games",
+        "item": "https://jimothytracker.org/games"
+      }
+    ]
+  }
+  </script>
+
+  <!--
+  “Play Online” Action Schema:
+  This is powerful — it tells Google that your page contains a playable online game.
+  This can trigger rich results like “Play” buttons in Google search.
+  -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Jimothy Retro Arcade",
+    "url": "https://jimothytracker.org/games",
+    "applicationCategory": "Game",
+    "browserRequirements": "Requires JavaScript",
+    "potentialAction": {
+      "@type": "PlayAction",
+      "target": "https://jimothytracker.org/games",
+      "name": "Play Jimothy Online"
     }
   }
   </script>
