@@ -3,16 +3,97 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>About Jimothy the Raccoon – Jimothy Tracker</title>
 
-  <meta name="description" content="Learn about Jimothy the raccoon, Seattle’s curious local wanderer. Discover his story, personality, and the community that tracks his adventures." />
-  <meta name="keywords" content="Jimothy, Jimothy the raccoon, Jimothy tracker, raccoon Jimothy, Seattle raccoon, Jimothy biography, Jimothy story" />
+  <!-- SEO Title -->
+  <title>Jimothy the Raccoon – Seattle’s Viral Raccoon | Official Biography</title>
+
+  <!-- SEO Description -->
+  <meta name="description" 
+        content="Meet Jimothy the raccoon — Seattle’s viral urban wanderer. Learn his story, unique appearance, Seattle sightings, and why Jimothy became the city’s most famous raccoon." />
+
+  <!-- SEO Keywords -->
+  <meta name="keywords" 
+        content="Jimothy, Jimothy raccoon, Seattle raccoon, Seattle raccoon Jimothy, Jimothy the raccoon, Ballard raccoon, viral raccoon Seattle, Jimothy biography, Jimothy story" />
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://jimothytracker.org/bio">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Jimothy the Raccoon – Seattle’s Viral Raccoon" />
+  <meta property="og:description" 
+        content="Learn about Jimothy, Seattle’s beloved raccoon with the short neck, tiny torso, and long legs. Explore his story, sightings, and rise to fame." />
+  <meta property="og:url" content="https://jimothytracker.org/bio" />
+  <meta property="og:type" content="profile" />
+  <meta property="og:image" content="https://jimothytracker.org/assets/jimothy-og-image.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Jimothy the Raccoon – Seattle’s Viral Raccoon" />
+  <meta name="twitter:description" 
+        content="Discover the story of Jimothy, Seattle’s most famous raccoon. Biography, sightings, and community lore." />
+  <meta name="twitter:image" content="https://jimothytracker.org/assets/jimothy-og-image.png" />
+
+  <!-- JSON-LD: Jimothy Profile Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Animal",
+    "name": "Jimothy the Raccoon",
+    "alternateName": ["Jimothy", "Seattle Raccoon Jimothy", "Ballard Raccoon"],
+    "description": "Jimothy is Seattle’s viral raccoon known for his short neck, tiny torso, long legs, and calm wandering demeanor.",
+    "image": "https://jimothytracker.org/assets/jimothy-og-image.png",
+    "url": "https://jimothytracker.org/bio",
+    "sameAs": [
+      "https://jimothytracker.org",
+      "https://jimothytracker.org/sightings"
+    ]
+  }
+  </script>
+
+  <!-- JSON-LD: Breadcrumb Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://jimothytracker.org"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "About Jimothy",
+        "item": "https://jimothytracker.org/bio"
+      }
+    ]
+  }
+  </script>
+
+  <!-- JSON-LD: Profile Page Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    "name": "Jimothy the Raccoon Biography",
+    "about": {
+      "@type": "Animal",
+      "name": "Jimothy the Raccoon"
+    },
+    "url": "https://jimothytracker.org/bio"
+  }
+  </script>
 
   <!-- Favicon Set -->
   <link rel="icon" type="image/svg+xml" href="./assets/jimothy-favicon.svg">
   <link rel="icon" type="image/png" href="./assets/jimothy-favicon.png">
-  
+
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
