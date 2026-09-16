@@ -547,7 +547,7 @@ function animateMovementOnMap(sightings) {
 
   // Jimothy icon
   const jimothyIcon = {
-    url: "/assets/jimothyonanimationmap.jpg",
+    url: "/assets/jimothyonanimationmap.png",
     scaledSize: new google.maps.Size(30, 30)
   };
 

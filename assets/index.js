@@ -180,10 +180,13 @@ async function submitFormSighting() {
   const time = document.getElementById("timeInput").value;
 
   if (!loc) {
-    alert("Please click the map or enter a location.");
+    alert("Please click the map to enter a location.");
     return;
   }
-
+ if (!time) {
+    alert("Please click the calendar icon and select a datetime.");
+    return;
+  }
   const parts = loc.split(",");
   if (parts.length !== 2) {
     alert("Location must be in 'lat, lng' format.");
@@ -201,6 +204,9 @@ async function submitFormSighting() {
   //const timestamp = new Date().toISOString();//for testing only
   const timestamp=new Date(time).toISOString();
   const payload = { lat, lng, timestamp, note };
+  //console.log(payload); //test only
+  //console.log(JSON.stringify(payload)); //test only
+  //const payload = JSON.parse(JSON.stringify({ lat, lng, timestamp, note })); //Force a clean object. This strips any inherited keys, like, constructor.
 
   try {
     const res = await fetch("https://delayedapi.jimothytracker.org", {
