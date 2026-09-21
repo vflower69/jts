@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Pro Archery 3D - Commercial Edition</title>
+  <!-- Archery v1 style sheet -->
+  <link rel="stylesheet" href="/assets/archeryv1.css">
+</head>
+<body>
+
+    <div id="canvas-container"></div>
+    <div id="crosshair"></div>
+
+    <div id="hud">
+        <div class="hud-row">
+            <div class="hud-box" id="score-display">SCORE: 0</div>
+            <div class="hud-box" id="wind-display">WIND: 0.0 m/s</div>
+            <div class="hud-box" id="arrows-display">ARROWS: 5</div>
+        </div>
+    </div>
+
+    <div id="power-container"><div id="power-bar"></div></div>
+
+    <div id="message-overlay">
+        <h1>Pro Archery 3D</h1>
+        <p>Master the wind and distance. Click & Hold / Touch & Drag to pull your bowstring, aim with precision, and release to shoot!</p>
+        <button class="btn" id="start-btn">Start Match</button>
+    </div>
+
+    <!-- Three.js Library CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- Archery v1 javascript -->
+  <script src="/assets/archeryv1.js"></script>
+  <!-- Cloudflare Web Analytics -->
+  <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8c0d32d91bd347e4990d1409f8061d2f"}'></script>
+  <!-- End Cloudflare Web Analytics -->
+</body>
+</html>
