@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pickleball Pro Tour - Arcade Edition</title>
+  <!-- Pickleball style sheet -->
+  <link rel="stylesheet" href="/assets/pickleball.css">
+</head>
+<body>
+
+    <div id="game-container">
+        <div id="ui-overlay">
+            <div class="hud-box">You: <span id="player-score">0</span></div>
+            <div class="hud-box" id="rally-display">Rally: 0 ⚡</div>
+            <div class="hud-box">AI: <span id="ai-score">0</span></div>
+        </div>
+
+        <div id="menu-overlay">
+            <h1>Pickleball Pro Tour</h1>
+            <p>Experience fast-paced arcade pickleball! Use mouse/keyboard (Arrow keys or W/S) or touch/drag to move your paddle. Master dinks, drives, and smashes to win the match first to 11 points!</p>
+            <div class="btn-group">
+                <button class="btn" id="start-btn">Serve Match</button>
+                <button class="btn btn-danger" id="exit-btn" style="display:none;">Main Menu</button>
+            </div>
+            <div id="controls-hint">
+                <strong>Controls:</strong> Mouse Move / Drag Paddle or Use W/S or Up/Down Arrow Keys.<br>
+                Timing your swing increases return speed! Non-Volley Zone (Kitchen) rules apply.
+            </div>
+        </div>
+
+        <canvas id="gameCanvas" width="960" height="540"></canvas>
+    </div>
+
+  <!-- Pickleball javascript -->
+  <script src="/assets/pickleball.js"></script>
+  <!-- Cloudflare Web Analytics -->
+  <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8c0d32d91bd347e4990d1409f8061d2f"}'></script>
+  <!-- End Cloudflare Web Analytics -->
+
+</body>
+</html>
