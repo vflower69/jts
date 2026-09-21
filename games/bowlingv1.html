@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Strike Arena - Commercial 3D Bowling</title>
+  <!-- Bowling v1 style sheet -->
+  <link rel="stylesheet" href="/assets/bowlingv1.css">
+
+</head>
+<body>
+
+    <div id="game-container">
+        <div id="ui-overlay">
+            <div class="stat-box">Score: <span id="score-display">0</span></div>
+            <div class="stat-box">Frame: <span id="frame-display">1/10</span></div>
+            <div class="stat-box">Pins: <span id="pins-display">10</span></div>
+        </div>
+
+        <div id="menu-overlay">
+            <h1>Strike Arena</h1>
+            <p>High-octane arcade bowling! Swipe, drag, or use A/D keys to position and shoot with curve physics. Knock down all pins for a STRIKE!</p>
+            <div class="btn-group">
+                <button class="btn" id="start-btn">Start Game</button>
+                <button class="btn btn-danger" id="exit-btn" style="display:none;">Main Menu</button>
+            </div>
+            <div id="controls-hint">
+                <strong>Controls:</strong> Drag / Mouse / Touch to aim & flick | A/D or Arrows + SPACE<br>
+                <strong>Arcade Action:</strong> Fast-paced pin collisions & dynamic crowd cheer effects!
+            </div>
+        </div>
+
+        <canvas id="gameCanvas" width="900" height="550"></canvas>
+    </div>
+
+  <!-- Bowling v1 javascript -->
+  <script src="/assets/bowlingv1.js"></script>
+  <!-- Cloudflare Web Analytics -->
+  <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8c0d32d91bd347e4990d1409f8061d2f"}'></script>
+  <!-- End Cloudflare Web Analytics -->
+
+</body>
+</html>
