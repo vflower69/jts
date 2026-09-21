@@ -10,6 +10,11 @@ What's Added in this Update:
 exact direction the wind is blowing, paired with speed metrics.
 4. Unique Sound Effects: Added distinct impact synthesis tones for hitting ring values versus hitting wooden obstacles.
 */
+// hostname check - only run from jimothytracker.org domain
+if (window.location.hostname !== "jimothytracker.org") {
+  document.body.innerHTML = "🦝 Jimothy says: This is stolen from jimothytracker.org!";}
+
+// Below are the codes for the game
 // --- Game Configuration & State ---
         let scene, camera, renderer, targetGroup, obstacles = [];
         let arrows = [];
