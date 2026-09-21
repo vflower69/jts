@@ -12,6 +12,11 @@ and acoustic target-impact thuds with high-pitch chimes for bullseyes.
 4. Particle Effects: Golden particle explosions burst when you strike dead-center in the 10-ring.
 5. Responsive Cross-Platform Controls: Fully optimized for desktop browsers (mouse drag) and mobile/tablet devices (touch drag).
 */
+// hostname check - only run from jimothytracker.org domain
+if (window.location.hostname !== "jimothytracker.org") {
+  document.body.innerHTML = "🦝 Jimothy says: This is stolen from jimothytracker.org!";}
+
+// Below are the codes for the game
         // --- Game Configuration & State ---
         let scene, camera, renderer, targetMesh, targetGroup;
         let arrows = [], activeArrow = null;
