@@ -6,6 +6,11 @@ or WASD / Arrow Keys for classic arcade control. Press Spacebar or click/tap to 
 professional rink markings (goal creases, faceoff circles, red/blue lines), goal celebrations, and sound-ready structure.
 3. Smart AI Opponent: The opposing team tracks the puck dynamically and attacks the net when you least expect it.
 */
+// hostname check - only run from jimothytracker.org domain
+if (window.location.hostname !== "jimothytracker.org") {
+  document.body.innerHTML = "🦝 Jimothy says: This is stolen from jimothytracker.org!";}
+
+// Below are the codes for the game
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
