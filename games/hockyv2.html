@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Slapshot Showdown - Commercial Hockey</title>
+  <!-- Hocky v2 style sheet -->
+  <link rel="stylesheet" href="/assets/hockyv2.css">
+</head>
+<body>
+
+    <div id="game-container">
+        <div id="ui-overlay">
+            <div class="team-score">HOME <span id="home-score">0</span></div>
+            <div id="clock-container">
+                <div id="timer">02:00</div>
+                <div id="period">Period 1</div>
+            </div>
+            <div class="team-score">AWAY <span id="away-score">0</span></div>
+        </div>
+
+        <div id="menu-overlay">
+            <h1>Slapshot Showdown</h1>
+            <p>Experience fast-paced arcade hockey! Control your skater with Mouse, Touch, or WASD/Arrow keys. Score the most goals before the final buzzer!</p>
+            <div class="btn-group">
+                <button class="btn" id="start-btn">Puck Drop</button>
+                <button class="btn btn-danger" id="exit-btn" style="display:none;">Exit Game</button>
+            </div>
+            <div id="controls-hint">
+                <strong>Controls:</strong> Mouse/Touch to move & aim | Click/Tap to Shoot / Speed Burst<br>
+                <strong>Keyboard:</strong> WASD / Arrows to Move | SPACE to Shoot
+            </div>
+        </div>
+
+        <canvas id="gameCanvas" width="900" height="500"></canvas>
+    </div>
+
+  <!-- Hocky v2 javascript -->
+  <script src="/assets/hockyv2.js"></script>
+  <!-- Cloudflare Web Analytics -->
+  <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8c0d32d91bd347e4990d1409f8061d2f"}'></script>
+  <!-- End Cloudflare Web Analytics -->
+
+</body>
+</html>
