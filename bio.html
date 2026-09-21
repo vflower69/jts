@@ -35,19 +35,26 @@
 
   <!-- JSON-LD: Jimothy Profile Schema -->
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Animal",
-    "name": "Jimothy the Raccoon",
-    "alternateName": ["Jimothy", "Seattle Raccoon Jimothy", "Ballard Raccoon"],
-    "description": "Jimothy is Seattle’s viral raccoon known for his short neck, tiny torso, long legs, and calm wandering demeanor.",
-    "image": "https://jimothytracker.org/assets/jimothy-og-image.png",
-    "url": "https://jimothytracker.org/bio",
-    "sameAs": [
-      "https://jimothytracker.org",
-      "https://jimothytracker.org/sightings"
-    ]
-  }
+    {
+      "@context": "https://schema.org",
+      "@type": "ProfilePage",
+      "dateCreated": "2026-07-15T12:34:00-05:00",
+      "dateModified": "2024-08-16T14:53:00-05:00",
+      "mainEntity": {
+        "@type": "Animal",
+        "name": "Jimothy the Raccoon",
+        "alternateName": ["Jimothy", "Seattle Raccoon Jimothy", "Ballard Raccoon", "Raccoon Jimothy"],
+        "description": "Seattle Raccoon Jimothy",
+        "image": "https://jimothytracker.org/assets/jimothy-og-image.png",
+        "url": "https://jimothytracker.org/bio.html",
+        "sameAs": [
+          "https://jimothytracker.org/index.html",
+          "https://jimothytracker.org/sightings.html",
+          "https://jimothytracker.org/gallery.html",
+          "https://jimothytracker.org/games.html"
+        ]
+      }
+    }
   </script>
 
   <!-- JSON-LD: Breadcrumb Schema -->
