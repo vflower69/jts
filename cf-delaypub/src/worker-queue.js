@@ -1,13 +1,9 @@
 export default {
-  // ---------------------------------------------------------
-  // QUEUE CONSUMER — runs after your configured delay
-  // ---------------------------------------------------------
   async queue(batch, env) {
     for (const msg of batch.messages) {
       const dispatch = msg.body;
 
       try {
-        // Publish to GitHub repository_dispatch
         const res = await fetch(
           `https://api.github.com/repos/${env.GH_OWNER}/${env.GH_REPO}/dispatches`,
           {
@@ -27,11 +23,15 @@ export default {
         if (!res.ok) {
           const text = await res.text();
           console.error("GitHub error:", text);
+          return new Response("GitHub write failed", { status: 500 });
         }
 
       } catch (err) {
         console.error("Queue consumer exception:", err);
+        return new Response("Queue consumer exception", { status: 500 });
       }
     }
+console.log(`Processed ${batch.messages.length} messages`);
+    return new Response("ok", { status: 200 });
   }
 };
