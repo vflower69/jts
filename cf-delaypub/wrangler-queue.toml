@@ -7,7 +7,7 @@ compatibility_date = "2026-08-30"
 
 # This Worker consumes from the queue
 [[queues.consumers]]
-queue = "sightingpub-delayed"
+queue = "sightingpub-delayed-v2"
 
 [vars]
 GH_OWNER = "vflower69"
