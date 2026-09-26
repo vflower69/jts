@@ -1,9 +1,13 @@
+// ---------------------------------------------------------
+// QUEUE CONSUMER — runs after your configured delay
+// ---------------------------------------------------------
 export default {
   async queue(batch, env) {
     for (const msg of batch.messages) {
       const dispatch = msg.body;
 
       try {
+        // Publish to GitHub repository_dispatch
         const res = await fetch(
           `https://api.github.com/repos/${env.GH_OWNER}/${env.GH_REPO}/dispatches`,
           {
