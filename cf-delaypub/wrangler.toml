@@ -12,7 +12,7 @@ GH_REPO = "jts"
 
 # Only the producer binding goes here
 [[queues.producers]]
-queue = "sightingpub-delayed"
+queue = "sightingpub-delayed-v2"
 binding = "DELAYED_PUBLISH_SIGHTING"
 
 ###############################################
