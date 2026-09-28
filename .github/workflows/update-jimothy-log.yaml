@@ -32,29 +32,26 @@ jobs:
         run: git pull --rebase origin main
 
       # ---------------------------------------------------------
-      # PAYLOAD SELECTION (FIXED — no invalid && / || operators)
+      # PAYLOAD EXTRACTION (SAFE — JSON WRITTEN TO FILES)
       # ---------------------------------------------------------
 
-      - name: Set payload from repository_dispatch
+      - name: Extract payload for repository_dispatch
         if: github.event_name == 'repository_dispatch'
         run: |
-          echo "PAYLOAD=$(echo '${{ toJson(github.event.client_payload) }}')" >> $GITHUB_ENV
-          echo "NEW_ENTRY=$(echo '${{ toJson(github.event.client_payload) }}')" >> $GITHUB_ENV
+          echo '${{ toJson(github.event.client_payload) }}' > payload.json
+          echo '${{ toJson(github.event.client_payload) }}' > new_entry.json
 
-      - name: Set payload from workflow_dispatch
+      - name: Extract payload for workflow_dispatch
         if: github.event_name == 'workflow_dispatch'
         run: |
-          echo "PAYLOAD=${{ inputs.payload }}" >> $GITHUB_ENV
-          echo "NEW_ENTRY=${{ inputs.new_entry }}" >> $GITHUB_ENV
+          echo '${{ inputs.payload }}' > payload.json
+          echo '${{ inputs.new_entry }}' > new_entry.json
 
       # ---------------------------------------------------------
-      # PROCESSING
+      # PROCESSING — MERGE NEW ENTRY INTO jimothy.json
       # ---------------------------------------------------------
 
       - name: Append new sighting to JSON
-        env:
-          PAYLOAD: ${{ env.PAYLOAD }}
-          NEW_ENTRY: ${{ env.NEW_ENTRY }}
         run: |
           # Ensure file exists
           if [ ! -f data/jimothy.json ]; then
@@ -64,12 +61,11 @@ jobs:
           # Validate existing JSON
           jq '.' data/jimothy.json > /dev/null
 
-          # Write new entry safely
-          echo "$NEW_ENTRY" > data/new_entry.json
-          jq '.' data/new_entry.json > /dev/null
+          # Validate new entry JSON
+          jq '.' new_entry.json > /dev/null
 
           # Merge new entry into locations array
-          jq --argjson entry "$NEW_ENTRY" '.locations += [$entry]' data/jimothy.json > data/tmp.json
+          jq --slurpfile entry new_entry.json '.locations += $entry' data/jimothy.json > data/tmp.json
           mv data/tmp.json data/jimothy.json
 
           # Configure Git identity
