@@ -6,6 +6,7 @@ permissions:
 on:
   repository_dispatch:
     types: [jimothy_sighting]
+
   workflow_dispatch:
     inputs:
       payload:
@@ -28,18 +29,32 @@ jobs:
           fetch-depth: 0
 
       - name: Sync with remote main BEFORE changes
-        shell: bash
+        run: git pull --rebase origin main
+
+      # ---------------------------------------------------------
+      # PAYLOAD SELECTION (FIXED — no invalid && / || operators)
+      # ---------------------------------------------------------
+
+      - name: Set payload from repository_dispatch
+        if: github.event_name == 'repository_dispatch'
         run: |
-          git pull --rebase origin main
+          echo "PAYLOAD=$(echo '${{ toJson(github.event.client_payload) }}')" >> $GITHUB_ENV
+          echo "NEW_ENTRY=$(echo '${{ toJson(github.event.client_payload) }}')" >> $GITHUB_ENV
+
+      - name: Set payload from workflow_dispatch
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          echo "PAYLOAD=${{ inputs.payload }}" >> $GITHUB_ENV
+          echo "NEW_ENTRY=${{ inputs.new_entry }}" >> $GITHUB_ENV
+
+      # ---------------------------------------------------------
+      # PROCESSING
+      # ---------------------------------------------------------
 
       - name: Append new sighting to JSON
-        shell: bash
         env:
-          # PAYLOAD: ${{ inputs.payload }}
-          # NEW_ENTRY: ${{ inputs.new_entry }}
-          # Detect trigger type and choose correct payload source
-          PAYLOAD: ${{ github.event_name == 'repository_dispatch' && toJson(github.event.client_payload) || inputs.payload }}
-          NEW_ENTRY: ${{ github.event_name == 'repository_dispatch' && toJson(github.event.client_payload) || inputs.new_entry }}
+          PAYLOAD: ${{ env.PAYLOAD }}
+          NEW_ENTRY: ${{ env.NEW_ENTRY }}
         run: |
           # Ensure file exists
           if [ ! -f data/jimothy.json ]; then
@@ -48,14 +63,12 @@ jobs:
 
           # Validate existing JSON
           jq '.' data/jimothy.json > /dev/null
-          
+
           # Write new entry safely
           echo "$NEW_ENTRY" > data/new_entry.json
-          # Validate JSON
           jq '.' data/new_entry.json > /dev/null
 
           # Merge new entry into locations array
-          # jq --slurpfile entry data/new_entry.json '.locations += $entry' data/tmp.json > data/jimothy.json
           jq --argjson entry "$NEW_ENTRY" '.locations += [$entry]' data/jimothy.json > data/tmp.json
           mv data/tmp.json data/jimothy.json
 
@@ -66,4 +79,4 @@ jobs:
           # Commit and push
           git add data/jimothy.json
           git commit -m "Add new Jimothy sighting" || echo "No changes to commit"
-          git push -u origin main
+          git push origin main
