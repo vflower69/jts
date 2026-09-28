@@ -1,7 +1,7 @@
+// ---------------------------------------------------------
+// QUEUE CONSUMER — runs after your configured delay
+// ---------------------------------------------------------
 export default {
-  // ---------------------------------------------------------
-  // QUEUE CONSUMER — runs after your configured delay
-  // ---------------------------------------------------------
   async queue(batch, env) {
     for (const msg of batch.messages) {
       const dispatch = msg.body;
@@ -27,11 +27,15 @@ export default {
         if (!res.ok) {
           const text = await res.text();
           console.error("GitHub error:", text);
+          return new Response("GitHub write failed", { status: 500 });
         }
 
       } catch (err) {
         console.error("Queue consumer exception:", err);
+        return new Response("Queue consumer exception", { status: 500 });
       }
     }
+console.log(`Processed ${batch.messages.length} messages`);
+    return new Response("ok", { status: 200 });
   }
 };
