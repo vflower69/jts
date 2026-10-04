@@ -215,6 +215,12 @@
       "lng": -66.958778,
       "note": "Jimothy ate Mandoca",
       "timestamp": "2026-10-04T05:30:00.000Z"
+    },
+    {
+      "lat": -32.563232,
+      "lng": 151.105538,
+      "note": "Jimothy drank Flat White coffee with kangaroos",
+      "timestamp": "2026-10-04T05:35:00.000Z"
     }
   ]
 }
