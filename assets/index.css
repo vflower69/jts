@@ -125,6 +125,25 @@
   box-shadow: 0 0 15px #34d399;
 }
 
+/* Toggle button — high contrast */
+#dark-mode-toggle {
+  background: #fbbf24;       /* bright gold */
+  color: #1f2937;            /* dark slate text */
+  font-weight: 700;
+  border: 2px solid #fbbf24;
+  border-radius: 999px;
+  padding: 10px 18px;
+  box-shadow: 0 0 10px #fbbf24;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+#dark-mode-toggle:hover {
+  background: #fcd34d;       /* lighter gold */
+  box-shadow: 0 0 15px #fcd34d;
+}
+
+
 /* Fix Edge dark mode contrast issues */
 #jimothy-popup {
   forced-color-adjust: none;
