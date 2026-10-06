@@ -35,10 +35,9 @@ body {
   inset: 0;
   background: rgba(0, 0, 0, 0.65);
   display: flex;
-  flex-direction: column; /* toggle sits ABOVE popup */
-  align-items: center;
-  /*justify-content: flex-end;*/
-  justify-content: flex-start; /* <-- aligns popup to left edge */
+  flex-direction: column; /* vertical stacking, toggle sits ABOVE popup */
+  align-items: flex-start; /* <-- LEFT EDGE */
+  justify-content: flex-end; /* bottom of screen */
   z-index: 9999;
   opacity: 0;
   animation: fadeIn 0.4s forwards;
