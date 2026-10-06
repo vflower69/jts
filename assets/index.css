@@ -95,6 +95,36 @@
       font-size: 0.9rem;
     }
 
+/* Checkbox visibility */
+#dont-show-container input[type="checkbox"] {
+  accent-color: #22c55e; /* vivid emerald */
+  border: 2px solid #22c55e;
+  background-color: #0a0f1a; /* deep black for contrast */
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+/* Checkbox label */
+#dont-show-container label {
+  color: #f9fafb; /* bright white text */
+  font-weight: 500;
+}
+
+/* Close button visibility */
+#jimothy-close-btn {
+  background: #10b981; /* bright emerald */
+  color: #ffffff;      /* white text for contrast */
+  font-weight: 700;
+  box-shadow: 0 0 10px #10b981;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+#jimothy-close-btn:hover {
+  background: #34d399; /* lighter green */
+  box-shadow: 0 0 15px #34d399;
+}
+
 /* Fix Edge dark mode contrast issues */
 #jimothy-popup {
   forced-color-adjust: none;
@@ -107,6 +137,7 @@
   color: #ffffff !important;
   text-shadow: 0 0 0 #ffffff;
 }
+
 
 /* ----------------------------------------
  * Jimothy Annoucement Popup - end
