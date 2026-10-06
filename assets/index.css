@@ -160,7 +160,7 @@ body {
 /* Mobile-only scrollbar styling */
 @media (max-width: 600px) {
   #jimothy-popup::-webkit-scrollbar {
-    width: 8px;               /* thicker scrollbar */
+    width: 16px;               /* thicker scrollbar */
   }
 
   #jimothy-popup::-webkit-scrollbar-track {
