@@ -95,6 +95,19 @@
       font-size: 0.9rem;
     }
 
+/* Fix Edge dark mode contrast issues */
+#jimothy-popup {
+  forced-color-adjust: none;
+  color-scheme: only light;
+  isolation: isolate;
+}
+#jimothy-popup p,
+#jimothy-popup em,
+#jimothy-popup strong {
+  color: #ffffff !important;
+  text-shadow: 0 0 0 #ffffff;
+}
+
 /* ----------------------------------------
  * Jimothy Annoucement Popup - end
  *----------------------------------------- */
