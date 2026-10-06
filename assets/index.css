@@ -159,6 +159,39 @@
   pointer-events: auto;
 }
 
+/* Popup stacking fix */
+#jimothy-popup {
+  position: relative;
+  z-index: 1;
+  overflow-y: auto;
+  transform: none; /* remove transform after animation ends */
+  animation: slideUp 0.5s ease-out forwards;
+}
+
+/* Toggle button fix */
+#dark-mode-toggle {
+  position: relative;
+  z-index: 10;
+  pointer-events: auto;
+  isolation: isolate;
+  width: 120px;          /* smaller width */
+  height: 36px;          /* smaller height */
+  font-size: 0.9rem;
+  border-radius: 999px;
+  background: #fbbf24;   /* bright gold for contrast */
+  color: #1f2937;
+  font-weight: 700;
+  border: 2px solid #fbbf24;
+  box-shadow: 0 0 10px #fbbf24;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+#dark-mode-toggle:hover {
+  background: #fcd34d;
+  box-shadow: 0 0 15px #fcd34d;
+}
+
 #jimothy-popup h3 {
   color: #fbbf24;      /* same gold as H2 */
   font-weight: 700;    /* make it pop */
@@ -176,6 +209,19 @@
 #jimothy-popup strong {
   color: #ffffff !important;
   text-shadow: 0 0 0 #ffffff;
+}
+
+/* --- Toggle button click fix --- */
+#jimothy-popup {
+  overflow-y: visible; /* allow clicks through bottom area */
+  transform: none;     /* remove transform after animation ends */
+}
+
+#dark-mode-toggle {
+  position: sticky;    /* stays visible and clickable */
+  top: 12px;
+  z-index: 100;
+  pointer-events: auto;
 }
 
 
