@@ -150,6 +150,11 @@
   pointer-events: auto;
 }
 
+#jimothy-popup {
+  position: relative;
+  z-index: 1;
+}
+
 #jimothy-popup * {
   pointer-events: auto;
 }
