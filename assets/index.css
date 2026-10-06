@@ -144,6 +144,9 @@
   box-shadow: 0 0 15px #fcd34d;
 }
 
+#jimothy-popup * {
+  pointer-events: auto;
+}
 
 /* Fix Edge dark mode contrast issues */
 #jimothy-popup {
