@@ -319,7 +319,120 @@
             px-6 py-4 rounded-lg shadow-2xl transition-all duration-500 transform scale-100
             pointer-events-none opacity-0">
 </div>
-   
+
+  <!-- Jimothy Annoucement Popup overlay -->
+  <div id="jimothy-popup-overlay" style="display:none;">
+    <div id="jimothy-popup">
+
+      <!-- Mascot -->
+      <div id="raccoon-mascot"></div>
+
+      <h2>🦝✨ Jimothy’s Official Statement About Recent Sightings Posted Here</h2>
+
+      <p><strong>A Tale of Trash, Travel, and Human Confusion</strong></p>
+
+      <p>
+	  	  Humans are strange creatures. They love animals more than they love each other — which is honestly the most sensible decision they’ve ever made. Animals don’t start wars, invent taxes, or create TikTok. We just vibe. So if humans want to adore me more than their cousins? Great. I accept the worship.
+	  </p>
+
+      <p>But lately?<br>
+Humans have been too enthusiastic. Like… <strong>Olympic‑level overactive imagination</strong> enthusiastic.</p>
+
+      <h3>🚨 August: The North Korea Incident</h3>
+      <p>
+	  Apparently someone decided I took a little vacation to North Korea.
+Me. A raccoon.
+If I actually showed up there, they’d probably throw me in prison as a spy because my neck is too short and my legs are too long. Suspicious proportions. Very espionage‑coded.
+</p>
+
+      <h3>🚨 September: Spotted me at Oregon</h3>
+      <p>Then someone claimed saw me in Oregon.  
+      Oregon!  
+      I have never even been allowed on a bus, train, or plane. I grew up in Seattle, eating trash like a respectable local raccoon. If I could afford a car, trust me, I would NOT be dumpster‑diving for Mandoca‑shaped mysteries.
+	  </p>
+      <h3>🚨 October: The month humans make crazy fun of me.</h3>
+      <p>October 1st:  
+      Someone posted that I was in Costa Rica doing… dirty stuff.
+Buddy, I can’t even cross I‑5 without panicking. You think I’m flying to Costa Rica? I’m a well‑behaved raccoon, thank you very much.
+	  </p>
+      <p>Those posts got deleted. Justice served.</p>
+
+      <p>But then October 3rd & 4th arrived, and humans decided I was basically a raccoon version of Carmen Sandiego.</p>
+
+      <h3>The Completely Fake Jimothy World Tour</h3>
+
+      <p><strong>1️⃣ Copenhagen Beach</strong><br>
+      The only thing unique there is nude! They get all fascinated, but for us animals, that’s just daily life — we’re naked 24/7. So honestly, it doesn’t impress me at all.
+</p> 
+       <p><strong>2️⃣ Golden Triangle — Smoking</strong><br>
+Absolutely not. We animals don’t do drugs. We already act chaotic enough sober.
+	  </p>
+           <p><strong>3️⃣ Ukraine Forest — Grenade Throwing</strong><br>
+      I hate loud noises. Fireworks already make me rethink existence.
+Why does the human world have wars everywhere? We animals are terrified of your boom‑boom hobbies.
+</p>
+      <p><strong>4️⃣ Venezuela — Ate Mandoca</strong><br>
+ I eat trash, yes. But even I have standards. Mandoca is not on the menu.
+ </p>
+      <p><strong>5️⃣ Australia — Drank Flat White Coffe With Kangaroos</strong><br>
+I might enjoy a flat white… but NOT next to a kangaroo.
+Their kick could send me into orbit.
+</p>
+      <p><strong>6️⃣ Madagascar — Eating Cica Leaves & Climbing Baobabs</strong><br>
+I would LOVE to climb a baobab. Gorgeous trees.
+But no airline is letting a raccoon board.
+Also cica leaves? Cute, but they won’t help my fur routine.
+</p>
+      <h3>🦝💫 Final Raccoon Wisdom</h3>
+      <p>I have never left Seattle.  
+      I have never thrown a grenade.  
+      I have never smoked anything except maybe a burnt slice of pizza I found behind a dumpster.</p>
+
+      <p>Humans, please stop giving me international criminal side quests.
+	  My biggest crime is stealing cat food once.
+      I’m just trying to live my raccoon life, contemplate the universe, and find a good piece of leftover garlic bread.</p>
+
+      <div id="dont-show-container">
+        <input type="checkbox" id="dont-show-checkbox">
+        <label for="dont-show-checkbox">Don’t show again</label>
+      </div>
+
+      <button id="dark-mode-toggle">Toggle Dark Mode</button>
+      <button id="jimothy-close-btn">Close</button>
+    </div>
+  </div>
+
+  <!-- Popup sound -->
+  <audio id="popup-sound">
+    <source src="https://www.soundjay.com/buttons/sounds/button-3.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const overlay = document.getElementById('jimothy-popup-overlay');
+    const closeBtn = document.getElementById('jimothy-close-btn');
+    const dontShow = document.getElementById('dont-show-checkbox');
+    const sound = document.getElementById('popup-sound');
+    const darkToggle = document.getElementById('dark-mode-toggle');
+
+    // Show popup unless user disabled it
+    window.addEventListener('load', () => {
+      if (!localStorage.getItem('jimothyHidePopup')) {
+        overlay.style.display = 'flex';
+        sound.play();
+      }
+    });
+
+    closeBtn.addEventListener('click', () => {
+      if (dontShow.checked) {
+        localStorage.setItem('jimothyHidePopup', 'true');
+      }
+      overlay.style.display = 'none';
+    });
+
+    darkToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+    });
+  </script>
     <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8c0d32d91bd347e4990d1409f8061d2f"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>
