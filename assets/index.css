@@ -35,9 +35,9 @@ body {
   inset: 0;
   background: rgba(0, 0, 0, 0.65);
   display: flex;
-  flex-direction: column; /* toggle sits ABOVE popup */
-  align-items: center;
-  justify-content: flex-end;
+  flex-direction: column; /* vertical stacking, toggle sits ABOVE popup */
+  align-items: flex-start; /* <-- LEFT EDGE */
+  justify-content: flex-end; /* bottom of screen */
   z-index: 9999;
   opacity: 0;
   animation: fadeIn 0.4s forwards;
@@ -69,12 +69,15 @@ body {
   background: #1f2937;
   border-radius: 16px 16px 0 0;
   padding: 24px 28px;
-  max-width: 600px;
+  max-width: min(600px, 100vw);   /* <-- FIX */
+  box-sizing: border-box;         /* <-- ensures glow doesn't add width */
   width: 100%;
   max-height: 70vh;
-  overflow-y: auto; /* scroll bar works */
+  /*overflow-y: auto;*/ /* scroll bar works */
   box-shadow: 0 0 20px #0ea5e9, inset 0 0 20px #0ea5e9;
   animation: slideUp 0.5s ease-out forwards;
+  overflow-y: scroll;                /* force scrollbar */
+  -webkit-overflow-scrolling: touch; /* smooth iOS scrolling */
 }
 
 /* Animations */
@@ -154,6 +157,27 @@ body {
   font-weight: 500;
 }
 
+/* Mobile-only scrollbar styling */
+@media (max-width: 600px) {
+  #jimothy-popup::-webkit-scrollbar {
+    width: 16px;               /* thicker scrollbar */
+  }
+
+  #jimothy-popup::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1); /* subtle track */
+    border-radius: 4px;
+  }
+
+  #jimothy-popup::-webkit-scrollbar-thumb {
+    background: #fbbf24;      /* bright gold thumb */
+    border-radius: 4px;
+    box-shadow: 0 0 6px #fbbf24; /* neon glow */
+  }
+
+  #jimothy-popup::-webkit-scrollbar-thumb:hover {
+    background: #fcd34d;      /* lighter gold on hover */
+  }
+}
 
 /* ----------------------------------------
  * Jimothy Annoucement Popup - end
