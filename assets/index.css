@@ -103,6 +103,7 @@
   width: 18px;
   height: 18px;
   cursor: pointer;
+  box-shadow: 0 0 6px #22c55e;
 }
 
 /* Checkbox label */
