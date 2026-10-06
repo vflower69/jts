@@ -159,6 +159,12 @@
   pointer-events: auto;
 }
 
+#jimothy-popup h3 {
+  color: #fbbf24;      /* same gold as H2 */
+  font-weight: 700;    /* make it pop */
+  margin-top: 20px;
+}
+
 /* Fix Edge dark mode contrast issues */
 #jimothy-popup {
   forced-color-adjust: none;
