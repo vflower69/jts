@@ -73,9 +73,11 @@ body {
   box-sizing: border-box;         /* <-- ensures glow doesn't add width */
   width: 100%;
   max-height: 70vh;
-  overflow-y: auto; /* scroll bar works */
+  /*overflow-y: auto;*/ /* scroll bar works */
   box-shadow: 0 0 20px #0ea5e9, inset 0 0 20px #0ea5e9;
   animation: slideUp 0.5s ease-out forwards;
+  overflow-y: scroll;                /* force scrollbar */
+  -webkit-overflow-scrolling: touch; /* smooth iOS scrolling */
 }
 
 /* Animations */
