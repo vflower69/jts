@@ -160,25 +160,69 @@ body.dark-mode #jimothy-popup h2 {
 }
 
 /* Paragraph text */
-body.dark-mode #jimothy-popup p {
-  color: #e2e8f0;             /* soft white */
-}
+//body.dark-mode #jimothy-popup p {
+//  color: #e2e8f0;             /* soft white */
+//}
 
 /* Buttons */
-body.dark-mode #jimothy-close-btn {
-  background: #22c55e;        /* bright green */
-  color: #0a0f1a;
-}
+//body.dark-mode #jimothy-close-btn {
+//  background: #22c55e;        /* bright green */
+//  color: #0a0f1a;
+//}
 
-body.dark-mode #dark-mode-toggle {
-  background: #3b82f6;        /* vivid blue */
-  color: #f8fafc;
-}
+//body.dark-mode #dark-mode-toggle {
+//  background: #3b82f6;        /* vivid blue */
+//  color: #f8fafc;
+//}
 
 /* Checkbox label */
 body.dark-mode #dont-show-container label {
   color: #f8fafc;
 }
+
+/* Dark mode with stronger contrast */
+body.dark-mode {
+  background: #0a0f1a; /* deep navy-black */
+  color: #f9fafb;      /* bright white for default text */
+}
+
+/* Popup box */
+body.dark-mode #jimothy-popup {
+  background: #111827; /* darker slate */
+  color: #f9fafb;      /* bright white text */
+  box-shadow: 0 0 25px #38bdf8, inset 0 0 25px #38bdf8;
+}
+
+/* Headings */
+body.dark-mode #jimothy-popup h2,
+body.dark-mode #jimothy-popup h3 {
+  color: #fbbf24; /* gold highlight */
+  font-weight: 700;
+}
+
+/* Paragraphs */
+body.dark-mode #jimothy-popup p {
+  color: #f9fafb; /* bright white */
+  font-weight: 400;
+}
+
+/* Emphasized text */
+body.dark-mode #jimothy-popup em,
+body.dark-mode #jimothy-popup strong {
+  color: #93c5fd; /* soft blue for emphasis */
+}
+
+/* Buttons */
+body.dark-mode #jimothy-close-btn {
+  background: #22c55e;
+  color: #0a0f1a;
+}
+
+body.dark-mode #dark-mode-toggle {
+  background: #3b82f6;
+  color: #f9fafb;
+}
+
 /* ----------------------------------------
  * Jimothy Annoucement Popup - end
  *----------------------------------------- */
