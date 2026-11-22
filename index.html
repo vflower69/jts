@@ -452,6 +452,24 @@ Also cica leaves? Cute, but they won’t help my fur routine.
       document.body.classList.toggle('dark-mode');
     });
   </script>
+
+<!-- Auto-remove Announcement bar after even begin -->
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+	  const banner = document.querySelector(".announcement-bar");
+	
+	  if (!banner) return;
+	
+	  const now = new Date();
+	  const expiry = new Date("2026-12-01");
+	
+	  if (now >= expiry) {
+	    banner.remove();
+	  }
+	});
+</script>
+<!-- Auto-remove Announcement bar after even end -->
+	  
     <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8c0d32d91bd347e4990d1409f8061d2f"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>
